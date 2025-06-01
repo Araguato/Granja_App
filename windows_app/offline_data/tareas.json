@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "titulo": "Vacunaci\u00f3n Newcastle",
+        "descripcion": "Aplicar vacuna de Newcastle a lote L-2025-001",
+        "fecha_creacion": "2025-03-01",
+        "fecha_vencimiento": "2025-03-05",
+        "prioridad": "Alta",
+        "estado": "Pendiente",
+        "asignado_a": "Juan P\u00e9rez",
+        "lote": 1,
+        "completada": false
+    },
+    {
+        "id": 2,
+        "titulo": "Limpieza de galp\u00f3n",
+        "descripcion": "Realizar limpieza y desinfecci\u00f3n del galp\u00f3n 2",
+        "fecha_creacion": "2025-03-02",
+        "fecha_vencimiento": "2025-03-03",
+        "prioridad": "Media",
+        "estado": "Completada",
+        "asignado_a": "Mar\u00eda G\u00f3mez",
+        "galpon": 2,
+        "completada": true
+    }
+]

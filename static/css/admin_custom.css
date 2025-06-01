@@ -1,0 +1,442 @@
+/* ===== ADMIN LAYOUT FIXES ===== */
+
+/* Main container */
+#container {
+    min-width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header styles */
+#header {
+    background: #2c3e50 !important;
+    color: #ffffff !important;
+    padding: 0 20px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1000;
+}
+
+/* Branding and user tools */
+#branding {
+    float: left;
+    padding: 10px 0;
+}
+
+#user-tools {
+    float: right;
+    padding: 10px 0;
+    text-align: right;
+}
+
+/* Main content area */
+#content {
+    flex: 1;
+    padding: 20px;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 60px !important; /* Account for fixed header */
+    width: 100% !important;
+    box-sizing: border-box;
+    background: #f8f8f8;
+}
+
+/* Filter and sidebar */
+.filtered .results, .filtered .paginator, .filtered .actions, .filtered .xfull {
+    margin-right: 0 !important;
+    width: auto !important;
+}
+
+/* Filter box */
+#changelist-filter {
+    position: relative !important;
+    top: 0 !important;
+    width: 200px !important;
+    float: right;
+    margin: 0 0 20px 20px !important;
+    padding: 15px !important;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Main content with sidebar */
+#changelist {
+    position: relative;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* Results grid */
+#changelist .results {
+    flex: 1;
+    min-width: 0; /* Prevents overflow */
+}
+
+/* Form fields */
+.form-row {
+    padding: 10px 15px !important;
+    margin-bottom: 15px !important;
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+}
+
+/* Buttons */
+.submit-row {
+    padding: 12px 15px !important;
+    background: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    margin: 20px 0 !important;
+    overflow: hidden;
+}
+
+/* Tables */
+#result_list {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    #changelist-filter {
+        width: 100% !important;
+        float: none;
+        margin: 0 0 20px 0 !important;
+    }
+    
+    #changelist {
+        flex-direction: column;
+    }
+}
+
+/* Fix for form fields in filter */
+.selector select, .selector-available select, .selector-chosen select {
+    width: 100% !important;
+}
+
+/* Fix for date picker */
+.calendarbox, .clockbox {
+    z-index: 1100 !important;
+}
+
+/* Fix for inline forms */
+.inline-group {
+    margin-bottom: 20px;
+}
+
+.inline-related h3 {
+    margin: 0 0 10px 0 !important;
+    padding: 8px 12px !important;
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd !important;
+}
+
+/* Fix for stacked inlines */
+.inline-group .tabular td.original p {
+    display: none;
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 12px !important;
+}
+
+/* Fix for select2 dropdowns */
+.select2-container {
+    min-width: 200px !important;
+    width: 100% !important;
+}
+
+/* Menu items */
+#header .module ul li a {
+    display: block;
+    padding: 10px 15px;
+    color: #fff !important;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+#header .module ul li a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Active menu item */
+#header .module ul li.active a {
+    background: #3498db;
+    font-weight: bold;
+}
+
+/* Submenu */
+#header .module ul ul {
+    margin-left: 15px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#header .module ul ul li a {
+    padding-left: 25px;
+    font-size: 0.9em;
+}
+
+/* Fix for admin content */
+#content-main {
+    float: none !important;
+    width: auto !important;
+    margin-right: 220px !important;
+}
+
+/* Fix for change form */
+.change-form .aligned .form-row {
+    padding: 10px 15px !important;
+    margin-bottom: 15px !important;
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+}
+
+/* Fix for object tools */
+.object-tools {
+    float: right !important;
+    margin: 0 0 15px 15px !important;
+}
+
+.object-tools a:link, .object-tools a:visited {
+    background: #79aec8 !important;
+    color: #fff !important;
+    padding: 8px 15px !important;
+    border-radius: 4px !important;
+    font-weight: 400 !important;
+}
+
+.object-tools a:hover {
+    background: #609ab6 !important;
+}
+
+/* Fix for breadcrumbs */
+.breadcrumbs {
+    margin: 0 0 15px 0 !important;
+    padding: 10px 15px !important;
+    background: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+}
+
+/* Fix for pagination */
+.paginator {
+    margin: 15px 0 !important;
+    padding: 10px 15px !important;
+    background: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+}
+
+/* Fix for action buttons */
+.submit-row {
+    padding: 15px !important;
+    margin: 20px 0 !important;
+    background: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+}
+
+.submit-row input[type="submit"] {
+    padding: 8px 15px !important;
+    background: #79aec8 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    color: #fff !important;
+    cursor: pointer;
+}
+
+.submit-row input[type="submit"]:hover {
+    background: #609ab6 !important;
+}
+
+/* Fix for form fields */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="tel"],
+select,
+textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 8px 10px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    margin: 5px 0 !important;
+}
+
+/* Fix for checkboxes and radios */
+input[type="checkbox"],
+input[type="radio"] {
+    margin: 0 5px 0 0 !important;
+    vertical-align: middle;
+}
+
+/* Fix for help text */
+.help, .help-tooltip {
+    color: #666 !important;
+    font-size: 0.85em !important;
+    margin: 5px 0 0 0 !important;
+    padding: 0 !important;
+}
+
+/* Fix for error messages */
+.errornote {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+    border-radius: 4px !important;
+    padding: 10px 15px !important;
+    margin: 0 0 20px 0 !important;
+}
+
+/* Fix for success messages */
+.messagelist .success {
+    background: #d4edda !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
+}
+
+/* Fix for warning messages */
+.messagelist .warning {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    border: 1px solid #ffeeba !important;
+}
+
+/* Fix for error messages */
+.messagelist .error {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+    padding: 10px 15px !important;
+    margin: 0 0 15px 0 !important;
+    border-radius: 4px !important;
+}
+
+/* Menu links */
+#header .module ul li a {
+    color: #ffffff !important;
+    padding: 12px 20px !important;
+    display: block !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+}
+
+#header .module ul li a:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    padding-left: 25px !important;
+}
+
+/* Active/selected menu item */
+#header .module ul li.selected a {
+    background: #3498db !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    padding-left: 25px !important;
+}
+
+/* ===== SUBMENU STYLES ===== */
+#header .module ul li ul {
+    background: #1a252f !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-left: 4px solid #3498db !important;
+}
+
+#header .module ul li ul li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#header .module ul li ul li a {
+    color: #ecf0f1 !important;
+    padding: 10px 20px 10px 35px !important;
+    font-size: 13px !important;
+    background: transparent !important;
+}
+
+#header .module ul li ul li a:hover {
+    background: #2c3e50 !important;
+    color: #ffffff !important;
+    padding-left: 40px !important;
+}
+
+/* Active submenu item */
+#header .module ul li ul li.selected a {
+    background: #2c3e50 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    padding-left: 40px !important;
+    border-left: 3px solid #3498db !important;
+}
+
+/* ===== CONTENT AREA STYLES ===== */
+/* Section headers in content area */
+.dashboard .module caption,
+.app-avicola .module caption, 
+.app-produccion .module caption,
+.app-inventario .module caption,
+.app-ventas .module caption,
+.app-reportes .module caption {
+    color: #ffffff !important;
+    background: #3498db !important;
+    font-weight: bold !important;
+    padding: 12px 15px !important;
+    margin: 0 0 20px 0 !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+/* Improve readability of form fields */
+.form-row {
+    margin-bottom: 15px !important;
+    padding: 15px !important;
+    background: #f9f9f9 !important;
+    border-radius: 4px !important;
+    border: 1px solid #eee !important;
+}
+
+/* Make sure buttons are visible */
+.submit-row input,
+.submit-row a.button {
+    background: #3498db !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 15px !important;
+    border-radius: 4px !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+    letter-spacing: 0.5px !important;
+}
+
+.submit-row input:hover,
+.submit-row a.button:hover {
+    background: #2980b9 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    #header .module ul li a {
+        padding: 10px 15px !important;
+    }
+    
+    #header .module ul li ul li a {
+        padding: 8px 15px 8px 30px !important;
+    }
+}

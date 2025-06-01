@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Registro de Mortalidad Diaria" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-skull-crossbones me-2"></i>
+                {% trans "Registro de Mortalidad Diaria" %}
+            </h1>
+            <p class="text-muted">
+                {% trans "Seguimiento de mortalidad en lotes activos" %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+            <a href="{% url 'nueva_mortalidad' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> {% trans "Nuevo Registro" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                {% trans "Historial de Mortalidad" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if registros %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% trans "ID" %}</th>
+                                <th>{% trans "Lote" %}</th>
+                                <th>{% trans "Fecha" %}</th>
+                                <th>{% trans "Cantidad" %}</th>
+                                <th>{% trans "Causa" %}</th>
+                                <th>{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in registros %}
+                                <tr>
+                                    <td>{{ registro.id }}</td>
+                                    <td>{{ registro.lote }}</td>
+                                    <td>{{ registro.fecha|date:"d/m/Y" }}</td>
+                                    <td>{{ registro.cantidad_muertes }}</td>
+                                    <td>{{ registro.causa|truncatechars:30 }}</td>
+                                    <td>
+                                        <a href="{% url 'detalle_mortalidad' registro.id %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'editar_mortalidad' registro.id %}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'eliminar_mortalidad' registro.id %}" class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('¿Está seguro de eliminar este registro?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "No hay registros de mortalidad disponibles." %}
+                </div>
+                <div class="text-center py-3">
+                    <a href="{% url 'nueva_mortalidad' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-1"></i> {% trans "Crear Primer Registro" %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

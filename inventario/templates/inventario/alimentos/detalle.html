@@ -1,0 +1,505 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if LANGUAGE_CODE == 'en' %}Food Details{% else %}Detalles del Alimento{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Encabezado -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-utensils me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Food Details{% else %}Detalles del Alimento{% endif %}
+        </h1>
+        <div>
+            <a href="{% url 'inventario:lista_alimentos' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% if LANGUAGE_CODE == 'en' %}Back to List{% else %}Volver al Listado{% endif %}
+            </a>
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#consumoModal">
+                <i class="fas fa-utensils me-1"></i> {% if LANGUAGE_CODE == 'en' %}Register Consumption{% else %}Registrar Consumo{% endif %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Tarjeta de información del alimento -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}General Information{% else %}Información General{% endif %}
+                    </h6>
+                    <div>
+                        <span class="badge {% if alimento.activo %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if alimento.activo %}
+                                {% if LANGUAGE_CODE == 'en' %}Active{% else %}Activo{% endif %}
+                            {% else %}
+                                {% if LANGUAGE_CODE == 'en' %}Inactive{% else %}Inactivo{% endif %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-primary">{{ alimento.nombre }}</h5>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Stage:{% else %}Etapa:{% endif %}</strong>
+                                <span class="badge 
+                                    {% if alimento.etapa == 'iniciador' %}bg-primary
+                                    {% elif alimento.etapa == 'crecimiento' %}bg-success
+                                    {% elif alimento.etapa == 'engorde' %}bg-warning
+                                    {% elif alimento.etapa == 'postura' %}bg-info
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ alimento.get_etapa_display }}
+                                </span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Supplier:{% else %}Proveedor:{% endif %}</strong>
+                                {{ alimento.proveedor.nombre }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Protein:{% else %}Proteína:{% endif %}</strong>
+                                {{ alimento.proteina_porcentaje }}%
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Energy (kcal/kg):{% else %}Energía (kcal/kg):{% endif %}</strong>
+                                {{ alimento.energia_kcal_kg|default:"N/A" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Entry Date:{% else %}Fecha de Ingreso:{% endif %}</strong>
+                                {{ alimento.fecha_ingreso|date:"d/m/Y" }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Expiration Date:{% else %}Fecha de Vencimiento:{% endif %}</strong>
+                                {% if alimento.fecha_vencimiento %}
+                                    {{ alimento.fecha_vencimiento|date:"d/m/Y" }}
+                                {% else %}
+                                    {% if LANGUAGE_CODE == 'en' %}Not specified{% else %}No especificada{% endif %}
+                                {% endif %}
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Current Stock:{% else %}Stock Actual:{% endif %}</strong>
+                                {{ alimento.stock_actual|default:0 }} kg
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Minimum Stock:{% else %}Stock Mínimo:{% endif %}</strong>
+                                {{ alimento.stock_minimo|default:0 }} kg
+                            </p>
+                            <p class="mb-1">
+                                <strong>{% if LANGUAGE_CODE == 'en' %}Unit:{% else %}Unidad:{% endif %}</strong>
+                                {{ alimento.get_unidad_medida_display }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if alimento.descripcion %}
+                    <div class="mt-3">
+                        <h6>{% if LANGUAGE_CODE == 'en' %}Description:{% else %}Descripción:{% endif %}</h6>
+                        <p class="text-muted">{{ alimento.descripcion }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if alimento.composicion_nutricional %}
+                    <div class="mt-3">
+                        <h6>{% if LANGUAGE_CODE == 'en' %}Nutritional Composition:{% else %}Composición Nutricional:{% endif %}</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{% if LANGUAGE_CODE == 'en' %}Nutrient{% else %}Nutriente{% endif %}</th>
+                                        <th>{% if LANGUAGE_CODE == 'en' %}Value{% else %}Valor{% endif %}</th>
+                                        <th>{% if LANGUAGE_CODE == 'en' %}Unit{% else %}Unidad{% endif %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, value in alimento.composicion_nutricional.items %}
+                                    <tr>
+                                        <td>{{ key|title }}</td>
+                                        <td>{{ value.valor }}</td>
+                                        <td>{{ value.unidad }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de estadísticas -->
+        <div class="col-lg-4">
+            <!-- Consumo mensual -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-line me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Monthly Consumption{% else %}Consumo Mensual{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="chart-pie pt-4">
+                        <canvas id="consumoMensualChart"></canvas>
+                    </div>
+                    <div class="mt-4 small">
+                        <span class="me-2">
+                            <i class="fas fa-circle text-primary"></i> {% if LANGUAGE_CODE == 'en' %}Current Month{% else %}Mes Actual{% endif %}
+                        </span>
+                        <span>
+                            <i class="fas fa-circle text-gray-300"></i> {% if LANGUAGE_CODE == 'en' %}Previous Month{% else %}Mes Anterior{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lotes que usan este alimento -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-egg me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Lots Using This Food{% else %}Lotes que usan este alimento{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if lotes_asociados %}
+                        <div class="list-group list-group-flush">
+                            {% for lote in lotes_asociados %}
+                            <a href="{% url 'avicola:detalle_lote' lote.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ lote.codigo_lote }}</h6>
+                                    <small>{{ lote.get_estado_display }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <small class="text-muted">
+                                        {{ lote.raza.nombre }} | 
+                                        {{ lote.galpon.nombre }}
+                                    </small>
+                                </p>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {% if LANGUAGE_CODE == 'en' %}No active lots are using this food.{% else %}No hay lotes activos que estén usando este alimento.{% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Historial de consumos -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-history me-2"></i>
+                {% if LANGUAGE_CODE == 'en' %}Consumption History{% else %}Historial de Consumos{% endif %}
+            </h6>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="exportConsumosBtn">
+                    <i class="fas fa-download me-1"></i> {% if LANGUAGE_CODE == 'en' %}Export{% else %}Exportar{% endif %}
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTableConsumos" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Lot{% else %}Lote{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Quantity (kg){% else %}Cantidad (kg){% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Registered By{% else %}Registrado Por{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Observations{% else %}Observaciones{% endif %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consumo in consumos %}
+                        <tr>
+                            <td>{{ consumo.fecha_consumo|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'avicola:detalle_lote' consumo.lote_aves.id %}">
+                                    {{ consumo.lote_aves.codigo_lote }}
+                                </a>
+                            </td>
+                            <td class="text-end">{{ consumo.cantidad_kg|floatformat:2 }}</td>
+                            <td>{{ consumo.registrado_por.get_full_name|default:consumo.registrado_por.username }}</td>
+                            <td>{{ consumo.observaciones|default:"-"|truncatechars:50 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    {% if LANGUAGE_CODE == 'en' %}No consumption records found.{% else %}No se encontraron registros de consumo.{% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para registrar consumo -->
+<div class="modal fade" id="consumoModal" tabindex="-1" aria-labelledby="consumoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consumoModalLabel">
+                    <i class="fas fa-utensils me-2"></i>
+                    {% if LANGUAGE_CODE == 'en' %}Register Food Consumption{% else %}Registrar Consumo de Alimento{% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% if LANGUAGE_CODE == 'en' %}Close{% else %}Cerrar{% endif %}"></button>
+            </div>
+            <form id="consumoForm" method="post" action="{% url 'inventario:registrar_consumo' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="alimento_id" value="{{ alimento.id }}">
+                    
+                    <div class="mb-3">
+                        <label for="alimento_nombre" class="form-label">{% if LANGUAGE_CODE == 'en' %}Food{% else %}Alimento{% endif %}</label>
+                        <input type="text" class="form-control" id="alimento_nombre" value="{{ alimento.nombre }}" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cantidad_kg" class="form-label">{% if LANGUAGE_CODE == 'en' %}Quantity (kg){% else %}Cantidad (kg){% endif %}</label>
+                        <input type="number" class="form-control" id="cantidad_kg" name="cantidad_kg" step="0.01" min="0.01" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fecha_consumo" class="form-label">{% if LANGUAGE_CODE == 'en' %}Consumption Date{% else %}Fecha de Consumo{% endif %}</label>
+                        <input type="datetime-local" class="form-control" id="fecha_consumo" name="fecha_consumo" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="lote_aves" class="form-label">{% if LANGUAGE_CODE == 'en' %}Lot{% else %}Lote{% endif %}</label>
+                        <select class="form-select" id="lote_aves" name="lote_aves" required>
+                            <option value="">{% if LANGUAGE_CODE == 'en' %}Select a lot...{% else %}Seleccione un lote...{% endif %}</option>
+                            {% for lote in lotes_activos %}
+                                <option value="{{ lote.id }}">{{ lote.codigo_lote }} - {{ lote.raza.nombre }} ({{ lote.galpon.nombre }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">{% if LANGUAGE_CODE == 'en' %}Observations{% else %}Observaciones{% endif %}</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> {% if LANGUAGE_CODE == 'en' %}Cancel{% else %}Cancelar{% endif %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% if LANGUAGE_CODE == 'en' %}Save{% else %}Guardar{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Page level plugins -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar la fecha y hora actual por defecto
+    var now = new Date();
+    var tzOffset = now.getTimezoneOffset() * 60000; // offset in milliseconds
+    var localISOTime = (new Date(Date.now() - tzOffset)).toISOString().slice(0, 16);
+    document.getElementById('fecha_consumo').value = localISOTime;
+    
+    // Inicializar DataTable para el historial de consumos
+    if (typeof $.fn.DataTable !== 'undefined') {
+        var table = $('#dataTableConsumos').DataTable({
+            order: [[0, 'desc']],
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+            },
+            dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                 "<'row'<'col-sm-12'tr>>" +
+                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        });
+        
+        // Configurar botón de exportación
+        if ($.fn.DataTable.Buttons) {
+            new $.fn.dataTable.Buttons(table, {
+                buttons: [
+                    {
+                        extend: 'excel',
+                        text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                        className: 'btn btn-sm btn-success',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                        className: 'btn btn-sm btn-danger',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print me-1"></i> {% if LANGUAGE_CODE == 'en' %}Print{% else %}Imprimir{% endif %}',
+                        className: 'btn btn-sm btn-secondary',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
+                    }
+                ]
+            });
+            
+            // Añadir los botones al contenedor
+            table.buttons().container().appendTo('#exportConsumosBtn').removeClass('btn-outline-primary').addClass('dropdown-toggle').attr('data-bs-toggle', 'dropdown');
+            
+            // Crear un menú desplegable para los botones
+            $('<div class="dropdown-menu dropdown-menu-end"></div>').append(
+                $('<div class="px-3 py-2">').append(
+                    $('<div class="btn-group-vertical w-100" role="group">')
+                        .append(table.buttons().container().find('.btn').addClass('dropdown-item text-start'))
+                )
+            ).insertAfter('#exportConsumosBtn');
+            
+            // Ocultar el contenedor original de los botones
+            table.buttons().container().addClass('d-none');
+        }
+    }
+    
+    // Gráfico de consumo mensual
+    var ctx = document.getElementById('consumoMensualChart');
+    if (ctx) {
+        var consumoMensualChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    '{% if LANGUAGE_CODE == 'en' %}Week 1{% else %}Semana 1{% endif %}',
+                    '{% if LANGUAGE_CODE == 'en' %}Week 2{% else %}Semana 2{% endif %}',
+                    '{% if LANGUAGE_CODE == 'en' %}Week 3{% else %}Semana 3{% endif %}',
+                    '{% if LANGUAGE_CODE == 'en' %}Week 4{% else %}Semana 4{% endif %}'
+                ],
+                datasets: [{
+                    label: '{% if LANGUAGE_CODE == 'en' %}Current Month{% else %}Mes Actual{% endif %}',
+                    backgroundColor: 'rgba(78, 115, 223, 0.8)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    data: [65, 59, 80, 81],
+                    barPercentage: 0.6
+                }, {
+                    label: '{% if LANGUAGE_CODE == 'en' %}Previous Month{% else %}Mes Anterior{% endif %}',
+                    backgroundColor: 'rgba(108, 117, 125, 0.5)',
+                    borderColor: 'rgba(108, 117, 125, 1)',
+                    data: [28, 48, 40, 19],
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' kg';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Manejar el envío del formulario de consumo
+    $('#consumoForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar el formulario
+        var form = this;
+        var formData = new FormData(form);
+        
+        // Mostrar indicador de carga
+        var submitBtn = $(form).find('button[type="submit"]');
+        var originalBtnText = submitBtn.html();
+        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> {% if LANGUAGE_CODE == 'en' %}Saving...{% else %}Guardando...{% endif %}');
+        
+        // Enviar el formulario vía AJAX
+        $.ajax({
+            url: $(form).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                // Mostrar mensaje de éxito
+                showAlert('success', '{% if LANGUAGE_CODE == 'en' %}Success!{% else %}¡Éxito!{% endif %}', response.message || '{% if LANGUAGE_CODE == 'en' %}Consumption registered successfully.{% else %}Consumo registrado correctamente.{% endif %}');
+                
+                // Cerrar el modal
+                $('#consumoModal').modal('hide');
+                
+                // Recargar la página después de 1.5 segundos
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1500);
+            },
+            error: function(xhr) {
+                var errorMessage = '{% if LANGUAGE_CODE == 'en' %}Error registering consumption.{% else %}Error al registrar el consumo.{% endif %}';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                showAlert('danger', '{% if LANGUAGE_CODE == 'en' %}Error!{% else %}¡Error!{% endif %}', errorMessage);
+            },
+            complete: function() {
+                // Restaurar el botón
+                submitBtn.prop('disabled', false).html(originalBtnText);
+            }
+        });
+    });
+    
+    // Función para mostrar alertas
+    function showAlert(type, title, message) {
+        var alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <strong>${title}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        // Insertar la alerta al principio del contenido principal
+        $('.container-fluid').prepend(alertHtml);
+        
+        // Desaparecer después de 5 segundos
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

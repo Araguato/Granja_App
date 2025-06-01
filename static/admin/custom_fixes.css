@@ -1,0 +1,49 @@
+/* Estilos personalizados para corregir problemas de contraste en el panel de administración */
+
+/* Selector más específico para aumentar la prioridad */
+body.app-avicola #header .module h2,
+body.app-produccion #header .module h2,
+body.app-inventario #header .module h2,
+body.app-ventas #header .module h2,
+body.app-wiki #header .module h2,
+body.app-faq #header .module h2,
+body.app-bot #header .module h2 {
+    color: #FFFFFF !important;
+    font-weight: bold !important;
+}
+
+/* Selector para los elementos del menú */
+body.app-avicola #header .module ul li a,
+body.app-produccion #header .module ul li a,
+body.app-inventario #header .module ul li a,
+body.app-ventas #header .module ul li a,
+body.app-wiki #header .module ul li a,
+body.app-faq #header .module ul li a,
+body.app-bot #header .module ul li a {
+    color: #FFFFFF !important;
+}
+
+/* Selector para los elementos del submenú */
+body.app-avicola #header .module ul li ul li a,
+body.app-produccion #header .module ul li ul li a,
+body.app-inventario #header .module ul li ul li a,
+body.app-ventas #header .module ul li ul li a,
+body.app-wiki #header .module ul li ul li a,
+body.app-faq #header .module ul li ul li a,
+body.app-bot #header .module ul li ul li a {
+    color: #FFFFFF !important;
+    background-color: transparent !important;
+}
+
+/* Selector para el hover */
+body #header .module ul li a:hover {
+    color: #FFFFFF !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Selector para elementos activos */
+body #header .module ul li.selected a {
+    color: #FFFFFF !important;
+    font-weight: bold !important;
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}

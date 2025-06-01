@@ -1,0 +1,144 @@
+/* ===== ADMIN MENU STYLES ===== */
+
+/* Main header background */
+#header {
+  background: #2c3e50 !important;
+  color: #ffffff !important;
+}
+
+/* User tools and site name */
+#header #user-tools,
+#header #branding h1,
+#header #site-name a:link, 
+#header #site-name a:visited {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* App list headers */
+#header .module h2, 
+#header .module caption {
+  color: #ffffff !important;
+  background: #2c3e50 !important;
+  padding: 12px 15px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Main menu items */
+#header .module ul {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#header .module ul li {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#header .module ul li a {
+  color: #ffffff !important;
+  padding: 12px 20px !important;
+  display: block !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* Hover states */
+#header .module ul li a:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  padding-left: 25px !important;
+}
+
+/* Active/selected menu item */
+#header .module ul li.selected a {
+  background: #3498db !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  padding-left: 25px !important;
+}
+
+/* ===== SUBMENU STYLES ===== */
+#header .module ul li ul {
+  background: #1a252f !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-left: 4px solid #3498db !important;
+}
+
+#header .module ul li ul li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#header .module ul li ul li a {
+  color: #ecf0f1 !important;
+  padding: 10px 20px 10px 35px !important;
+  font-size: 13px !important;
+  background: transparent !important;
+}
+
+#header .module ul li ul li a:hover {
+  background: #2c3e50 !important;
+  color: #ffffff !important;
+  padding-left: 40px !important;
+}
+
+/* Active submenu item */
+#header .module ul li ul li.selected a {
+  background: #2c3e50 !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  padding-left: 40px !important;
+  border-left: 3px solid #3498db !important;
+}
+
+/* ===== CONTENT AREA STYLES ===== */
+/* Section headers in content area */
+.app-avicola .module caption, 
+.app-produccion .module caption,
+.app-inventario .module caption,
+.app-ventas .module caption,
+.app-reportes .module caption,
+.app-wiki .module caption,
+.app-faq .module caption,
+.app-bot .module caption {
+  color: #ffffff !important;
+  background: #3498db !important;
+  font-weight: bold !important;
+  padding: 12px 15px !important;
+  margin: 0 0 20px 0 !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+/* Improve readability of form fields */
+.form-row {
+  margin-bottom: 15px !important;
+  padding: 10px 15px !important;
+  background: #f9f9f9 !important;
+  border-radius: 4px !important;
+  border: 1px solid #eee !important;
+}
+
+/* Make sure buttons are visible */
+.submit-row input,
+.submit-row a.button {
+  background: #3498db !important;
+  color: white !important;
+  border: none !important;
+  padding: 10px 15px !important;
+  border-radius: 4px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+}
+
+.submit-row input:hover,
+.submit-row a.button:hover {
+  background: #2980b9 !important;
+}

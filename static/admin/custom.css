@@ -1,0 +1,47 @@
+/* Estilos personalizados para el panel de administración de Django */
+
+/* Mejorar el contraste del texto en el menú de navegación */
+#header #branding h1 {
+    color: #FFFFFF !important;
+}
+
+/* Color del texto en el menú de aplicaciones */
+#header .module h2 {
+    color: #FFFFFF !important;
+}
+
+/* Color del texto de los elementos del menú */
+#header .module ul li a {
+    color: #FFFFFF !important;
+}
+
+/* Color del texto al pasar el cursor por encima */
+#header .module ul li a:hover {
+    color: #FFFFFF !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Color del texto para elementos activos */
+#header .module ul li.selected a {
+    color: #FFFFFF !important;
+    font-weight: bold;
+}
+
+/* Mejorar la visibilidad de los submenús */
+#header .module ul li ul li a {
+    color: #FFFFFF !important;
+    padding-left: 20px !important;
+}
+
+/* Ajustar el contraste para los títulos de secciones */
+.app-avicola .module caption, 
+.app-produccion .module caption,
+.app-inventario .module caption,
+.app-ventas .module caption,
+.app-reportes .module caption,
+.app-wiki .module caption,
+.app-faq .module caption,
+.app-bot .module caption {
+    color: #FFFFFF !important;
+    background-color: #417690 !important;
+}

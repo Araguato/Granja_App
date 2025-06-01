@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas - App Granja</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stats-card {
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .period-selector {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-feather-alt me-2"></i>App Granja
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/estadisticas/">Estadísticas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reportes/">Reportes</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1><i class="fas fa-chart-line me-2"></i>Estadísticas</h1>
+                <p class="lead">Análisis detallado de la producción, mortalidad, ventas e inventario de tu granja.</p>
+                <hr>
+            </div>
+        </div>
+
+        <!-- Tarjetas de estadísticas rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-layer-group stats-icon"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.total_lotes }}</div>
+                        <div class="stats-label">Lotes Totales</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle stats-icon text-success"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.lotes_activos }}</div>
+                        <div class="stats-label">Lotes Activos</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-drumstick-bite stats-icon text-warning"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.total_alimentos }}</div>
+                        <div class="stats-label">Alimentos</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-syringe stats-icon text-danger"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.total_vacunas }}</div>
+                        <div class="stats-label">Vacunas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de período -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Período de análisis</h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-period="semana">Semanal</button>
+                            <button type="button" class="btn btn-outline-primary" data-period="mes">Mensual</button>
+                            <button type="button" class="btn btn-outline-primary" data-period="anio">Anual</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h5>Acciones rápidas</h5>
+                        <div class="btn-group" role="group">
+                            <a href="/admin/produccion/seguimientodiario/add/" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Nuevo Seguimiento
+                            </a>
+                            <a href="/admin/ventas/venta/add/" class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i>Nueva Venta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Producción -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-egg me-2"></i>Producción de Huevos</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="produccionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Mortalidad -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0"><i class="fas fa-skull me-2"></i>Mortalidad</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="mortalidadChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Ventas -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Ventas</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <canvas id="ventasChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <canvas id="tiposHuevoChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Inventario -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0"><i class="fas fa-warehouse me-2"></i>Inventario</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="alimentosChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="vacunasChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos de engorde -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="card-title">Estadísticas de Engorde</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="engordeTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="peso-tab" data-bs-toggle="tab" data-bs-target="#peso" type="button" role="tab" aria-controls="peso" aria-selected="true">Peso Promedio</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="ganancia-tab" data-bs-toggle="tab" data-bs-target="#ganancia" type="button" role="tab" aria-controls="ganancia" aria-selected="false">Ganancia Diaria</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="conversion-tab" data-bs-toggle="tab" data-bs-target="#conversion" type="button" role="tab" aria-controls="conversion" aria-selected="false">Conversión Alimenticia</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="eficiencia-energetica-tab" data-bs-toggle="tab" data-bs-target="#eficiencia-energetica" type="button" role="tab" aria-controls="eficiencia-energetica" aria-selected="false">Eficiencia Energética</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="eficiencia-proteica-tab" data-bs-toggle="tab" data-bs-target="#eficiencia-proteica" type="button" role="tab" aria-controls="eficiencia-proteica" aria-selected="false">Eficiencia Proteica</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="relacion-energia-proteina-tab" data-bs-toggle="tab" data-bs-target="#relacion-energia-proteina" type="button" role="tab" aria-controls="relacion-energia-proteina" aria-selected="false">Relación E/P</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-3" id="engordeTabsContent">
+                            <div class="tab-pane fade show active" id="peso" role="tabpanel" aria-labelledby="peso-tab">
+                                <canvas id="chartPesoPromedio"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="ganancia" role="tabpanel" aria-labelledby="ganancia-tab">
+                                <canvas id="chartGananciaDiaria"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="conversion" role="tabpanel" aria-labelledby="conversion-tab">
+                                <canvas id="chartConversionAlimenticia"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="eficiencia-energetica" role="tabpanel" aria-labelledby="eficiencia-energetica-tab">
+                                <canvas id="chartEficienciaEnergetica"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="eficiencia-proteica" role="tabpanel" aria-labelledby="eficiencia-proteica-tab">
+                                <canvas id="chartEficienciaProteica"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="relacion-energia-proteina" role="tabpanel" aria-labelledby="relacion-energia-proteina-tab">
+                                <canvas id="chartRelacionEnergiaProteina"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparativa por Galpón -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title">Comparativa por Galpón</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="galponTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="galpon-peso-tab" data-bs-toggle="tab" data-bs-target="#galpon-peso" type="button" role="tab" aria-controls="galpon-peso" aria-selected="true">Peso Promedio</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="galpon-ganancia-tab" data-bs-toggle="tab" data-bs-target="#galpon-ganancia" type="button" role="tab" aria-controls="galpon-ganancia" aria-selected="false">Ganancia Diaria</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="galpon-conversion-tab" data-bs-toggle="tab" data-bs-target="#galpon-conversion" type="button" role="tab" aria-controls="galpon-conversion" aria-selected="false">Conversión Alimenticia</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="galpon-mortalidad-tab" data-bs-toggle="tab" data-bs-target="#galpon-mortalidad" type="button" role="tab" aria-controls="galpon-mortalidad" aria-selected="false">Mortalidad</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="galpon-eficiencia-energetica-tab" data-bs-toggle="tab" data-bs-target="#galpon-eficiencia-energetica" type="button" role="tab" aria-controls="galpon-eficiencia-energetica" aria-selected="false">Eficiencia EE</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="galpon-eficiencia-proteica-tab" data-bs-toggle="tab" data-bs-target="#galpon-eficiencia-proteica" type="button" role="tab" aria-controls="galpon-eficiencia-proteica" aria-selected="false">Eficiencia Proteica</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="galpon-relacion-energia-proteina-tab" data-bs-toggle="tab" data-bs-target="#galpon-relacion-energia-proteina" type="button" role="tab" aria-controls="galpon-relacion-energia-proteina" aria-selected="false">Relación E/P</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-3" id="galponTabsContent">
+                            <div class="tab-pane fade show active" id="galpon-peso" role="tabpanel" aria-labelledby="galpon-peso-tab">
+                                <canvas id="chartGalponPeso"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="galpon-ganancia" role="tabpanel" aria-labelledby="galpon-ganancia-tab">
+                                <canvas id="chartGalponGanancia"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="galpon-conversion" role="tabpanel" aria-labelledby="galpon-conversion-tab">
+                                <canvas id="chartGalponConversion"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="galpon-mortalidad" role="tabpanel" aria-labelledby="galpon-mortalidad-tab">
+                                <canvas id="chartGalponMortalidad"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="galpon-eficiencia-energetica" role="tabpanel" aria-labelledby="galpon-eficiencia-energetica-tab">
+                                <canvas id="chartGalponEficienciaEnergetica"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="galpon-eficiencia-proteica" role="tabpanel" aria-labelledby="galpon-eficiencia-proteica-tab">
+                                <canvas id="chartGalponEficienciaProteica"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="galpon-relacion-energia-proteina" role="tabpanel" aria-labelledby="galpon-relacion-energia-proteina-tab">
+                                <canvas id="chartGalponRelacionEnergiaProteina"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos de inventario -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Inventario de Alimentos</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="chartAlimentos"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Inventario de Vacunas</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="chartVacunas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Configuración de colores
+        const primaryColor = '#4caf50';
+        const secondaryColor = '#ff9800';
+        const dangerColor = '#f44336';
+        const infoColor = '#2196f3';
+        const warningColor = '#ffeb3b';
+        const successColor = '#8bc34a';
+        
+        // Datos para los gráficos (usando datos reales si están disponibles, o datos de ejemplo si no)
+        {% if estadisticas.produccion.labels|length > 0 %}
+        const produccionLabels = {{ estadisticas.produccion.labels|safe }};
+        const produccionData = {{ estadisticas.produccion.datos|safe }};
+        {% else %}
+        const produccionLabels = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5', 'Semana 6'];
+        const produccionData = [1200, 1900, 3000, 5000, 2000, 3000];
+        {% endif %}
+        
+        {% if estadisticas.mortalidad.labels|length > 0 %}
+        const mortalidadLabels = {{ estadisticas.mortalidad.labels|safe }};
+        const mortalidadData = {{ estadisticas.mortalidad.datos|safe }};
+        {% else %}
+        const mortalidadLabels = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5', 'Semana 6'];
+        const mortalidadData = [5, 3, 7, 12, 4, 6];
+        {% endif %}
+        
+        {% if estadisticas.ventas.labels|length > 0 %}
+        const ventasLabels = {{ estadisticas.ventas.labels|safe }};
+        const ventasData = {{ estadisticas.ventas.datos|safe }};
+        {% else %}
+        const ventasLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
+        const ventasData = [15000, 25000, 18000, 30000, 22000, 35000];
+        {% endif %}
+        
+        {% if estadisticas.tipos_huevo.labels|length > 0 %}
+        const tiposHuevoLabels = {{ estadisticas.tipos_huevo.labels|safe }};
+        const tiposHuevoData = {{ estadisticas.tipos_huevo.datos|safe }};
+        {% else %}
+        const tiposHuevoLabels = ['Tipo A', 'Tipo B', 'Tipo C', 'Tipo D'];
+        const tiposHuevoData = [45, 25, 20, 10];
+        {% endif %}
+        
+        // Datos para los gráficos de engorde
+        {% if estadisticas.engorde.labels|length > 0 %}
+        const engordeLabels = {{ estadisticas.engorde.labels|safe }};
+        const engordePesoData = {{ estadisticas.engorde.datos_peso|safe }};
+        const engordeGananciaData = {{ estadisticas.engorde.datos_ganancia|safe }};
+        const engordeConversionData = {{ estadisticas.engorde.datos_conversion|safe }};
+        const engordeEficienciaEnergeticaData = {{ estadisticas.engorde.datos_eficiencia_energetica|safe }};
+        const engordeEficienciaProteicaData = {{ estadisticas.engorde.datos_eficiencia_proteica|safe }};
+        const engordeRelacionEnergiaProteinaData = {{ estadisticas.engorde.datos_relacion_energia_proteina|safe }};
+        {% else %}
+        const engordeLabels = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5', 'Semana 6'];
+        const engordePesoData = [0.8, 1.2, 1.5, 1.8, 2.1, 2.3];
+        const engordeGananciaData = [25, 30, 35, 40, 38, 35];
+        const engordeConversionData = [1.8, 1.7, 1.65, 1.7, 1.8, 1.9];
+        const engordeEficienciaEnergeticaData = [3.2, 3.1, 3.0, 2.9, 3.0, 3.1];
+        const engordeEficienciaProteicaData = [0.45, 0.42, 0.40, 0.38, 0.39, 0.41];
+        const engordeRelacionEnergiaProteinaData = [145, 150, 152, 155, 153, 148];
+        {% endif %}
+        
+        // Datos para la comparativa por galpón
+        {% if estadisticas.por_galpon.labels|length > 0 %}
+        const galponLabels = {{ estadisticas.por_galpon.labels|safe }};
+        const galponPesoData = {{ estadisticas.por_galpon.datos_peso|safe }};
+        const galponGananciaData = {{ estadisticas.por_galpon.datos_ganancia|safe }};
+        const galponConversionData = {{ estadisticas.por_galpon.datos_conversion|safe }};
+        const galponMortalidadData = {{ estadisticas.por_galpon.datos_mortalidad|safe }};
+        const galponEficienciaEnergeticaData = {{ estadisticas.por_galpon.datos_eficiencia_energetica|safe }};
+        const galponEficienciaProteicaData = {{ estadisticas.por_galpon.datos_eficiencia_proteica|safe }};
+        const galponRelacionEnergiaProteinaData = {{ estadisticas.por_galpon.datos_relacion_energia_proteina|safe }};
+        {% else %}
+        const galponLabels = ['Galpón 1', 'Galpón 2', 'Galpón 3', 'Galpón 4'];
+        const galponPesoData = [2.1, 1.9, 2.3, 2.0];
+        const galponGananciaData = [38, 35, 42, 37];
+        const galponConversionData = [1.7, 1.8, 1.6, 1.75];
+        const galponMortalidadData = [10, 15, 8, 12];
+        const galponEficienciaEnergeticaData = [3.1, 3.3, 2.9, 3.2];
+        const galponEficienciaProteicaData = [0.40, 0.43, 0.38, 0.41];
+        const galponRelacionEnergiaProteinaData = [150, 145, 155, 148];
+        {% endif %}
+        
+        // Datos de ejemplo para alimentos y vacunas (estos no están en el contexto de estadísticas)
+        const alimentosLabels = ['Alimento 1', 'Alimento 2', 'Alimento 3', 'Alimento 4'];
+        const alimentosData = [300, 450, 200, 350];
+        
+        const vacunasLabels = ['Vacuna 1', 'Vacuna 2', 'Vacuna 3', 'Vacuna 4'];
+        const vacunasData = [50, 30, 20, 40];
+        
+        // Función para crear gráficos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfico de Producción
+            const produccionCtx = document.getElementById('produccionChart').getContext('2d');
+            new Chart(produccionCtx, {
+                type: 'line',
+                data: {
+                    labels: produccionLabels,
+                    datasets: [{
+                        label: 'Huevos producidos',
+                        data: produccionData,
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderColor: primaryColor,
+                        borderWidth: 2,
+                        tension: 0.1,
+                        pointBackgroundColor: primaryColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de Mortalidad
+            const mortalidadCtx = document.getElementById('mortalidadChart').getContext('2d');
+            new Chart(mortalidadCtx, {
+                type: 'line',
+                data: {
+                    labels: mortalidadLabels,
+                    datasets: [{
+                        label: 'Mortalidad',
+                        data: mortalidadData,
+                        backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                        borderColor: dangerColor,
+                        borderWidth: 2,
+                        tension: 0.1,
+                        pointBackgroundColor: dangerColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de Ventas
+            const ventasCtx = document.getElementById('ventasChart').getContext('2d');
+            new Chart(ventasCtx, {
+                type: 'bar',
+                data: {
+                    labels: ventasLabels,
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: ventasData,
+                        backgroundColor: 'rgba(33, 150, 243, 0.7)',
+                        borderColor: infoColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de Tipos de Huevo
+            const tiposHuevoCtx = document.getElementById('tiposHuevoChart').getContext('2d');
+            new Chart(tiposHuevoCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: tiposHuevoLabels,
+                    datasets: [{
+                        data: tiposHuevoData,
+                        backgroundColor: [
+                            primaryColor,
+                            secondaryColor,
+                            infoColor,
+                            warningColor
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de Alimentos
+            const alimentosCtx = document.getElementById('alimentosChart').getContext('2d');
+            new Chart(alimentosCtx, {
+                type: 'bar',
+                data: {
+                    labels: alimentosLabels,
+                    datasets: [{
+                        label: 'Cantidad (kg)',
+                        data: alimentosData,
+                        backgroundColor: 'rgba(255, 152, 0, 0.7)',
+                        borderColor: secondaryColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de Vacunas
+            const vacunasCtx = document.getElementById('vacunasChart').getContext('2d');
+            new Chart(vacunasCtx, {
+                type: 'bar',
+                data: {
+                    labels: vacunasLabels,
+                    datasets: [{
+                        label: 'Cantidad (dosis)',
+                        data: vacunasData,
+                        backgroundColor: 'rgba(139, 195, 74, 0.7)',
+                        borderColor: successColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Gráficos de engorde
+            // Peso promedio
+            const ctxPesoPromedio = document.getElementById('chartPesoPromedio').getContext('2d');
+            new Chart(ctxPesoPromedio, {
+                type: 'line',
+                data: {
+                    labels: engordeLabels,
+                    datasets: [{
+                        label: 'Peso Promedio (kg)',
+                        data: engordePesoData,
+                        backgroundColor: warningColor + '40',
+                        borderColor: warningColor,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Evolución del Peso Promedio'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Peso (kg)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Ganancia diaria
+            const ctxGananciaDiaria = document.getElementById('chartGananciaDiaria').getContext('2d');
+            new Chart(ctxGananciaDiaria, {
+                type: 'line',
+                data: {
+                    labels: engordeLabels,
+                    datasets: [{
+                        label: 'Ganancia Diaria (g)',
+                        data: engordeGananciaData,
+                        backgroundColor: successColor + '40',
+                        borderColor: successColor,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ganancia Diaria de Peso'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Gramos (g)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Conversión alimenticia
+            const ctxConversionAlimenticia = document.getElementById('chartConversionAlimenticia').getContext('2d');
+            new Chart(ctxConversionAlimenticia, {
+                type: 'line',
+                data: {
+                    labels: engordeLabels,
+                    datasets: [{
+                        label: 'Conversión Alimenticia',
+                        data: engordeConversionData,
+                        backgroundColor: infoColor + '40',
+                        borderColor: infoColor,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Conversión Alimenticia'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Ratio'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Eficiencia energética
+            const ctxEficienciaEnergetica = document.getElementById('chartEficienciaEnergetica').getContext('2d');
+            new Chart(ctxEficienciaEnergetica, {
+                type: 'line',
+                data: {
+                    labels: engordeLabels,
+                    datasets: [{
+                        label: 'Eficiencia Energética (kcal/g)',
+                        data: engordeEficienciaEnergeticaData,
+                        backgroundColor: '#ff5722' + '40', // Naranja profundo
+                        borderColor: '#ff5722',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Eficiencia Energética'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'kcal/g'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Eficiencia proteica
+            const ctxEficienciaProteica = document.getElementById('chartEficienciaProteica').getContext('2d');
+            new Chart(ctxEficienciaProteica, {
+                type: 'line',
+                data: {
+                    labels: engordeLabels,
+                    datasets: [{
+                        label: 'Eficiencia Proteica (g/g)',
+                        data: engordeEficienciaProteicaData,
+                        backgroundColor: '#9c27b0' + '40', // Púrpura
+                        borderColor: '#9c27b0',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Eficiencia Proteica'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'g/g'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Relación energía/proteína
+            const ctxRelacionEnergiaProteina = document.getElementById('chartRelacionEnergiaProteina').getContext('2d');
+            new Chart(ctxRelacionEnergiaProteina, {
+                type: 'line',
+                data: {
+                    labels: engordeLabels,
+                    datasets: [{
+                        label: 'Relación Energía/Proteína',
+                        data: engordeRelacionEnergiaProteinaData,
+                        backgroundColor: '#607d8b' + '40', // Azul gris
+                        borderColor: '#607d8b',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Relación Energía/Proteína'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Ratio'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráficos de comparativa por galpón
+            // Peso promedio por galpón
+            const ctxGalponPeso = document.getElementById('chartGalponPeso').getContext('2d');
+            new Chart(ctxGalponPeso, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Peso Promedio (kg)',
+                        data: galponPesoData,
+                        backgroundColor: warningColor + '80',
+                        borderColor: warningColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Peso Promedio por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+            
+            // Ganancia diaria por galpón
+            const ctxGalponGanancia = document.getElementById('chartGalponGanancia').getContext('2d');
+            new Chart(ctxGalponGanancia, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Ganancia Diaria (g)',
+                        data: galponGananciaData,
+                        backgroundColor: successColor + '80',
+                        borderColor: successColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ganancia Diaria por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Conversión alimenticia por galpón
+            const ctxGalponConversion = document.getElementById('chartGalponConversion').getContext('2d');
+            new Chart(ctxGalponConversion, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Conversión Alimenticia',
+                        data: galponConversionData,
+                        backgroundColor: infoColor + '80',
+                        borderColor: infoColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Conversión Alimenticia por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+            
+            // Mortalidad por galpón
+            const ctxGalponMortalidad = document.getElementById('chartGalponMortalidad').getContext('2d');
+            new Chart(ctxGalponMortalidad, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Mortalidad (%)',
+                        data: galponMortalidadData,
+                        backgroundColor: dangerColor + '80',
+                        borderColor: dangerColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Mortalidad por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Porcentaje (%)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Eficiencia energética por galpón
+            const ctxGalponEficienciaEnergetica = document.getElementById('chartGalponEficienciaEnergetica').getContext('2d');
+            new Chart(ctxGalponEficienciaEnergetica, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Eficiencia Energética (kcal/g)',
+                        data: galponEficienciaEnergeticaData,
+                        backgroundColor: '#ff5722' + '80', // Naranja profundo
+                        borderColor: '#ff5722',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Eficiencia Energética por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'kcal/g'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Eficiencia proteica por galpón
+            const ctxGalponEficienciaProteica = document.getElementById('chartGalponEficienciaProteica').getContext('2d');
+            new Chart(ctxGalponEficienciaProteica, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Eficiencia Proteica (g/g)',
+                        data: galponEficienciaProteicaData,
+                        backgroundColor: '#9c27b0' + '80', // Púrpura
+                        borderColor: '#9c27b0',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Eficiencia Proteica por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'g/g'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Relación energía/proteína por galpón
+            const ctxGalponRelacionEnergiaProteina = document.getElementById('chartGalponRelacionEnergiaProteina').getContext('2d');
+            new Chart(ctxGalponRelacionEnergiaProteina, {
+                type: 'bar',
+                data: {
+                    labels: galponLabels,
+                    datasets: [{
+                        label: 'Relación Energía/Proteína',
+                        data: galponRelacionEnergiaProteinaData,
+                        backgroundColor: '#607d8b' + '80', // Azul gris
+                        borderColor: '#607d8b',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Relación Energía/Proteína por Galpón'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Ratio'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Cambiar período de análisis
+            const periodButtons = document.querySelectorAll('[data-period]');
+            periodButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Quitar la clase active de todos los botones
+                    periodButtons.forEach(btn => btn.classList.remove('active'));
+                    // Agregar la clase active al botón seleccionado
+                    this.classList.add('active');
+                    
+                    // Aquí se podría implementar la lógica para cambiar los datos según el período seleccionado
+                    // Por ahora, solo mostramos un mensaje en la consola
+                    console.log('Período seleccionado:', this.dataset.period);
+                });
+            });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

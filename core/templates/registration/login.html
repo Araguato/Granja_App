@@ -1,0 +1,146 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Iniciar Sesión - App Granja{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center mb-5">
+                <img src="{{ MEDIA_URL }}logo.png" alt="Logo App Granja" class="img-fluid mb-4" style="max-height: 80px;">
+                <h1 class="h3 mb-3 fw-normal">Bienvenido a App Granja</h1>
+                <p class="text-muted">Por favor inicie sesión para continuar</p>
+            </div>
+            
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    {% if form.errors %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <div>
+                                Usuario o contraseña incorrectos. Por favor, intente de nuevo.
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if next %}
+                        {% if user.is_authenticated %}
+                            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    Su cuenta no tiene acceso a esta página. Contacte al administrador.
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info d-flex align-items-center" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <div>Por favor inicie sesión para continuar.</div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'login' %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next|default:'/dashboard/' }}" />
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Usuario</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" 
+                                       name="username" 
+                                       class="form-control form-control-lg" 
+                                       id="id_username" 
+                                       placeholder="Ingrese su usuario" 
+                                       required 
+                                       autofocus>
+                            </div>
+                            <div class="invalid-feedback">
+                                Por favor ingrese su nombre de usuario.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" 
+                                       name="password" 
+                                       class="form-control form-control-lg" 
+                                       id="id_password" 
+                                       placeholder="Ingrese su contraseña" 
+                                       required>
+                            </div>
+                            <div class="invalid-feedback">
+                                Por favor ingrese su contraseña.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember-me">
+                                <label class="form-check-label" for="remember-me">
+                                    Recordarme
+                                </label>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="text-decoration-none">
+                                ¿Olvidó su contraseña?
+                            </a>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-lg w-100 mb-3" type="submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión
+                        </button>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-0">¿No tiene una cuenta? <a href="#" class="text-decoration-none">Contáctenos</a></p>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small">
+                        <a href="{% url 'password_reset' %}" class="text-decoration-none">
+                            <i class="fas fa-question-circle me-1"></i>¿Olvidó su contraseña?
+                        </a>
+                    </div>
+                    {% comment %}
+                    <div class="small mt-2">
+                        ¿No tiene una cuenta? 
+                        <a href="{% url 'signup' %}" class="text-decoration-none">Regístrese aquí</a>
+                    </div>
+                    {% endcomment %}
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <img src="{{ MEDIA_URL }}logo.png" alt="Logo" class="img-fluid" style="max-height: 60px;">
+                <p class="mt-2 text-muted">© {% now "Y" %} App Granja. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Validación del formulario con Bootstrap
+(function () {
+    'use strict'
+    
+    // Obtener todos los formularios que necesitan validación
+    var forms = document.querySelectorAll('.needs-validation')
+    
+    // Bucle sobre los formularios y evitar el envío
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}

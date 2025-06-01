@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "granja_nombre": "Zuata Centro",
+    "tipo_galpon_display": "Producción",
+    "responsable_nombre": "Pepe",
+    "numero_galpon": "0001 Z",
+    "tipo_galpon": "PRODUCCION",
+    "capacidad_aves": 2000,
+    "area_metros_cuadrados": "2000.00",
+    "granja": 1,
+    "responsable": 2,
+    "nombre": "Galpón 0001 Z",
+    "capacidad": 2000
+  },
+  {
+    "id": 2,
+    "granja_nombre": "Zuata Centro",
+    "tipo_galpon_display": "Producción",
+    "responsable_nombre": "thomas",
+    "numero_galpon": "0002 Z",
+    "tipo_galpon": "PRODUCCION",
+    "capacidad_aves": 3000,
+    "area_metros_cuadrados": null,
+    "granja": 1,
+    "responsable": 1,
+    "nombre": "Galpón 0002 Z",
+    "capacidad": 3000
+  }
+]

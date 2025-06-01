@@ -1,0 +1,185 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    .card-header {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+        color: white;
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .badge-stock {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
+    .btn-action {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-pills text-primary"></i> Gestión de Medicamentos
+        </h1>
+        <a href="{% url 'inventario:nuevo_medicamento' %}" class="btn btn-primary btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-plus"></i>
+            </span>
+            <span class="text">Nuevo Medicamento</span>
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Total Medicamentos Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Medicamentos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ medicamentos|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-pills fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Bajo Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Stock Bajo</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stock_bajo }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medicamentos Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Listado de Medicamentos</h6>
+            <div>
+                <a href="{% url 'inventario:registrar_aplicacion_medicamento' %}" class="btn btn-success btn-sm">
+                    <i class="fas fa-syringe"></i> Registrar Aplicación
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Proveedor</th>
+                            <th>Stock</th>
+                            <th>Unidad</th>
+                            <th>Vencimiento</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for med in medicamentos %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'inventario:detalle_medicamento' med.id %}">
+                                    {{ med.nombre }}
+                                </a>
+                            </td>
+                            <td>{{ med.proveedor.nombre|default:"N/A" }}</td>
+                            <td>
+                                {{ med.stock }} / {{ med.stock_minimo|default:"0" }}
+                            </td>
+                            <td>{{ med.unidad_medida }}</td>
+                            <td>{{ med.fecha_vencimiento|date:"d/m/Y"|default:"N/A" }}</td>
+                            <td>
+                                {% if med.stock <= 0 %}
+                                    <span class="badge bg-danger">Agotado</span>
+                                {% elif med.stock < med.stock_minimo %}
+                                    <span class="badge bg-warning">Bajo Stock</span>
+                                {% else %}
+                                    <span class="badge bg-success">Disponible</span>
+                                {% endif %}
+                                {% if med.activo %}
+                                    <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'inventario:detalle_medicamento' med.id %}" 
+                                       class="btn btn-info btn-sm btn-action"
+                                       data-bs-toggle="tooltip" title="Ver Detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'inventario:editar_medicamento' med.id %}" 
+                                       class="btn btn-warning btn-sm btn-action"
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'inventario:registrar_aplicacion_medicamento' %}?medicamento={{ med.id }}" 
+                                       class="btn btn-success btn-sm btn-action"
+                                       data-bs-toggle="tooltip" title="Registrar Aplicación">
+                                        <i class="fas fa-syringe"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No hay medicamentos registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Inicializar tooltips
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Inicializar DataTable
+        $('#dataTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+            },
+            "order": [[0, 'asc']],
+            "pageLength": 25,
+            "responsive": true
+        });
+    });
+</script>
+{% endblock %}

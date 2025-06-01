@@ -1,0 +1,284 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Sistema Avícola{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos personalizados -->
+    <style>
+        .language-selector {
+            margin-left: 15px;
+        }
+        .language-selector .dropdown-item {
+            cursor: pointer;
+        }
+        .language-flag {
+            width: 20px;
+            margin-right: 5px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1e88e5 !important;">
+        <div class="container-fluid">
+            <!-- Brand and toggle button -->
+            <a class="navbar-brand" href="{% if request.user.is_superuser %}{% url 'core:dashboard' %}{% else %}{% url 'core:dashboard_operario' %}{% endif %}">
+                <i class="fas fa-kiwi-bird me-2"></i>Sistema Avícola
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Main Navigation -->
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav me-auto">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'dashboard' in request.resolver_match.url_name %}active{% endif %}" 
+                           href="{% if user.is_superuser or user.groups.filter.name__in=['Supervisores', 'Administradores'] %}{% url 'core:dashboard' %}{% else %}{% url 'core:dashboard_operario' %}{% endif %}">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    
+                    <!-- Reportes -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}" href="{% url 'reportes:panel_reportes' %}">
+                            <i class="fas fa-chart-bar me-1"></i>Reportes
+                        </a>
+                    </li>
+                    
+                    <!-- Inventario Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if 'inventario' in request.path %}active{% endif %}" 
+                           href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown" 
+                           aria-expanded="false">
+                            <i class="fas fa-boxes me-1"></i>Inventario
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+                            <li>
+                                <a class="dropdown-item {% if 'alimentos' in request.path %}active{% endif %}" 
+                                   href="{% url 'inventario:lista_alimentos' %}">
+                                    <i class="fas fa-utensils me-2"></i>Alimentos
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if 'medicamentos' in request.path %}active{% endif %}" 
+                                   href="{% url 'inventario:lista_medicamentos' %}">
+                                    <i class="fas fa-pills me-2"></i>Medicamentos
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {% if 'vacunas' in request.path %}active{% endif %}" 
+                                   href="{% url 'inventario:lista_vacunas' %}">
+                                    <i class="fas fa-syringe me-2"></i>Vacunas
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Producción -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'produccion' in request.path or 'lotes' in request.path %}active{% endif %}" 
+                           href="{% url 'avicola:listar_lotes' %}">
+                            <i class="fas fa-warehouse me-1"></i>Producción
+                        </a>
+                    </li>
+                    
+                    <!-- Estadísticas -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'estadisticas' in request.path %}active{% endif %}" 
+                           href="{% url 'avicola:estadisticas' %}">
+                            <i class="fas fa-chart-line me-1"></i>Estadísticas
+                        </a>
+                    </li>
+                    
+                    <!-- Gráficos -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'graficos' in request.path %}active{% endif %}" 
+                           href="{% url 'avicola:graficos' %}">
+                            <i class="fas fa-chart-pie me-1"></i>Gráficos
+                        </a>
+                    </li>
+                    
+                    <!-- Wiki -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'wiki' in request.path %}active{% endif %}" 
+                           href="{% url 'wiki:wiki_home' %}">
+                            <i class="fas fa-book me-1"></i>Wiki
+                        </a>
+                    </li>
+                    
+                    <!-- FAQ -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'faq' in request.path %}active{% endif %}" 
+                           href="{% url 'faq:faq_list' %}">
+                            <i class="fas fa-question-circle me-1"></i>FAQ
+                        </a>
+                    </li>
+                    
+                    <!-- Bot -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'bot' in request.path %}active{% endif %}" 
+                           href="{% url 'bot:chat' %}">
+                            <i class="fas fa-robot me-1"></i>Bot
+                        </a>
+                    </li>
+                    
+                    <!-- Admin Link -->
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}" target="_blank">
+                            <i class="fas fa-cogs me-1"></i>Administración
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+
+                <!-- Right-aligned items -->
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <!-- User Menu -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span class="d-none d-lg-inline">{{ user.get_username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'avicola:perfil' %}">
+                                        <i class="fas fa-user me-2"></i>{% trans 'Perfil' %}
+                                    </a>
+                                </li>
+                                {% if user.is_superuser %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ DASHBOARD_URLS.admin }}" target="_blank">
+                                        <i class="fas fa-cog me-2"></i>{% trans 'Administración' %}
+                                    </a>
+                                </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>{% trans 'Cerrar Sesión' %}
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <!-- Login Link -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> {% trans 'Iniciar Sesión' %}
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown language-selector">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-1"></i>
+                            <span class="d-none d-lg-inline">{% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item {% if LANGUAGE_CODE == 'es' %}active{% endif %}" 
+                                   href="/i18n/setlang/?language=es&next={{ request.path }}">
+                                    <img src="https://flagcdn.com/w20/es.png" class="language-flag me-2" alt="Español">
+                                    Español
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if LANGUAGE_CODE == 'en' %}active{% endif %}" 
+                                   href="/i18n/setlang/?language=en&next={{ request.path }}">
+                                    <img src="https://flagcdn.com/w20/us.png" class="language-flag me-2" alt="English">
+                                    English
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Breadcrumbs -->
+    <div class="container mt-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-light p-2 rounded">
+                <li class="breadcrumb-item">
+                    <a href="{% if request.user.is_superuser %}{{ DASHBOARD_URLS.supervisor }}{% else %}{{ DASHBOARD_URLS.operario }}{% endif %}">
+                        <i class="fas fa-home"></i> {% trans 'Inicio' %}
+                    </a>
+                </li>
+                {% block breadcrumbs %}{% endblock %}
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Main Content -->
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © {% now "Y" %} Sistema Avícola - 
+            <a class="text-dark" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">
+                {% trans 'Acerca de' %}
+            </a>
+        </div>
+    </footer>
+    
+    <!-- About Modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="aboutModalLabel">{% trans 'Acerca de' %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>Sistema Avícola</h5>
+                    <p>Versión 1.0.0</p>
+                    <p>© {% now "Y" %} Todos los derechos reservados.</p>
+                    <hr>
+                    <p class="text-muted small">
+                        {% trans 'Sistema de gestión para la producción avícola' %}
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cerrar' %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery para AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

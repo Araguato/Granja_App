@@ -1,0 +1,26 @@
+{
+    "inventario": {
+        "alimento": [
+            "change_alimento",
+            "view_alimento"
+        ],
+        "vacuna": [
+            "view_vacuna"
+        ]
+    },
+    "produccion": {
+        "galpon": [
+            "change_galpon",
+            "view_galpon"
+        ],
+        "lote": [
+            "change_lote",
+            "view_lote"
+        ],
+        "seguimientodiario": [
+            "add_seguimientodiario",
+            "change_seguimientodiario",
+            "view_seguimientodiario"
+        ]
+    }
+}

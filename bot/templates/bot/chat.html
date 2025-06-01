@@ -1,0 +1,264 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: 70vh;
+        overflow-y: auto;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .message {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        max-width: 80%;
+    }
+    
+    .user-message {
+        background-color: #d1e7dd;
+        margin-left: auto;
+    }
+    
+    .bot-message {
+        background-color: #e2e3e5;
+        margin-right: auto;
+    }
+    
+    .message-header {
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+    
+    .message-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-align: right;
+    }
+    
+    .input-group {
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-robot me-2"></i> Asistente Virtual
+                    </h5>
+                    <div>
+                        <a href="{% url 'bot:history' %}" class="btn btn-sm btn-outline-secondary me-2">
+                            <i class="fas fa-history"></i> Historial
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#helpModal">
+                            <i class="fas fa-question-circle"></i> Ayuda
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chat-container" id="chatContainer">
+                        {% for message in messages %}
+                            <div class="message {% if message.sender == 'USER' %}user-message{% else %}bot-message{% endif %}">
+                                <div class="message-header">
+                                    {% if message.sender == 'USER' %}Tú{% else %}Asistente{% endif %}
+                                </div>
+                                <div class="message-content">
+                                    {{ message.text|linebreaksbr }}
+                                </div>
+                                <div class="message-time">
+                                    {{ message.timestamp|time:"H:i" }}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-robot fa-3x mb-3"></i>
+                                <p>¡Hola! Soy el asistente virtual de la granja.</p>
+                                <p>Puedes preguntarme sobre:</p>
+                                <ul class="list-unstyled">
+                                    <li>Estado de los lotes</li>
+                                    <li>Producción de huevos</li>
+                                    <li>Mortalidad</li>
+                                    <li>Y más...</li>
+                                </ul>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <form id="messageForm" class="mt-3">
+                        <div class="input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Escribe tu mensaje..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Enviar
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="d-flex justify-content-between mt-3">
+                        <button id="endConversationBtn" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-times-circle"></i> Finalizar conversación
+                        </button>
+                        <div class="feedback-container" style="display: none;">
+                            <span class="me-2">¿Te fue útil esta conversación?</span>
+                            <div class="btn-group" role="group">
+                                {% for i in "12345" %}
+                                <button type="button" class="btn btn-outline-warning btn-sm feedback-btn" data-rating="{{ i }}">{{ i }}</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Ayuda -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalLabel">Ayuda del Asistente Virtual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>¿Qué puedo preguntar?</h6>
+                <p>El asistente virtual puede ayudarte con información sobre:</p>
+                <ul>
+                    <li>Estado actual de los lotes</li>
+                    <li>Estadísticas de producción</li>
+                    <li>Datos de mortalidad</li>
+                    <li>Recomendaciones de alimentación</li>
+                    <li>Información sobre vacunación</li>
+                    <li>Y más...</li>
+                </ul>
+                
+                <h6>Ejemplos de preguntas:</h6>
+                <ul>
+                    <li>"¿Cómo están los lotes actualmente?"</li>
+                    <li>"¿Cuál es la producción de huevos esta semana?"</li>
+                    <li>"¿Cuál es la tasa de mortalidad actual?"</li>
+                    <li>"¿Qué vacunas debo aplicar esta semana?"</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatContainer = document.getElementById('chatContainer');
+        const messageForm = document.getElementById('messageForm');
+        const messageInput = document.getElementById('messageInput');
+        const endConversationBtn = document.getElementById('endConversationBtn');
+        const feedbackContainer = document.querySelector('.feedback-container');
+        const feedbackBtns = document.querySelectorAll('.feedback-btn');
+        
+        // Scroll al final del chat
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Scroll inicial
+        scrollToBottom();
+        
+        // Enviar mensaje
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Limpiar input
+            messageInput.value = '';
+            
+            // Enviar mensaje al servidor
+            fetch('{% url "bot:send_message" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    conversation_id: '{{ conversation.id }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                }
+                
+                // Añadir mensaje del usuario
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'message user-message';
+                userMessageDiv.innerHTML = `
+                    <div class="message-header">Tú</div>
+                    <div class="message-content">${data.user_message.text}</div>
+                    <div class="message-time">${new Date(data.user_message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                chatContainer.appendChild(userMessageDiv);
+                
+                // Añadir mensaje del bot
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'message bot-message';
+                botMessageDiv.innerHTML = `
+                    <div class="message-header">Asistente</div>
+                    <div class="message-content">${data.bot_message.text}</div>
+                    <div class="message-time">${new Date(data.bot_message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                chatContainer.appendChild(botMessageDiv);
+                
+                // Scroll al final
+                scrollToBottom();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        
+        // Finalizar conversación
+        endConversationBtn.addEventListener('click', function() {
+            // Mostrar opciones de feedback
+            feedbackContainer.style.display = 'block';
+            endConversationBtn.disabled = true;
+        });
+        
+        // Enviar feedback y finalizar conversación
+        feedbackBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                
+                fetch(`{% url "bot:end_conversation" conversation.id %}?feedback=${rating}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Redirigir al historial
+                            window.location.href = '{% url "bot:history" %}';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+</script>
+{% endblock %}

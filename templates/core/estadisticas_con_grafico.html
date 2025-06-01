@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas - App Granja</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stats-card {
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #4caf50;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-feather-alt me-2"></i>App Granja
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/estadisticas/">Estadísticas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reportes/">Reportes</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1><i class="fas fa-chart-line me-2"></i>Estadísticas</h1>
+                <p class="lead">Análisis detallado de la producción, mortalidad, ventas e inventario de tu granja.</p>
+                <hr>
+            </div>
+        </div>
+
+        <!-- Tarjetas de estadísticas rápidas -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-layer-group stats-icon"></i>
+                        <div class="stats-number">0</div>
+                        <div class="stats-label">Lotes Totales</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle stats-icon text-success"></i>
+                        <div class="stats-number">0</div>
+                        <div class="stats-label">Lotes Activos</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-drumstick-bite stats-icon text-warning"></i>
+                        <div class="stats-number">0</div>
+                        <div class="stats-label">Alimentos</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-syringe stats-icon text-danger"></i>
+                        <div class="stats-number">0</div>
+                        <div class="stats-label">Vacunas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Producción -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-egg me-2"></i>Producción de Huevos</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="produccionChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    <a href="/admin/produccion/seguimientodiario/add/" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Nuevo Seguimiento
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Mortalidad -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0"><i class="fas fa-skull me-2"></i>Mortalidad</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay datos de mortalidad disponibles. Registra seguimientos diarios para ver estadísticas.
+                </div>
+                <div class="mt-3">
+                    <a href="/admin/produccion/mortalidaddiaria/add/" class="btn btn-danger">
+                        <i class="fas fa-plus me-1"></i>Registrar Mortalidad
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Ventas -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Ventas</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay datos de ventas disponibles. Registra ventas para ver estadísticas.
+                </div>
+                <div class="mt-3">
+                    <a href="/admin/ventas/venta/add/" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Nueva Venta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Configuración de colores
+        const primaryColor = '#4caf50';
+        const secondaryColor = '#ff9800';
+        const dangerColor = '#f44336';
+        const infoColor = '#2196f3';
+        
+        // Datos de ejemplo para el gráfico
+        const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'];
+        const data = [1200, 1900, 3000, 5000, 2000, 3000];
+        
+        // Crear gráfico de producción
+        document.addEventListener('DOMContentLoaded', function() {
+            const produccionCtx = document.getElementById('produccionChart').getContext('2d');
+            new Chart(produccionCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Huevos producidos',
+                        data: data,
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderColor: primaryColor,
+                        borderWidth: 2,
+                        tension: 0.1,
+                        pointBackgroundColor: primaryColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

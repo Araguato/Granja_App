@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "nombre": "Zuata Centro",
+    "nit": "Sin NIT",
+    "direccion": "Sin dirección",
+    "telefono": "04124945403",
+    "email": "info@ejemplo.com",
+    "sitio_web": "www.ejemplo.com",
+    "descripcion": "Sin descripción"
+  }
+]

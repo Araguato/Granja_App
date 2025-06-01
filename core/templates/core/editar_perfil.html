@@ -1,0 +1,233 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Editar Perfil - App Granja{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:perfil_usuario' %}">Mi Perfil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Editar Perfil</li>
+                </ol>
+            </nav>
+            <h1><i class="fas fa-user-edit me-2"></i>Editar Perfil</h1>
+            <hr>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-user-edit me-2"></i>Información Personal
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ user.first_name }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingresa tu(s) nombre(s).
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Apellidos</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ user.last_name }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingresa tu(s) apellido(s).
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ user.email }}" required>
+                            <div class="invalid-feedback">
+                                Por favor ingresa un correo electrónico válido.
+                            </div>
+                        </div>
+                        
+                        {% if user.userprofile %}
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                       value="{{ user.userprofile.telefono|default:'' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" 
+                                       value="{{ user.userprofile.direccion|default:'' }}">
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'core:perfil_usuario' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header text-white bg-warning">
+                    <i class="fas fa-key me-2"></i>Cambiar Contraseña
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="cambiar_password" value="1">
+                        
+                        <div class="mb-3">
+                            <label for="old_password" class="form-label">Contraseña Actual</label>
+                            <input type="password" class="form-control" id="old_password" name="old_password" required>
+                            <div class="invalid-feedback">
+                                Por favor ingresa tu contraseña actual.
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="new_password1" class="form-label">Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="new_password1" name="new_password1" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingresa una nueva contraseña.
+                                </div>
+                                <div class="form-text">
+                                    <small>Mínimo 8 caracteres. No uses información personal.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="new_password2" class="form-label">Confirmar Nueva Contraseña</label>
+                                <input type="password" class="form-control" id="new_password2" name="new_password2" required>
+                                <div class="invalid-feedback">
+                                    Por favor confirma tu nueva contraseña.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-key me-1"></i> Cambiar Contraseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i>Información de la Cuenta
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="position-relative d-inline-block">
+                            <div class="avatar-xxl">
+                                <i class="fas fa-user-circle fa-8x text-secondary"></i>
+                            </div>
+                            <button class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <h5 class="mt-3 mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                        <p class="text-muted mb-0">{{ user.userprofile.get_user_type_display }}</p>
+                    </div>
+                    <hr>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-user-tag me-2 text-muted"></i>
+                            <span class="text-muted">Rol:</span>
+                            <span class="float-end">{{ user.userprofile.get_user_type_display }}</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                            <span class="text-muted">Miembro desde:</span>
+                            <span class="float-end">{{ user.date_joined|date:"d/m/Y" }}</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-sign-in-alt me-2 text-muted"></i>
+                            <span class="text-muted">Último acceso:</span>
+                            <span class="float-end">
+                                {% if user.last_login %}
+                                    {{ user.last_login|date:"d/m/Y H:i" }}
+                                {% else %}
+                                    Nunca
+                                {% endif %}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt me-2"></i>Seguridad de la Cuenta
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-shield-alt fa-2x text-success"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-0">Autenticación de Dos Factores</h6>
+                            <small class="text-muted">Añade una capa adicional de seguridad</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="twoFactorAuth" disabled>
+                            <label class="form-check-label" for="twoFactorAuth"></label>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button class="btn btn-outline-secondary" disabled>
+                            <i class="fas fa-cog me-1"></i> Configurar
+                        </button>
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0">
+                        <small><i class="fas fa-info-circle me-1"></i> Próximamente disponible</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Validación del formulario con Bootstrap
+(function () {
+    'use strict'
+    
+    // Obtener todos los formularios que necesitan validación
+    var forms = document.querySelectorAll('.needs-validation')
+    
+    // Bucle sobre los formularios y evitar el envío
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}
+
+{% endblock %}

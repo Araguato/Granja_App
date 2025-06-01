@@ -1,0 +1,441 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                {% if LANGUAGE_CODE == 'en' %}Operator Dashboard{% else %}Panel de Control{% endif %}
+            </h1>
+            <p class="lead">
+                {% if LANGUAGE_CODE == 'en' %}Welcome{% else %}Bienvenido{% endif %}, {{ user.get_full_name|default:user.username }}
+                {% if user.is_superuser %}<span class="badge bg-danger ms-2">Administrador</span>{% endif %}
+            </p>
+            <hr>
+        </div>
+    </div>
+    
+    <!-- Menú de navegación para operarios -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-th-large me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Quick Access{% else %}Acceso Rápido{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'produccion:lista_lotes' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-layer-group mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Lots{% else %}Lotes{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'produccion:lista_galpones' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-warehouse mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Sheds{% else %}Galpones{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'inventario:lista_alimentos' %}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="fas fa-drumstick-bite mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Feed{% else %}Alimentos{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'produccion:lista_tareas' %}" class="btn btn-outline-danger w-100 py-3">
+                                <i class="fas fa-tasks mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Tasks{% else %}Tareas{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'inventario:registro_seguimiento' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="fas fa-clipboard-check mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Tracking{% else %}Seguimiento{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/wiki/" class="btn btn-outline-secondary w-100 py-3">
+                                <i class="fas fa-book mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Wiki{% else %}Wiki{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/faq/" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-question-circle mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}FAQ{% else %}FAQ{% endif %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/bot/" class="btn btn-outline-dark w-100 py-3">
+                                <i class="fas fa-robot mb-2 d-block" style="font-size: 24px;"></i>
+                                {% if LANGUAGE_CODE == 'en' %}Bot{% else %}Bot{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resto del contenido del dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}My Tasks{% else %}Mis Tareas{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <!-- Aquí se cargarían las tareas del operario -->
+                        <a href="{% url 'produccion:lista_tareas' %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{% if LANGUAGE_CODE == 'en' %}Check Lot 1 Temperature{% else %}Revisar Temperatura Lote 1{% endif %}</h5>
+                                <small class="text-danger">{% if LANGUAGE_CODE == 'en' %}Urgent{% else %}Urgente{% endif %}</small>
+                            </div>
+                            <p class="mb-1">{% if LANGUAGE_CODE == 'en' %}Verify that the temperature is between 30-32°C{% else %}Verificar que la temperatura esté entre 30-32°C{% endif %}</p>
+                            <small>{% if LANGUAGE_CODE == 'en' %}Assigned{% else %}Asignado{% endif %}: {% if LANGUAGE_CODE == 'en' %}Today{% else %}Hoy{% endif %}</small>
+                        </a>
+                        <a href="{% url 'produccion:lista_tareas' %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{% if LANGUAGE_CODE == 'en' %}Feed Lot 3{% else %}Alimentar Lote 3{% endif %}</h5>
+                                <small class="text-warning">{% if LANGUAGE_CODE == 'en' %}Important{% else %}Importante{% endif %}</small>
+                            </div>
+                            <p class="mb-1">{% if LANGUAGE_CODE == 'en' %}Distribute 50kg of feed{% else %}Distribuir 50kg de alimento{% endif %}</p>
+                            <small>{% if LANGUAGE_CODE == 'en' %}Assigned{% else %}Asignado{% endif %}: {% if LANGUAGE_CODE == 'en' %}Yesterday{% else %}Ayer{% endif %}</small>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'produccion:lista_tareas' %}" class="btn btn-outline-primary btn-sm">
+                        {% if LANGUAGE_CODE == 'en' %}View All Tasks{% else %}Ver Todas las Tareas{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}My Lots{% else %}Mis Lotes{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <!-- Aquí se cargarían los lotes asignados al operario -->
+                        <a href="{% url 'produccion:detalle_lote' lote_id=1 %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{% if LANGUAGE_CODE == 'en' %}Lot 1 - Shed 2{% else %}Lote 1 - Galpón 2{% endif %}</h5>
+                                <small>{% if LANGUAGE_CODE == 'en' %}Day{% else %}Día{% endif %} 15</small>
+                            </div>
+                            <p class="mb-1">{% if LANGUAGE_CODE == 'en' %}COBB 500 - 1000 birds{% else %}COBB 500 - 1000 aves{% endif %}</p>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                            </div>
+                        </a>
+                        <a href="{% url 'produccion:detalle_lote' lote_id=3 %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{% if LANGUAGE_CODE == 'en' %}Lot 3 - Shed 1{% else %}Lote 3 - Galpón 1{% endif %}</h5>
+                                <small>{% if LANGUAGE_CODE == 'en' %}Day{% else %}Día{% endif %} 30</small>
+                            </div>
+                            <p class="mb-1">{% if LANGUAGE_CODE == 'en' %}Ross 308 - 1500 birds{% else %}Ross 308 - 1500 aves{% endif %}</p>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'produccion:lista_lotes' %}" class="btn btn-outline-success btn-sm">
+                        {% if LANGUAGE_CODE == 'en' %}View All Lots{% else %}Ver Todos los Lotes{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección de Galpones -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-warehouse me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Chicken Coops{% else %}Galpones{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if galpones %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Coop{% else %}Galpón{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Farm{% else %}Granja{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Type{% else %}Tipo{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Capacity{% else %}Capacidad{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Active Lots{% else %}Lotes Activos{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Status{% else %}Estado{% endif %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for galpon in galpones %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'produccion:detalle_galpon' galpon.id %}">
+                                            {{ galpon.numero_galpon }}
+                                        </a>
+                                    </td>
+                                    <td>{{ galpon.granja.nombre|default:"N/A" }}</td>
+                                    <td>{{ galpon.get_tipo_galpon_display }}</td>
+                                    <td>{{ galpon.capacidad_aves }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ galpon.lotes_activos|yesno:'success,danger' }}">
+                                            {{ galpon.lotes_activos }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if galpon.estado == 'ACTIVO' %}
+                                            <span class="badge bg-success">{% if LANGUAGE_CODE == 'en' %}Active{% else %}Activo{% endif %}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{% if LANGUAGE_CODE == 'en' %}Inactive{% else %}Inactivo{% endif %}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}No coops found.{% else %}No se encontraron galpones.{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección de Seguimientos Recientes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Recent Follow-ups{% else %}Seguimientos Recientes{% endif %}
+                    </h5>
+                    <a href="{% url 'admin:produccion_seguimientodiario_changelist' %}" class="btn btn-sm btn-light">
+                        <i class="fas fa-external-link-alt me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}View All{% else %}Ver Todos{% endif %}
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if ultimos_seguimientos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Lot{% else %}Lote{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Coop{% else %}Galpón{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Eggs{% else %}Huevos{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Mortality{% else %}Mortalidad{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Avg. Weight{% else %}Peso Prom.{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Food (kg){% else %}Alimento (kg){% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Actions{% else %}Acciones{% endif %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seguimiento in ultimos_seguimientos %}
+                                <tr>
+                                    <td>{{ seguimiento.fecha_seguimiento|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if seguimiento.lote %}
+                                            <a href="{% url 'admin:produccion_lote_change' seguimiento.lote.id %}">
+                                                {{ seguimiento.lote.codigo_lote|default:"N/A" }}
+                                            </a>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if seguimiento.lote and seguimiento.lote.galpon %}
+                                            <a href="{% url 'admin:produccion_galpon_change' seguimiento.lote.galpon.id %}">
+                                                {{ seguimiento.lote.galpon.numero_galpon }}
+                                            </a>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">{{ seguimiento.huevos_totales|default:0|floatformat:0 }}</td>
+                                    <td class="text-end">{{ seguimiento.mortalidad|default:0|floatformat:0 }}</td>
+                                    <td class="text-end">{{ seguimiento.peso_promedio_ave|default:0|floatformat:2 }} kg</td>
+                                    <td class="text-end">{{ seguimiento.consumo_alimento_kg|default:0|floatformat:2 }}</td>
+                                    <td class="text-nowrap">
+                                        <a href="{% url 'admin:produccion_seguimientodiario_change' seguimiento.id %}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="{% if LANGUAGE_CODE == 'en' %}Edit{% else %}Editar{% endif %}">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'admin:produccion_seguimientodiario_delete' seguimiento.id %}" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="{% if LANGUAGE_CODE == 'en' %}Delete{% else %}Eliminar{% endif %}">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}No follow-ups found.{% else %}No se encontraron seguimientos.{% endif %}
+                        <a href="{% url 'admin:produccion_seguimientodiario_add' %}" class="alert-link ms-2">
+                            <i class="fas fa-plus me-1"></i>
+                            {% if LANGUAGE_CODE == 'en' %}Add your first follow-up{% else %}Agregar un seguimiento{% endif %}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'produccion:lista_lotes' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}New Follow-up (Select Lot){% else %}Nuevo Seguimiento (Seleccionar Lote){% endif %}
+                    </a>
+                    {% if ultimos_seguimientos %}
+                    <a href="{% url 'admin:produccion_seguimientodiario_changelist' %}" class="btn btn-outline-primary btn-sm ms-2">
+                        <i class="fas fa-list me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}View All{% else %}Ver Todos{% endif %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Energía -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Energy Consumption{% else %}Consumo de Energía{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="display-4 text-warning">
+                            <i class="fas fa-bolt"></i> {{ estadisticas_energia.consumo_diario|default:0 }} kWh
+                        </div>
+                        <p class="text-muted">{% if LANGUAGE_CODE == 'en' %}Daily Consumption{% else %}Consumo Diario{% endif %}</p>
+                    </div>
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" 
+                             aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h6>{% if LANGUAGE_CODE == 'en' %}Monthly{% else %}Mensual{% endif %}</h6>
+                            <p class="h5">{{ estadisticas_energia.consumo_mensual|default:0 }} kWh</p>
+                        </div>
+                        <div class="col-4">
+                            <h6>{% if LANGUAGE_CODE == 'en' %}Cost{% else %}Costo{% endif %}</h6>
+                            <p class="h5">${{ estadisticas_energia.costo_estimado|default:0|floatformat:2 }}</p>
+                        </div>
+                        <div class="col-4">
+                            <h6>{% if LANGUAGE_CODE == 'en' %}Efficiency{% else %}Eficiencia{% endif %}</h6>
+                            <p class="h5">85%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="#" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-chart-line me-1"></i> {% if LANGUAGE_CODE == 'en' %}View Details{% else %}Ver Detalles{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Energy Distribution{% else %}Distribución de Energía{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center my-4">
+                        <div id="energyChart" style="height: 200px;">
+                            <!-- Aquí iría el gráfico de distribución de energía -->
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-pie fa-4x text-muted mb-3"></i>
+                                    <p class="text-muted">{% if LANGUAGE_CODE == 'en' %}Energy distribution chart{% else %}Gráfico de distribución de energía{% endif %}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{% if LANGUAGE_CODE == 'en' %}Ventilation{% else %}Ventilación{% endif %}</span>
+                            <strong>45%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{% if LANGUAGE_CODE == 'en' %}Lighting{% else %}Iluminación{% endif %}</span>
+                            <strong>30%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>{% if LANGUAGE_CODE == 'en' %}Equipment{% else %}Equipos{% endif %}</span>
+                            <strong>25%</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mensaje para administradores -->
+    {% if es_admin %}
+    <div class="alert alert-info">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle fa-2x me-3"></i>
+            <div>
+                <h5 class="alert-heading">{% if LANGUAGE_CODE == 'en' %}Administrator Panel{% else %}Panel de Administrador{% endif %}</h5>
+                <p class="mb-0">
+                    {% if LANGUAGE_CODE == 'en' %}
+                    You have administrator privileges. You can access the complete administration panel to manage all aspects of the system.
+                    {% else %}
+                    Usted tiene privilegios de administrador. Puede acceder al panel de administración completo para gestionar todos los aspectos del sistema.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Script para mostrar/ocultar los resultados de la comparación
+    document.getElementById('compare-button').addEventListener('click', function() {
+        var results = document.getElementById('comparison-results');
+        if (results.style.display === 'none') {
+            results.style.display = 'block';
+        } else {
+            results.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+[
+    {
+        "model": "avicola.TipoInsumo",
+        "pk": 1,
+        "fields": {
+            "nombre": "Equipo de Protección"
+        }
+    },
+    {
+        "model": "avicola.TipoInsumo",
+        "pk": 2,
+        "fields": {
+            "nombre": "Material Médico"
+        }
+    },
+    {
+        "model": "avicola.TipoInsumo",
+        "pk": 3,
+        "fields": {
+            "nombre": "Material de Empaque"
+        }
+    },
+    {
+        "model": "avicola.TipoInsumo",
+        "pk": 4,
+        "fields": {
+            "nombre": "Medicamentos"
+        }
+    },
+    {
+        "model": "avicola.Insumo",
+        "pk": 1,
+        "fields": {
+            "codigo": "001",
+            "nombre": "MASCARILLAS",
+            "tipo": 1,
+            "unidad": "PZA",
+            "existencia": 0.00,
+            "stock_minimo": 10
+        }
+    },
+    {
+        "model": "avicola.Insumo",
+        "pk": 2,
+        "fields": {
+            "codigo": "002",
+            "nombre": "JERINGAS",
+            "tipo": 2,
+            "unidad": "PZA",
+            "existencia": 0.00,
+            "stock_minimo": 20
+        }
+    },
+    {
+        "model": "avicola.Insumo",
+        "pk": 3,
+        "fields": {
+            "codigo": "003",
+            "nombre": "CARTONES",
+            "tipo": 3,
+            "unidad": "LTS",
+            "existencia": 0.00,
+            "stock_minimo": 5
+        }
+    },
+    {
+        "model": "avicola.Insumo",
+        "pk": 4,
+        "fields": {
+            "codigo": "004",
+            "nombre": "FLORFENCOL",
+            "tipo": 4,
+            "unidad": "UND",
+            "existencia": 1.00,
+            "stock_minimo": 2
+        }
+    }
+]

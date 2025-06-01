@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Nuevo Seguimiento" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-clipboard-check me-2"></i>
+                {% trans "Nuevo Seguimiento:" %} {{ lote.codigo }}
+            </h1>
+            <p class="text-muted">
+                {{ lote.galpon }} - {{ lote.raza }} - 
+                {% if lote.estado == 'PRODUCCION' %}
+                    <span class="badge bg-success">{% trans "Producción" %}</span>
+                {% elif lote.estado == 'CRECIMIENTO' %}
+                    <span class="badge bg-warning">{% trans "Crecimiento" %}</span>
+                {% else %}
+                    <span class="badge bg-info">{% trans "Levante" %}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventario:seguimiento_lote' lote.id %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-plus-circle me-2"></i>
+                {% trans "Formulario de Registro" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="seguimientoForm" action=".">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="fecha" class="form-label">{% trans "Fecha" %}</label>
+                        <input type="date" class="form-control" id="fecha" name="fecha" value="{{ fecha_actual|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="peso_promedio" class="form-label">{% trans "Peso Promedio (g)" %}</label>
+                        <div class="input-group">
+                            <input type="number" step="1" min="1" class="form-control" id="peso_promedio" name="peso_promedio" required>
+                            <span class="input-group-text">g</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="consumo_alimento" class="form-label">{% trans "Consumo de Alimento (kg)" %}</label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" min="0.1" class="form-control" id="consumo_alimento" name="consumo_alimento" required>
+                            <span class="input-group-text">kg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mortalidad" class="form-label">{% trans "Mortalidad (aves)" %}</label>
+                        <input type="number" step="1" min="0" class="form-control" id="mortalidad" name="mortalidad" value="0" required>
+                    </div>
+                </div>
+                
+                {% if lote.estado == 'PRODUCCION' %}
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="produccion_huevos" class="form-label">{% trans "Producción de Huevos" %}</label>
+                        <input type="number" step="1" min="0" class="form-control" id="produccion_huevos" name="produccion_huevos">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="huevos_rotos" class="form-label">{% trans "Huevos Rotos" %}</label>
+                        <input type="number" step="1" min="0" class="form-control" id="huevos_rotos" name="huevos_rotos" value="0">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="conversion_alimenticia" class="form-label">{% trans "Conversión Alimenticia" %}</label>
+                        <input type="number" step="0.01" min="0" class="form-control" id="conversion_alimenticia" name="conversion_alimenticia">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="energia" class="form-label">{% trans "Energía (kcal/kg)" %}</label>
+                        <input type="number" step="1" min="0" class="form-control" id="energia" name="energia">
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">{% trans "Observaciones" %}</label>
+                    <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "Todos los campos son obligatorios excepto las observaciones." %}
+                </div>
+                
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        {% trans "Cancelar" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% trans "Guardar" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                {% trans "Información Importante" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h5 class="alert-heading">{% trans "Recomendaciones para el registro" %}</h5>
+                <ul>
+                    <li>{% trans "El peso promedio debe ser calculado tomando una muestra representativa del lote (al menos 10% de las aves)." %}</li>
+                    <li>{% trans "El consumo de alimento debe ser el consumo real, no lo suministrado." %}</li>
+                    <li>{% trans "Registre cualquier síntoma o comportamiento inusual en las observaciones." %}</li>
+                    <li>{% trans "Si la mortalidad es superior al 1% diario, notifique inmediatamente al supervisor." %}</li>
+                </ul>
+            </div>
+            
+            {% if lote.estado == 'PRODUCCION' %}
+            <div class="alert alert-info">
+                <h5 class="alert-heading">{% trans "Sobre la producción de huevos" %}</h5>
+                <p>{% trans "La conversión alimenticia se calcula dividiendo los kilogramos de alimento consumido entre los kilogramos de huevo producido." %}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validación del formulario
+        const form = document.getElementById('seguimientoForm');
+        form.addEventListener('submit', function(event) {
+            // No prevenimos el evento por defecto para permitir que el formulario se envíe normalmente
+            // Solo validamos y si hay problemas, cancelamos el envío
+            
+            const pesoPromedio = document.getElementById('peso_promedio').value;
+            const consumoAlimento = document.getElementById('consumo_alimento').value;
+            const mortalidad = document.getElementById('mortalidad').value;
+            
+            if (!pesoPromedio || !consumoAlimento) {
+                event.preventDefault(); // Prevenir envío solo si faltan campos obligatorios
+                alert('{% trans "Por favor complete todos los campos obligatorios" %}');
+                return false;
+            }
+            
+            // Validar que el peso promedio sea razonable según la edad y raza
+            const edadSemanas = {{ lote.edad_semanas }};
+            const raza = "{{ lote.raza }}";
+            
+            let pesoEsperado = 0;
+            if (raza.includes('COBB')) {
+                // Pesos aproximados para COBB 500 según la edad
+                if (edadSemanas <= 1) pesoEsperado = 150;
+                else if (edadSemanas <= 2) pesoEsperado = 400;
+                else if (edadSemanas <= 3) pesoEsperado = 800;
+                else if (edadSemanas <= 4) pesoEsperado = 1200;
+                else if (edadSemanas <= 5) pesoEsperado = 1700;
+                else if (edadSemanas <= 6) pesoEsperado = 2200;
+                else pesoEsperado = 2500 + (edadSemanas - 6) * 100;
+            } else if (raza.includes('Ross')) {
+                // Pesos aproximados para Ross 308 según la edad
+                if (edadSemanas <= 1) pesoEsperado = 170;
+                else if (edadSemanas <= 2) pesoEsperado = 420;
+                else if (edadSemanas <= 3) pesoEsperado = 850;
+                else if (edadSemanas <= 4) pesoEsperado = 1300;
+                else if (edadSemanas <= 5) pesoEsperado = 1800;
+                else if (edadSemanas <= 6) pesoEsperado = 2300;
+                else pesoEsperado = 2600 + (edadSemanas - 6) * 100;
+            }
+            
+            // Permitir una variación del 20% sobre el peso esperado
+            const minPesoEsperado = pesoEsperado * 0.8;
+            const maxPesoEsperado = pesoEsperado * 1.2;
+            
+            if (parseFloat(pesoPromedio) < minPesoEsperado || parseFloat(pesoPromedio) > maxPesoEsperado) {
+                // Prevenir envío y mostrar confirmación
+                event.preventDefault();
+                if (confirm(`{% trans "El peso ingresado (${pesoPromedio}g) parece inusual para la edad y raza del lote. El peso esperado es aproximadamente ${pesoEsperado}g. ¿Desea continuar?" %}`)) {
+                    // Si el usuario confirma, enviamos el formulario manualmente
+                    form.submit();
+                }
+                return false;
+            }
+            
+            // Si todo está bien, el formulario se enviará normalmente
+            return true;
+        });
+        
+        // Calcular automáticamente la conversión alimenticia y energía en lotes de producción
+        {% if lote.estado == 'PRODUCCION' %}
+        const produccionHuevos = document.getElementById('produccion_huevos');
+        const consumoAlimento = document.getElementById('consumo_alimento');
+        const conversionAlimenticia = document.getElementById('conversion_alimenticia');
+        const energia = document.getElementById('energia');
+        
+        function calcularConversion() {
+            if (produccionHuevos.value && consumoAlimento.value) {
+                // Estimación: cada huevo pesa aproximadamente 60g
+                const kgHuevos = (parseFloat(produccionHuevos.value) * 60) / 1000;
+                const kgAlimento = parseFloat(consumoAlimento.value);
+                
+                if (kgHuevos > 0) {
+                    const conversion = kgAlimento / kgHuevos;
+                    conversionAlimenticia.value = conversion.toFixed(2);
+                    
+                    // Calcular energía basado en la conversión alimenticia
+                    // Fórmula aproximada: Energía (kcal/kg) = 2800 - (conversion * 100)
+                    const energiaCalculada = Math.max(2200, 2800 - (conversion * 100));
+                    energia.value = Math.round(energiaCalculada);
+                }
+            }
+        }
+        
+        produccionHuevos.addEventListener('input', calcularConversion);
+        consumoAlimento.addEventListener('input', calcularConversion);
+        {% endif %}
+    });
+</script>
+{% endblock %}

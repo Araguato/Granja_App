@@ -1,0 +1,414 @@
+{% extends 'supervisor/base_supervisor.html' %}
+{% load i18n %}
+
+{% block supervisor_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">
+            <i class="fas fa-layer-group me-2"></i>
+            {{ title }}
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_supervisor' %}">{% if LANGUAGE_CODE == 'en' %}Dashboard{% else %}Panel{% endif %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'listar_lotes' %}">{% if LANGUAGE_CODE == 'en' %}Lots{% else %}Lotes{% endif %}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ lote.codigo }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'admin:produccion_seguimientodiario_add' %}?lote={{ lote.id }}" class="btn btn-sm btn-success me-2">
+            <i class="fas fa-plus me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Add Follow-up{% else %}Agregar Seguimiento{% endif %}
+        </a>
+        <a href="{% url 'admin:produccion_lote_change' lote.id %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-edit me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Edit in Admin{% else %}Editar en Admin{% endif %}
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Información del Lote -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% if LANGUAGE_CODE == 'en' %}Lot Information{% else %}Información del Lote{% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6>{% if LANGUAGE_CODE == 'en' %}Basic Data{% else %}Datos Básicos{% endif %}</h6>
+                        <dl class="mb-0">
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Code{% else %}Código{% endif %}:</dt>
+                            <dd>{{ lote.codigo }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Shed{% else %}Galpón{% endif %}:</dt>
+                            <dd>
+                                <a href="{% url 'detalle_galpon' lote.galpon.id %}" class="text-decoration-none">
+                                    {{ lote.galpon.numero }} - {{ lote.galpon.nombre|default:"Sin nombre" }}
+                                </a>
+                            </dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Farm{% else %}Granja{% endif %}:</dt>
+                            <dd>{{ lote.galpon.granja.nombre|default:"-" }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Breed{% else %}Raza{% endif %}:</dt>
+                            <dd>{{ lote.raza.nombre|default:"-" }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Status{% else %}Estado{% endif %}:</dt>
+                            <dd>
+                                <span class="badge bg-{{ lote.estado|lower }}">
+                                    {{ lote.get_estado_display }}
+                                </span>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>{% if LANGUAGE_CODE == 'en' %}Production Data{% else %}Datos de Producción{% endif %}</h6>
+                        <dl class="mb-0">
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Entry Date{% else %}Fecha de Ingreso{% endif %}:</dt>
+                            <dd>{{ lote.fecha_ingreso|date:"d/m/Y"|default:"-" }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Age (days){% else %}Edad (días){% endif %}:</dt>
+                            <dd>{{ lote.edad_dias|default:"-" }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Birds{% else %}Aves{% endif %}:</dt>
+                            <dd>{{ lote.cantidad_inicial_aves|floatformat:0|default:"0" }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Food{% else %}Alimento{% endif %}:</dt>
+                            <dd>{{ lote.alimento.nombre|default:"-" }}</dd>
+                            
+                            <dt>{% if LANGUAGE_CODE == 'en' %}Stage{% else %}Etapa{% endif %}:</dt>
+                            <dd>{{ lote.get_etapa_display|default:"-" }}</dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                {% if lote.observaciones %}
+                <div class="alert alert-info mt-3 mb-0">
+                    <h6 class="alert-heading">{% if LANGUAGE_CODE == 'en' %}Notes{% else %}Observaciones{% endif %}:</h6>
+                    <p class="mb-0">{{ lote.observaciones }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas del Lote -->
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-0">{% if LANGUAGE_CODE == 'en' %}Total Eggs{% else %}Total Huevos{% endif %}</h6>
+                                <h2 class="mb-0">{{ total_huevos|floatformat:0|default:"0" }}</h2>
+                            </div>
+                            <i class="fas fa-egg fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card bg-danger text-white h-100">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-0">{% if LANGUAGE_CODE == 'en' %}Mortality{% else %}Mortalidad{% endif %}</h6>
+                                <h2 class="mb-0">{{ total_mortalidad|floatformat:0|default:"0" }}</h2>
+                            </div>
+                            <i class="fas fa-heartbeat fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-0">{% if LANGUAGE_CODE == 'en' %}Avg. Production{% else %}Prod. Prom.{% endif %}</h6>
+                                <h2 class="mb-0">{{ produccion_promedio|floatformat:1|default:"0.0" }}%</h2>
+                            </div>
+                            <i class="fas fa-chart-line fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-info text-white h-100">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase mb-0">{% if LANGUAGE_CODE == 'en' %}Avg. Weight{% else %}Peso Prom.{% endif %}</h6>
+                                <h2 class="mb-0">{{ peso_promedio|floatformat:2|default:"0.00" }} kg</h2>
+                            </div>
+                            <i class="fas fa-weight fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Últimos Seguimientos -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-clipboard-list me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Recent Follow-ups{% else %}Últimos Seguimientos{% endif %}
+        </h5>
+        <a href="{% url 'admin:produccion_seguimientodiario_add' %}?lote={{ lote.id }}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Add Follow-up{% else %}Agregar Seguimiento{% endif %}
+        </a>
+    </div>
+    <div class="card-body p-0">
+        {% if ultimos_seguimientos %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Eggs{% else %}Huevos{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Mortality{% else %}Mortalidad{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Food (kg){% else %}Alimento (kg){% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Water (L){% else %}Agua (L){% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Weight (kg){% else %}Peso (kg){% endif %}</th>
+                        <th>{% if LANGUAGE_CODE == 'en' %}Notes{% else %}Observaciones{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Actions{% else %}Acciones{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for seguimiento in ultimos_seguimientos %}
+                    <tr>
+                        <td>{{ seguimiento.fecha_seguimiento|date:"d/m/Y" }}</td>
+                        <td class="text-end">{{ seguimiento.huevos_totales|default:"0" }}</td>
+                        <td class="text-end">{{ seguimiento.mortalidad|default:"0" }}</td>
+                        <td class="text-end">{{ seguimiento.consumo_alimento|default:"0.0"|floatformat:1 }}</td>
+                        <td class="text-end">{{ seguimiento.consumo_agua|default:"0.0"|floatformat:1 }}</td>
+                        <td class="text-end">{{ seguimiento.peso_promedio|default:"-"|floatformat:2 }}</td>
+                        <td>
+                            {% if seguimiento.observaciones %}
+                            <span data-bs-toggle="tooltip" title="{{ seguimiento.observaciones }}">
+                                {{ seguimiento.observaciones|truncatechars:20 }}
+                            </span>
+                            {% else %}-
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'admin:produccion_seguimientodiario_change' seguimiento.id %}" 
+                               class="btn btn-sm btn-outline-secondary"
+                               data-bs-toggle="tooltip" 
+                               title="{% if LANGUAGE_CODE == 'en' %}Edit{% else %}Editar{% endif %}">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center p-4">
+            <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
+            <p class="mb-0">
+                {% if LANGUAGE_CODE == 'en' %}
+                No follow-up records found. <a href="{% url 'admin:produccion_seguimientodiario_add' %}?lote={{ lote.id }}">Add the first follow-up</a>.
+                {% else %}
+                No se encontraron registros de seguimiento. <a href="{% url 'admin:produccion_seguimientodiario_add' %}?lote={{ lote.id }}">Agregar el primer seguimiento</a>.
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+    {% if total_seguimientos > 5 %}
+    <div class="card-footer text-end">
+        <a href="{% url 'admin:produccion_seguimientodiario_changelist' %}?lote__id__exact={{ lote.id }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-list me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}View All Follow-ups{% else %}Ver Todos los Seguimientos{% endif %} ({{ total_seguimientos }})
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Gráficos de Producción -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-chart-line me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Production Charts{% else %}Gr&aacute;ficos de Producci&oacute;n{% endif %}
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="graficoHuevos"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="graficoMortalidad"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if lote.raza and lote.raza.curva_produccion %}
+<!-- Curva de Producción Esperada -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-chart-area me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Expected Production Curve{% else %}Curva de Producción Esperada{% endif %}
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="chart-container" style="position: relative; height: 300px;">
+            <canvas id="curvaProduccion"></canvas>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Activar tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Datos para los gráficos (deben ser proporcionados por la vista)
+var datosGraficos = {
+    fechas: {{ fechas_grafico|safe }},
+    huevos: {{ datos_huevos|safe }},
+    mortalidad: {{ datos_mortalidad|safe }},
+    produccionEsperada: {{ datos_produccion_esperada|default:'[]'|safe }}
+};
+
+// Gráfico de producción de huevos
+var ctxHuevos = document.getElementById('graficoHuevos').getContext('2d');
+new Chart(ctxHuevos, {
+    type: 'line',
+    data: {
+        labels: datosGraficos.fechas,
+        datasets: [{
+            label: '{% if LANGUAGE_CODE == 'en' %}Eggs{% else %}Huevos{% endif %}',
+            data: datosGraficos.huevos,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.3,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: '{% if LANGUAGE_CODE == 'en' %}Daily Egg Production{% else %}Producción Diaria de Huevos{% endif %}',
+                font: { size: 14 }
+            },
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: '{% if LANGUAGE_CODE == 'en' %}Eggs{% else %}Huevos{% endif %}' }
+            },
+            x: { title: { display: true, text: '{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}' } }
+        }
+    }
+});
+
+// Gráfico de mortalidad
+var ctxMortalidad = document.getElementById('graficoMortalidad').getContext('2d');
+new Chart(ctxMortalidad, {
+    type: 'bar',
+    data: {
+        labels: datosGraficos.fechas,
+        datasets: [{
+            label: '{% if LANGUAGE_CODE == 'en' %}Mortality{% else %}Mortalidad{% endif %}',
+            data: datosGraficos.mortalidad,
+            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+            borderColor: 'rgb(255, 99, 132)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: '{% if LANGUAGE_CODE == 'en' %}Daily Mortality{% else %}Mortalidad Diaria{% endif %}',
+                font: { size: 14 }
+            },
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: '{% if LANGUAGE_CODE == 'en' %}Birds{% else %}Aves{% endif %}' }
+            },
+            x: { title: { display: true, text: '{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}' } }
+        }
+    }
+});
+
+{% if lote.raza and lote.raza.curva_produccion %}
+// Gráfico de curva de producción esperada
+var ctxCurva = document.getElementById('curvaProduccion').getContext('2d');
+new Chart(ctxCurva, {
+    type: 'line',
+    data: {
+        labels: Array.from({length: 80}, (_, i) => i + 1), // Semanas 1-80
+        datasets: [{
+            label: '{% if LANGUAGE_CODE == 'en' %}Expected Production{% else %}Producción Esperada{% endif %}',
+            data: datosGraficos.produccionEsperada,
+            borderColor: 'rgb(54, 162, 235)',
+            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: '{% if LANGUAGE_CODE == 'en' %}Expected Production Curve (Weeks 1-80){% else %}Curva de Producción Esperada (Semanas 1-80){% endif %}',
+                font: { size: 14 }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: '{% if LANGUAGE_CODE == 'en' %}Production %{% else %}Producción %{% endif %}' },
+                max: 100
+            },
+            x: { 
+                title: { display: true, text: '{% if LANGUAGE_CODE == 'en' %}Week{% else %}Semana{% endif %}' },
+                ticks: { stepSize: 5 }
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

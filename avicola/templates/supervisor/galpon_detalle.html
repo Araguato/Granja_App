@@ -1,0 +1,185 @@
+{% extends 'supervisor/base_supervisor.html' %}
+{% load i18n %}
+
+{% block supervisor_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">
+            <i class="fas fa-warehouse me-2"></i>
+            {{ title }}
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_supervisor' %}">{% if LANGUAGE_CODE == 'en' %}Dashboard{% else %}Panel{% endif %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'listar_galpones' %}">{% if LANGUAGE_CODE == 'en' %}Sheds{% else %}Galpones{% endif %}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ galpon.numero }} - {{ galpon.nombre|default:"Sin nombre" }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-print me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Print{% else %}Imprimir{% endif %}
+        </button>
+        <a href="{% url 'admin:produccion_galpon_change' galpon.id %}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-edit me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Edit in Admin{% else %}Editar en Admin{% endif %}
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información del Galpón -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% if LANGUAGE_CODE == 'en' %}Shed Information{% else %}Información del Galpón{% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Number{% else %}Número{% endif %}:</dt>
+                    <dd class="col-sm-8">{{ galpon.numero }}</dd>
+                    
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Name{% else %}Nombre{% endif %}:</dt>
+                    <dd class="col-sm-8">{{ galpon.nombre|default:"-" }}</dd>
+                    
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Farm{% else %}Granja{% endif %}:</dt>
+                    <dd class="col-sm-8">{{ galpon.granja.nombre|default:"-" }}</dd>
+                    
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Type{% else %}Tipo{% endif %}:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-{{ galpon.get_tipo_display|lower }}">
+                            {{ galpon.get_tipo_display }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Status{% else %}Estado{% endif %}:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-{{ galpon.estado|lower }}">
+                            {{ galpon.get_estado_display }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Capacity{% else %}Capacidad{% endif %}:</dt>
+                    <dd class="col-sm-8">{{ galpon.capacidad|default:"-" }}</dd>
+                    
+                    <dt class="col-sm-4">{% if LANGUAGE_CODE == 'en' %}Active Lots{% else %}Lotes Activos{% endif %}:</dt>
+                    <dd class="col-sm-8">{{ lotes_activos.count|default:0 }}</dd>
+                </dl>
+                
+                {% if galpon.descripcion %}
+                <div class="mt-3">
+                    <h6>{% if LANGUAGE_CODE == 'en' %}Description{% else %}Descripción{% endif %}:</h6>
+                    <p class="mb-0">{{ galpon.descripcion }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lotes Activos -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-layer-group me-2"></i>
+                    {% if LANGUAGE_CODE == 'en' %}Active Lots{% else %}Lotes Activos{% endif %}
+                </h5>
+                <a href="{% url 'admin:produccion_lote_add' %}?galpon={{ galpon.id }}" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-plus me-1"></i>
+                    {% if LANGUAGE_CODE == 'en' %}Add Lot{% else %}Agregar Lote{% endif %}
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if lotes_activos %}
+                <div class="list-group list-group-flush">
+                    {% for lote in lotes_activos %}
+                    <a href="{% url 'detalle_lote' lote.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ lote.codigo }}</h6>
+                            <span class="badge bg-{{ lote.estado|lower }}">
+                                {{ lote.get_estado_display }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small>{{ lote.raza.nombre|default:"Sin raza" }}</small>
+                            <small>{{ lote.cantidad_inicial_aves }} {% if LANGUAGE_CODE == 'en' %}birds{% else %}aves{% endif %}</small>
+                        </div>
+                        <small class="text-muted">
+                            <i class="far fa-calendar-alt me-1"></i>
+                            {{ lote.fecha_ingreso|date:"d/m/Y" }}
+                        </small>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="mb-0">{% if LANGUAGE_CODE == 'en' %}No active lots in this shed.{% else %}No hay lotes activos en este galpón.{% endif %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Últimos Seguimientos -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-clipboard-list me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Recent Follow-ups{% else %}Últimos Seguimientos{% endif %}
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if ultimos_seguimientos %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}</th>
+                        <th>{% if LANGUAGE_CODE == 'en' %}Lot{% else %}Lote{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Eggs{% else %}Huevos{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Mortality{% else %}Mortalidad{% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Food (kg){% else %}Alimento (kg){% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Water (L){% else %}Agua (L){% endif %}</th>
+                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Temperature (°C){% else %}Temperatura (°C){% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for seguimiento in ultimos_seguimientos %}
+                    <tr>
+                        <td>{{ seguimiento.fecha_seguimiento|date:"d/m/Y" }}</td>
+                        <td>{{ seguimiento.lote.codigo }}</td>
+                        <td class="text-end">{{ seguimiento.huevos_totales|default:"0" }}</td>
+                        <td class="text-end">{{ seguimiento.mortalidad|default:"0" }}</td>
+                        <td class="text-end">{{ seguimiento.consumo_alimento|default:"0.0" }}</td>
+                        <td class="text-end">{{ seguimiento.consumo_agua|default:"0.0" }}</td>
+                        <td class="text-end">{{ seguimiento.temperatura|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center p-4">
+            <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
+            <p class="mb-0">{% if LANGUAGE_CODE == 'en' %}No follow-up records found.{% else %}No se encontraron registros de seguimiento.{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+    <div class="card-footer bg-transparent">
+        <a href="{% url 'admin:produccion_seguimientodiario_add' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Add Follow-up{% else %}Agregar Seguimiento{% endif %}
+        </a>
+        <a href="{% url 'admin:produccion_seguimientodiario_changelist' %}?lote__galpon__id__exact={{ galpon.id }}" class="btn btn-sm btn-outline-secondary ms-2">
+            <i class="fas fa-list me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}View All{% else %}Ver Todos{% endif %}
+        </a>
+    </div>
+</div>
+{% endblock %}

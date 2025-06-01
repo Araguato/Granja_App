@@ -1,0 +1,537 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if LANGUAGE_CODE == 'en' %}Supervisor Dashboard{% else %}Panel de Supervisor{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Supervisor Dashboard{% else %}Panel de Control{% endif %}
+        </h1>
+        <div class="d-flex">
+            <a href="{% url 'avicola:avicola_reportes' %}" class="btn btn-primary btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-chart-bar"></i>
+                </span>
+                <span class="text">{% if LANGUAGE_CODE == 'en' %}Reports{% else %}Reportes{% endif %}</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Welcome Card -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="text-center">
+                <h4 class="mb-3">
+                    {% if LANGUAGE_CODE == 'en' %}Welcome{% else %}Bienvenido{% endif %}, {{ user.get_full_name|default:user.username }}
+                </h4>
+                <p class="mb-0">
+                    <span class="badge bg-primary">
+                        <i class="fas fa-user-shield me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Supervisor{% else %}Supervisor{% endif %}
+                    </span>
+                    {% if user.is_superuser %}
+                    <span class="badge bg-danger ms-2">
+                        <i class="fas fa-star me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Administrator{% else %}Administrador{% endif %}
+                    </span>
+                    {% endif %}
+                </p>
+                <p class="text-muted mt-2 mb-0">
+                    <i class="far fa-calendar-alt me-1"></i> {{ hoy|date:"l, d F Y" }}
+                </p>
+            </div>
+        </div>
+    </div>
+            
+    <!-- Quick Navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-compass me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Quick Navigation{% else %}Acceso Rápido{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'avicola:listar_lotes' %}" class="btn btn-outline-primary btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-list-ul"></i>
+                            </span>
+                            <span class="text">{% if LANGUAGE_CODE == 'en' %}Active Lots{% else %}Lotes Activos{% endif %}</span>
+                        </a>
+                        <a href="{% url 'avicola:listar_galpones' %}" class="btn btn-outline-secondary btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-warehouse"></i>
+                            </span>
+                            <span class="text">{% if LANGUAGE_CODE == 'en' %}Sheds{% else %}Galpones{% endif %}</span>
+                        </a>
+                        <a href="{% url 'avicola:seguimientos_recientes' %}" class="btn btn-outline-info btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-clipboard-check"></i>
+                            </span>
+                            <span class="text">{% if LANGUAGE_CODE == 'en' %}Follow-ups{% else %}Seguimientos{% endif %}</span>
+                        </a>
+                        <a href="{% url 'avicola:avicola_reportes' %}" class="btn btn-outline-success btn-icon-split">
+                            <span class="icon text-gray-600">
+                                <i class="fas fa-chart-bar"></i>
+                            </span>
+                            <span class="text">{% if LANGUAGE_CODE == 'en' %}Reports{% else %}Reportes{% endif %}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas Rápidas -->
+    <div class="row mb-4">
+        <!-- Total Galpones -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Total Sheds{% else %}Total Galpones{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_galpones }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-warehouse fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galpones Activos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Active Sheds{% else %}Galpones Activos{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ galpones_activos }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Aves -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Total Birds{% else %}Total Aves{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_aves|floatformat:0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dove fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mortalidad Promedio -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Avg. Mortality{% else %}Mortalidad Prom.{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ mortalidad_promedio|floatformat:2 }}%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-heartbeat fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Segunda Fila de Estadísticas -->
+    <div class="row mb-4">
+        <!-- Producción Mensual -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Monthly Eggs{% else %}Huevos/Mes{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_huevos_mes|floatformat:0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-egg fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Consumo de Alimento -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Monthly Feed (kg){% else %}Alimento/Mes (kg){% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ consumo_alimento_mes|floatformat:2 }} kg</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wheat-awn fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vacunas Aplicadas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Vaccines This Month{% else %}Vacunas Este Mes{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vacunas_aplicadas }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-syringe fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Promedio Ponedoras -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                {% if LANGUAGE_CODE == 'en' %}Avg. Layers{% else %}Prom. Ponedoras{% endif %}
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ promedio_ponedoras|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lotes Activos y Seguimientos -->
+    <div class="row">
+        <!-- Lotes Activos -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-list-ul me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Active Lots{% else %}Lotes Activos{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if lotes_activos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="lotesTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}ID{% else %}ID{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Shed{% else %}Galpón{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Breed{% else %}Raza{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Birds{% else %}Aves{% endif %}</th>
+                                    <th>{% if LANGUAGE_CODE == 'en' %}Status{% else %}Estado{% endif %}</th>
+                                    <th class="text-right">{% if LANGUAGE_CODE == 'en' %}Actions{% else %}Acciones{% endif %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lote in lotes_activos %}
+                                <tr>
+                                    <td>{{ lote.codigo_lote|default:lote.id }}</td>
+                                    <td>
+                                        <strong>{% if LANGUAGE_CODE == 'en' %}Shed{% else %}Galpón{% endif %} {{ lote.galpon.numero_galpon }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ lote.galpon.granja.nombre }}</small>
+                                    </td>
+                                    <td>{{ lote.raza.nombre|default:"-" }}</td>
+                                    <td>{{ lote.cantidad_inicial_aves|floatformat:0 }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if lote.estado == 'INICIAL' %}bg-primary
+                                            {% elif lote.estado == 'CRECIMIENTO' %}bg-info
+                                            {% elif lote.estado == 'PRODUCCION' %}bg-success
+                                            {% elif lote.estado == 'FINALIZADO' %}bg-secondary
+                                            {% else %}bg-warning{% endif %}">
+                                            {{ lote.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a href="{% url 'avicola:detalle_lote' lote.id %}" class="btn btn-sm btn-info" title="{% if LANGUAGE_CODE == 'en' %}View Details{% else %}Ver Detalles{% endif %}">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-primary" title="{% if LANGUAGE_CODE == 'en' %}Add Follow-up{% else %}Agregar Seguimiento{% endif %}">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-4x mb-3 text-gray-400"></i>
+                        <p class="text-muted">
+                            {% if LANGUAGE_CODE == 'en' %}No active lots found.{% else %}No se encontraron lotes activos.{% endif %}
+                        </p>
+                        <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#nuevoLoteModal">
+                            <i class="fas fa-plus me-1"></i>
+                            {% if LANGUAGE_CODE == 'en' %}Add New Lot{% else %}Agregar Lote{% endif %}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimos Seguimientos -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-clipboard-check me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Recent Follow-ups{% else %}Seguimientos Recientes{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if ultimos_seguimientos %}
+                    <div class="timeline">
+                        {% for seguimiento in ultimos_seguimientos %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <i class="fas fa-{{ seguimiento.tipo_icono|default:'check' }} {{ seguimiento.tipo_clase|default:'bg-primary' }}"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'avicola:detalle_lote' seguimiento.lote.id %}" class="text-dark">
+                                            {% if LANGUAGE_CODE == 'en' %}Lot{% else %}Lote{% endif %} {{ seguimiento.lote.codigo_lote|default:seguimiento.lote.id }}
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">{{ seguimiento.fecha_seguimiento|date:"d/m/Y" }}</small>
+                                </div>
+                                <p class="mb-1">{{ seguimiento.observaciones|truncatechars:80|default:"Sin observaciones" }}</p>
+                                <div class="small text-muted">
+                                    <i class="fas fa-user me-1"></i> {{ seguimiento.registrado_por.get_full_name|default:seguimiento.registrado_por.username }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'avicola:seguimientos_recientes' %}" class="btn btn-sm btn-outline-primary">
+                            {% if LANGUAGE_CODE == 'en' %}View All{% else %}Ver Todos{% endif %}
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-4x mb-3 text-gray-400"></i>
+                        <p class="text-muted">
+                            {% if LANGUAGE_CODE == 'en' %}No recent follow-ups found.{% else %}No se encontraron seguimientos recientes.{% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin: 0 0 0 1.5rem;
+        border-left: 2px solid #e3e6f0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -2.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .timeline-content {
+        padding: 0.75rem 1rem;
+        background-color: #f8f9fc;
+        border-radius: 0.35rem;
+        margin-bottom: 1rem;
+    }
+    
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    
+    .timeline-item:before {
+        content: '';
+        position: absolute;
+        left: -2.25rem;
+        top: 0.75rem;
+        width: 1rem;
+        height: 2px;
+        background: #e3e6f0;
+    }
+    
+    /* Card hover effect */
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Custom badge styles */
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+    
+    /* Custom button styles */
+    .btn-icon-split .icon {
+        width: 2.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-icon-split .text {
+        padding-right: 1rem;
+    }
+    
+    /* Custom table styles */
+    .table thead th {
+        border-top: none;
+        border-bottom: 2px solid #e3e6f0;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    /* Custom card header styles */
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .btn-icon-split .text {
+            display: none;
+        }
+        
+        .btn-icon-split .icon {
+            width: auto;
+            padding: 0.375rem 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize DataTable
+    $(document).ready(function() {
+        $('#lotesTable').DataTable({
+            "order": [[0, "desc"]],
+            "language": {
+                {% if LANGUAGE_CODE == 'en' %}
+                "search": "Search:",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "No entries found",
+                "infoFiltered": "(filtered from _MAX_ total entries)",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+                {% else %}
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                {% endif %}
+            },
+            "responsive": true,
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 25, 50, 100],
+            "dom": '<"top"f>rt<"bottom"lip><"clear">',
+            "columnDefs": [
+                { "orderable": false, "targets": -1 } // Make last column (actions) not sortable
+            ]
+        });
+        
+        // Enable tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Initialize popovers
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            html: true
+        });
+    });
+    
+    // Auto-hide alerts after 5 seconds
+    window.setTimeout(function() {
+        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+            $(this).remove();
+        });
+    }, 5000);
+</script>
+{% endblock %}

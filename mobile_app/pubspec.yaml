@@ -1,0 +1,73 @@
+name: app_granja_mobile
+description: Aplicación móvil para la gestión de granjas avícolas.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI
+  cupertino_icons: ^1.0.5
+  flutter_svg: ^2.0.7
+  cached_network_image: ^3.3.0
+  flutter_spinkit: ^5.2.0
+  # Internacionalización
+  intl: ^0.17.0
+  charts_flutter: ^0.12.0
+  
+  # Estado
+  provider: ^6.0.5
+  
+  # Almacenamiento local
+  shared_preferences: ^2.2.1
+  sqflite: ^2.3.0
+  path_provider: ^2.1.1
+  flutter_secure_storage: ^8.0.0
+  
+  # Redes y API
+  http: ^1.1.0
+  connectivity_plus: ^4.0.2
+  
+  # Autenticación
+  jwt_decoder: ^2.0.1
+  
+  # QR y cámara
+  qr_code_scanner: ^1.0.1
+  qr_flutter: ^4.1.0
+  camera: ^0.10.5+4
+  
+  # Utilidades
+  uuid: ^3.0.7
+  logger: ^1.4.0
+  file_picker: ^6.0.0
+  path: ^1.8.0
+  permission_handler: ^10.4.3
+  
+  # Sincronización
+  workmanager: ^0.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+  build_runner: ^2.4.6
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+    
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-Light.ttf
+          weight: 300

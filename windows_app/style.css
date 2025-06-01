@@ -1,0 +1,141 @@
+/* Estilos generales */
+QWidget {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow {
+    background-color: #f8f9fc;
+}
+
+/* Estilos para tarjetas */
+QFrame#statCard {
+    background-color: white;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 5px;
+}
+
+/* Estilos para tablas */
+QTableWidget {
+    background-color: white;
+    alternate-background-color: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 4px;
+    gridline-color: #e3e6f0;
+}
+
+QTableWidget::item {
+    padding: 4px;
+}
+
+QTableWidget::item:selected {
+    background-color: #4e73df;
+    color: white;
+}
+
+QHeaderView::section {
+    background-color: #4e73df;
+    color: white;
+    padding: 6px;
+    border: none;
+    font-weight: bold;
+}
+
+/* Estilos para pestañas */
+QTabWidget::pane {
+    border: 1px solid #e3e6f0;
+    border-radius: 4px;
+    background-color: white;
+}
+
+QTabBar::tab {
+    background-color: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 8px 12px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: white;
+    border-bottom: 1px solid white;
+}
+
+/* Estilos para botones */
+QPushButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: #2e59d9;
+}
+
+/* Estilos para campos de formulario */
+QLineEdit, QDateEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+    padding: 6px;
+    border: 1px solid #d1d3e2;
+    border-radius: 4px;
+    background-color: white;
+}
+
+QLineEdit:focus, QDateEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus {
+    border: 1px solid #4e73df;
+}
+
+/* Estilos para grupos */
+QGroupBox {
+    border: 1px solid #e3e6f0;
+    border-radius: 4px;
+    margin-top: 1.5ex;
+    padding-top: 1.5ex;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+    color: #5a5c69;
+    font-weight: bold;
+}
+
+/* Estilos para menús */
+QMenuBar {
+    background-color: white;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+QMenuBar::item {
+    padding: 8px 12px;
+}
+
+QMenuBar::item:selected {
+    background-color: #4e73df;
+    color: white;
+}
+
+QMenu {
+    background-color: white;
+    border: 1px solid #e3e6f0;
+}
+
+QMenu::item {
+    padding: 6px 20px 6px 20px;
+}
+
+QMenu::item:selected {
+    background-color: #4e73df;
+    color: white;
+}
+
+/* Estilos para la barra de estado */
+QStatusBar {
+    background-color: white;
+    border-top: 1px solid #e3e6f0;
+    color: #5a5c69;
+}

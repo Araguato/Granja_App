@@ -1,0 +1,302 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if LANGUAGE_CODE == 'en' %}Food List{% else %}Lista de Alimentos{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-utensils me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Food List{% else %}Lista de Alimentos{% endif %}
+        </h1>
+        <a href="{% url 'inventario:registrar_consumo' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i>
+            {% if LANGUAGE_CODE == 'en' %}Register Consumption{% else %}Registrar Consumo{% endif %}
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-filter me-1"></i>
+                {% if LANGUAGE_CODE == 'en' %}Filters{% else %}Filtros{% endif %}
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="etapa" class="form-label">{% if LANGUAGE_CODE == 'en' %}Stage{% else %}Etapa{% endif %}</label>
+                    <select name="etapa" id="etapa" class="form-select">
+                        <option value="">{% if LANGUAGE_CODE == 'en' %}All{% else %}Todas{% endif %}</option>
+                        <option value="iniciador" {% if request.GET.etapa == 'iniciador' %}selected{% endif %}>Iniciador</option>
+                        <option value="crecimiento" {% if request.GET.etapa == 'crecimiento' %}selected{% endif %}>Crecimiento</option>
+                        <option value="engorde" {% if request.GET.etapa == 'engorde' %}selected{% endif %}>Engorde</option>
+                        <option value="postura" {% if request.GET.etapa == 'postura' %}selected{% endif %}>Postura</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="proveedor" class="form-label">{% if LANGUAGE_CODE == 'en' %}Supplier{% else %}Proveedor{% endif %}</label>
+                    <input type="text" name="proveedor" id="proveedor" class="form-control" 
+                           placeholder="{% if LANGUAGE_CODE == 'en' %}Supplier name{% else %}Nombre del proveedor{% endif %}" 
+                           value="{{ request.GET.proveedor|default:'' }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i> {% if LANGUAGE_CODE == 'en' %}Search{% else %}Buscar{% endif %}
+                    </button>
+                    <a href="{% url 'inventario:lista_alimentos' %}" class="btn btn-secondary">
+                        <i class="fas fa-undo me-1"></i> {% if LANGUAGE_CODE == 'en' %}Reset{% else %}Limpiar{% endif %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Alimentos -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Name{% else %}Nombre{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Stage{% else %}Etapa{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Supplier{% else %}Proveedor{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Protein %{% else %}Proteína %{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Status{% else %}Estado{% endif %}</th>
+                            <th>{% if LANGUAGE_CODE == 'en' %}Actions{% else %}Acciones{% endif %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alimento in alimentos %}
+                        <tr>
+                            <td>{{ alimento.nombre }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if alimento.etapa == 'iniciador' %}bg-primary
+                                    {% elif alimento.etapa == 'crecimiento' %}bg-success
+                                    {% elif alimento.etapa == 'engorde' %}bg-warning
+                                    {% elif alimento.etapa == 'postura' %}bg-info
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ alimento.get_etapa_display }}
+                                </span>
+                            </td>
+                            <td>{{ alimento.proveedor.nombre }}</td>
+                            <td>{{ alimento.proteina_porcentaje }}%</td>
+                            <td>
+                                {% if alimento.activo %}
+                                    <span class="badge bg-success">{% if LANGUAGE_CODE == 'en' %}Active{% else %}Activo{% endif %}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{% if LANGUAGE_CODE == 'en' %}Inactive{% else %}Inactivo{% endif %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'inventario:detalle_alimento' alimento.id %}" 
+                                   class="btn btn-sm btn-primary" 
+                                   title="{% if LANGUAGE_CODE == 'en' %}View details{% else %}Ver detalles{% endif %}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" 
+                                   class="btn btn-sm btn-info" 
+                                   title="{% if LANGUAGE_CODE == 'en' %}Consumption{% else %}Consumo{% endif %}"
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#consumoModal"
+                                   data-alimento-id="{{ alimento.id }}"
+                                   data-alimento-nombre="{{ alimento.nombre }}">
+                                    <i class="fas fa-utensils"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    {% if LANGUAGE_CODE == 'en' %}No food items found.{% else %}No se encontraron alimentos.{% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    {% if LANGUAGE_CODE == 'en' %}
+                        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} entries
+                    {% else %}
+                        Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+                    {% endif %}
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="{% if LANGUAGE_CODE == 'en' %}First{% else %}Primera{% endif %}">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="{% if LANGUAGE_CODE == 'en' %}Previous{% else %}Anterior{% endif %}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.etapa %}&etapa={{ request.GET.etapa }}{% endif %}{% if request.GET.proveedor %}&proveedor={{ request.GET.proveedor }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.etapa %}&etapa={{ request.GET.etapa }}{% endif %}{% if request.GET.proveedor %}&proveedor={{ request.GET.proveedor }}{% endif %}" aria-label="{% if LANGUAGE_CODE == 'en' %}Next{% else %}Siguiente{% endif %}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.etapa %}&etapa={{ request.GET.etapa }}{% endif %}{% if request.GET.proveedor %}&proveedor={{ request.GET.proveedor }}{% endif %}" aria-label="{% if LANGUAGE_CODE == 'en' %}Last{% else %}Última{% endif %}">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para registrar consumo -->
+<div class="modal fade" id="consumoModal" tabindex="-1" aria-labelledby="consumoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consumoModalLabel">
+                    <i class="fas fa-utensils me-2"></i>
+                    {% if LANGUAGE_CODE == 'en' %}Register Food Consumption{% else %}Registrar Consumo de Alimento{% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% if LANGUAGE_CODE == 'en' %}Close{% else %}Cerrar{% endif %}"></button>
+            </div>
+            <form id="consumoForm" method="post" action="{% url 'inventario:registrar_consumo' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" id="alimento_id" name="alimento_id">
+                    
+                    <div class="mb-3">
+                        <label for="alimento_nombre" class="form-label">{% if LANGUAGE_CODE == 'en' %}Food{% else %}Alimento{% endif %}</label>
+                        <input type="text" class="form-control" id="alimento_nombre" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cantidad_kg" class="form-label">{% if LANGUAGE_CODE == 'en' %}Quantity (kg){% else %}Cantidad (kg){% endif %}</label>
+                        <input type="number" class="form-control" id="cantidad_kg" name="cantidad_kg" step="0.01" min="0.01" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="fecha_consumo" class="form-label">{% if LANGUAGE_CODE == 'en' %}Consumption Date{% else %}Fecha de Consumo{% endif %}</label>
+                        <input type="date" class="form-control" id="fecha_consumo" name="fecha_consumo" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="lote_aves" class="form-label">{% if LANGUAGE_CODE == 'en' %}Lot{% else %}Lote{% endif %}</label>
+                        <select class="form-select" id="lote_aves" name="lote_aves" required>
+                            <option value="">{% if LANGUAGE_CODE == 'en' %}Select a lot...{% else %}Seleccione un lote...{% endif %}</option>
+                            {% for lote in lotes_activos %}
+                                <option value="{{ lote.id }}">{{ lote.codigo_lote }} - {{ lote.raza.nombre }} ({{ lote.galpon.nombre }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">{% if LANGUAGE_CODE == 'en' %}Observations{% else %}Observaciones{% endif %}</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> {% if LANGUAGE_CODE == 'en' %}Cancel{% else %}Cancelar{% endif %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% if LANGUAGE_CODE == 'en' %}Save{% else %}Guardar{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Inicializar el modal de consumo
+    document.addEventListener('DOMContentLoaded', function() {
+        var consumoModal = document.getElementById('consumoModal');
+        if (consumoModal) {
+            consumoModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var alimentoId = button.getAttribute('data-alimento-id');
+                var alimentoNombre = button.getAttribute('data-alimento-nombre');
+                
+                // Actualizar el formulario con los datos del alimento
+                document.getElementById('alimento_id').value = alimentoId;
+                document.getElementById('alimento_nombre').value = alimentoNombre;
+                
+                // Establecer la fecha actual por defecto
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                var yyyy = today.getFullYear();
+                today = yyyy + '-' + mm + '-' + dd;
+                document.getElementById('fecha_consumo').value = today;
+                
+                // Limpiar y enfocar el campo de cantidad
+                document.getElementById('cantidad_kg').value = '';
+                document.getElementById('cantidad_kg').focus();
+            });
+        }
+        
+        // Inicializar DataTables
+        if (typeof $ !== 'undefined' && $.fn.DataTable) {
+            $('#dataTable').DataTable({
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                },
+                order: [[0, 'asc']],
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                     "<'row'<'col-sm-12'tr>>" +
+                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+            });
+        }
+    });
+</script>
+{% endblock %}

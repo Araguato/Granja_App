@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Error 403 - Acceso denegado{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-1 text-danger">403</h1>
+            <h2>Acceso denegado</h2>
+            <p class="lead">No tienes permiso para acceder a esta página.</p>
+            {% if not user.is_authenticated %}
+                <p>Por favor, inicia sesión con una cuenta que tenga los permisos necesarios.</p>
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary mt-3">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </a>
+            {% else %}
+                <a href="{% url 'core:home' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-home"></i> Volver al inicio
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

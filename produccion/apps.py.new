@@ -1,0 +1,11 @@
+from django.apps import AppConfig
+
+
+class ProduccionConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'produccion'
+    verbose_name = '1. Producción Avícola'  # Added number for ordering
+    
+    def ready(self):
+        # Import signals and other startup code
+        import produccion.signals  # noqa

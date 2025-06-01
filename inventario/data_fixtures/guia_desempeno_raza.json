@@ -1,0 +1,74 @@
+[
+    {
+        "model": "inventario.raza",
+        "pk": 1,
+        "fields": {
+            "nombre": "Cobb 500",
+            "tipo_raza": "ENGORDE",
+            "descripcion": "Línea genética de pollo de engorde de alto rendimiento"
+        }
+    },
+    {
+        "model": "inventario.raza",
+        "pk": 2,
+        "fields": {
+            "nombre": "Hy-Line Brown",
+            "tipo_raza": "PONEDORA",
+            "descripcion": "Línea genética de gallina ponedora marrón de alta productividad"
+        }
+    },
+    {
+        "model": "inventario.guiadesempenoraza",
+        "pk": 1,
+        "fields": {
+            "raza": 1,
+            "dia_edad": 7,
+            "peso_corporal_ideal_gr": 180,
+            "consumo_alimento_diario_ideal_gr_ave": 25,
+            "consumo_alimento_acumulado_ideal_gr_ave": 175,
+            "conversion_alimenticia_ideal": 1.6,
+            "mortalidad_acumulada_ideal_porc": 1.5,
+            "ganancia_peso_diaria_ideal_gr": 25,
+            "consumo_agua_diario_ideal_ml_ave": 50,
+            "viabilidad_ideal_porc": 98.5,
+            "epef_ideal": 320,
+            "ie_ideal": 0.85
+        }
+    },
+    {
+        "model": "inventario.guiadesempenoraza",
+        "pk": 2,
+        "fields": {
+            "raza": 1,
+            "dia_edad": 14,
+            "peso_corporal_ideal_gr": 420,
+            "consumo_alimento_diario_ideal_gr_ave": 55,
+            "consumo_alimento_acumulado_ideal_gr_ave": 770,
+            "conversion_alimenticia_ideal": 1.4,
+            "mortalidad_acumulada_ideal_porc": 2.5,
+            "ganancia_peso_diaria_ideal_gr": 34,
+            "consumo_agua_diario_ideal_ml_ave": 100,
+            "viabilidad_ideal_porc": 97.5,
+            "epef_ideal": 340,
+            "ie_ideal": 0.88
+        }
+    },
+    {
+        "model": "inventario.guiadesempenoraza",
+        "pk": 3,
+        "fields": {
+            "raza": 2,
+            "dia_edad": 20,
+            "peso_corporal_ideal_gr": 1200,
+            "consumo_alimento_diario_ideal_gr_ave": 110,
+            "consumo_alimento_acumulado_ideal_gr_ave": 2200,
+            "conversion_alimenticia_ideal": 2.1,
+            "mortalidad_acumulada_ideal_porc": 3.0,
+            "ganancia_peso_diaria_ideal_gr": 60,
+            "consumo_agua_diario_ideal_ml_ave": 200,
+            "viabilidad_ideal_porc": 97.0,
+            "epef_ideal": 280,
+            "ie_ideal": 0.75
+        }
+    }
+]

@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin_custom.css' %}?v=5">
+  <style>
+    /* Ensure admin menu is visible */
+    #header {
+      background: #2c3e50 !important;
+    }
+    
+    /* Make sure text is visible in admin */
+    #header a:link, #header a:visited {
+      color: #ffffff !important;
+    }
+    
+    /* Ensure content area has proper spacing */
+    #content {
+      margin: 20px 20px 20px 240px !important;
+    }
+    
+    /* Make sure sidebar is visible */
+    #content-main {
+      float: left;
+      width: 200px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('App Granja') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('App Granja - Administración') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+{{ block.super }}
+{% if user.is_superuser or user.user_type == 'ADMIN' %}
+  {% if request.path == '/admin/' %}
+    <div class="module" style="margin-top: 20px;">
+      <h2>Gestión de Permisos y Grupos</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card shadow-sm mb-3">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Supervisores</h5>
+            </div>
+            <div class="card-body">
+              <p>Gestione los permisos y usuarios del grupo de Supervisores.</p>
+              <div class="d-grid gap-2 d-md-flex">
+                <a href="{% url 'verificar_permisos_grupo' 'Supervisores' %}" class="btn btn-outline-primary">
+                  <i class="fas fa-key me-1"></i> Gestionar Permisos
+                </a>
+                <a href="{% url 'usuarios_grupo' 'Supervisores' %}" class="btn btn-outline-primary">
+                  <i class="fas fa-users me-1"></i> Gestionar Usuarios
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm mb-3">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">Otros Grupos</h5>
+            </div>
+            <div class="card-body">
+              <p>Gestione los permisos y usuarios de otros grupos del sistema.</p>
+              <div class="d-grid gap-2 d-md-flex">
+                <a href="{% url 'admin:auth_group_changelist' %}" class="btn btn-outline-success">
+                  <i class="fas fa-users-cog me-1"></i> Ver Todos los Grupos
+                </a>
+                <a href="{% url 'admin:auth_group_add' %}" class="btn btn-outline-success">
+                  <i class="fas fa-plus-circle me-1"></i> Crear Nuevo Grupo
+                </a>
+                <a href="{% url 'configurar_acceso_admin' %}" class="btn btn-outline-warning mt-2 w-100">
+                  <i class="fas fa-unlock-alt me-1"></i> Configurar Acceso Admin para Supervisores
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

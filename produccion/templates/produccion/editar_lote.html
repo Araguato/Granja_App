@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-edit me-2"></i>
+                {% trans "Editar Lote" %}: {{ lote.codigo }}
+            </h1>
+            <p class="text-muted">
+                {{ lote.galpon }} - {{ lote.raza }}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/produccion/lotes/{{ lote.id }}/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                {% trans "Formulario de Edición" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="loteForm">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="codigo" class="form-label">{% trans "Código" %}</label>
+                        <input type="text" class="form-control" id="codigo" name="codigo" value="{{ lote.codigo }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="raza" class="form-label">{% trans "Raza" %}</label>
+                        <select class="form-select" id="raza" name="raza" required>
+                            <option value="">{% trans "Seleccione una raza" %}</option>
+                            <option value="COBB 500" {% if lote.raza == 'COBB 500' %}selected{% endif %}>COBB 500</option>
+                            <option value="Ross 308" {% if lote.raza == 'Ross 308' %}selected{% endif %}>Ross 308</option>
+                            <option value="Hy-Line Brown" {% if lote.raza == 'Hy-Line Brown' %}selected{% endif %}>Hy-Line Brown</option>
+                            <option value="Lohmann Brown" {% if lote.raza == 'Lohmann Brown' %}selected{% endif %}>Lohmann Brown</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="cantidad_aves" class="form-label">{% trans "Cantidad de Aves" %}</label>
+                        <input type="number" class="form-control" id="cantidad_aves" name="cantidad_aves" min="1" value="{{ lote.cantidad_aves }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">{% trans "Estado" %}</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="INICIAL" {% if lote.estado == 'INICIAL' %}selected{% endif %}>{% trans "Inicial" %}</option>
+                            <option value="CRECIMIENTO" {% if lote.estado == 'CRECIMIENTO' %}selected{% endif %}>{% trans "Crecimiento" %}</option>
+                            <option value="PRODUCCION" {% if lote.estado == 'PRODUCCION' %}selected{% endif %}>{% trans "Producción" %}</option>
+                            <option value="FINALIZADO" {% if lote.estado == 'FINALIZADO' %}selected{% endif %}>{% trans "Finalizado" %}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">{% trans "Observaciones" %}</label>
+                    <textarea class="form-control" id="observaciones" name="observaciones" rows="3">{{ lote.observaciones }}</textarea>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "Todos los campos son obligatorios excepto las observaciones." %}
+                </div>
+                
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        {% trans "Cancelar" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% trans "Guardar Cambios" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validación del formulario
+        const form = document.getElementById('loteForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const codigo = document.getElementById('codigo').value;
+            const raza = document.getElementById('raza').value;
+            const cantidadAves = document.getElementById('cantidad_aves').value;
+            
+            if (!codigo || !raza || !cantidadAves) {
+                alert('{% trans "Por favor complete todos los campos obligatorios" %}');
+                return;
+            }
+            
+            // Si todo está bien, enviar el formulario
+            this.submit();
+        });
+    });
+</script>
+{% endblock %}

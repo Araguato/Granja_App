@@ -1,0 +1,502 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        background: linear-gradient(45deg, #1cc88a, #13855c);
+        color: white;
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .info-card {
+        border-left: 4px solid #1cc88a;
+        transition: all 0.3s ease;
+    }
+    .info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .btn-cancel {
+        background-color: #e74a3b;
+        color: white;
+    }
+    .btn-cancel:hover {
+        background-color: #be2617;
+        color: white;
+    }
+    .required-field label:after {
+        content: " *";
+        color: red;
+    }
+    .stock-info {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .stock-low {
+        color: #e74a3b;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-syringe text-success"></i> 
+            Registrar Aplicación de Medicamento
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'inventario:lista_medicamentos' %}">Medicamentos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Registrar Aplicación</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-notes-medical mr-2"></i>
+                        Datos de la Aplicación
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="aplicacionForm">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-group required-field">
+                            <label for="id_medicamento">Medicamento *</label>
+                            <select name="medicamento" class="form-control select2" id="id_medicamento" required>
+                                <option value="">Seleccione un medicamento</option>
+                                {% for med in medicamentos %}
+                                    <option value="{{ med.id }}" 
+                                            data-stock="{{ med.stock }}"
+                                            data-unidad="{{ med.unidad_medida }}"
+                                            {% if request.GET.medicamento|add:0 == med.id %}selected{% endif}>
+                                        {{ med.nombre }} ({{ med.stock }} {{ med.unidad_medida }} disponibles)
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Solo se muestran medicamentos con stock disponible</small>
+                        </div>
+                        
+                        <div class="form-group required-field">
+                            <label for="id_lote">Lote de Aves *</label>
+                            <select name="lote" class="form-control select2" id="id_lote" required>
+                                <option value="">Seleccione un lote</option>
+                                {% for lote in lotes %}
+                                    <option value="{{ lote.id }}">
+                                        {{ lote.codigo_lote }} - {{ lote.raza.nombre }} ({{ lote.cantidad_aves }} aves)
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required-field">
+                                    <label for="id_dosis">Dosis *</label>
+                                    <div class="input-group">
+                                        <input type="number" name="dosis" step="0.01" min="0.01" class="form-control" id="id_dosis" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="unidad_medida">-</span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted" id="stock_disponible"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required-field">
+                                    <label for="id_via_aplicacion">Vía de Aplicación *</label>
+                                    <select name="via_aplicacion" class="form-control" id="id_via_aplicacion" required>
+                                        <option value="">Seleccione una opción</option>
+                                        {% for value, label in vias_aplicacion %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_fecha_aplicacion">Fecha de Aplicación</label>
+                                    <input type="date" name="fecha_aplicacion" class="form-control dateinput" 
+                                           id="id_fecha_aplicacion" value="{{ hoy|date:'Y-m-d' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_observaciones">Observaciones</label>
+                                    <textarea name="observaciones" class="form-control" id="id_observaciones" 
+                                              rows="2" placeholder="Opcional"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <strong>Importante:</strong> Al registrar una aplicación, se descontará automáticamente 
+                            la cantidad utilizada del stock del medicamento.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'inventario:lista_medicamentos' %}" class="btn btn-cancel btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                                <span class="text">Cancelar</span>
+                            </a>
+                            <button type="submit" class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-save"></i>
+                                </span>
+                                <span class="text">Registrar Aplicación</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Información del Medicamento -->
+            <div class="card shadow mb-4" id="medicamentoInfoCard" style="display: none;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Información del Medicamento
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h5 id="medicamentoNombre" class="font-weight-bold"></h5>
+                    <p id="medicamentoDescripcion" class="text-muted"></p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Stock Actual</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="stockActual">-</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Stock Mínimo</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="stockMinimo">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div class="progress
+                            {% if medicamento and medicamento.stock <= 0 %}
+                                bg-danger
+                            {% elif medicamento and medicamento.stock < medicamento.stock_minimo %}
+                                bg-warning
+                            {% else %}
+                                bg-success
+                            {% endif %}
+                            progress-bar-striped progress-bar-animated" 
+                             style="height: 20px; border-radius: 5px;">
+                            <div class="progress-bar" role="progressbar" id="stockProgress" 
+                                 style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <div class="small">
+                        <p class="mb-1"><i class="fas fa-box mr-2"></i> <strong>Lote:</strong> <span id="medicamentoLote">-</span></p>
+                        <p class="mb-1"><i class="fas fa-calendar-alt mr-2"></i> <strong>Vencimiento:</strong> <span id="medicamentoVencimiento">-</span></p>
+                        <p class="mb-1"><i class="fas fa-industry mr-2"></i> <strong>Proveedor:</strong> <span id="medicamentoProveedor">-</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Lote -->
+            <div class="card shadow mb-4" id="loteInfoCard" style="display: none;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-kiwi-bird mr-2"></i>
+                        Información del Lote
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h5 id="loteCodigo" class="font-weight-bold"></h5>
+                    
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Edad</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="loteEdad">-</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Aves</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="loteAves">-</div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <div class="small">
+                        <p class="mb-1"><i class="fas fa-dna mr-2"></i> <strong>Raza:</strong> <span id="loteRaza">-</span></p>
+                        <p class="mb-1"><i class="fas fa-calendar-plus mr-2"></i> <strong>Ingreso:</strong> <span id="loteIngreso">-</span></p>
+                        <p class="mb-1"><i class="fas fa-flag mr-2"></i> <strong>Estado:</strong> <span id="loteEstado">-</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Historial Reciente -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history mr-2"></i>
+                        Últimas Aplicaciones
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush" id="historialAplicaciones">
+                        <div class="text-center py-3 text-muted">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p>Seleccione un medicamento para ver su historial</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Inicializar select2
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
+        
+        // Inicializar datepicker
+        $('.dateinput').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+            language: 'es',
+            orientation: 'bottom auto'
+        });
+        
+        // Cargar información del medicamento seleccionado
+        $('#id_medicamento').on('change', function() {
+            const medicamentoId = $(this).val();
+            
+            if (medicamentoId) {
+                // Mostrar tarjeta de información del medicamento
+                $('#medicamentoInfoCard').show();
+                
+                // Obtener datos del medicamento vía AJAX
+                $.ajax({
+                    url: `/api/medicamentos/${medicamentoId}/`,
+                    method: 'GET',
+                    success: function(data) {
+                        // Actualizar información del medicamento
+                        $('#medicamentoNombre').text(data.nombre);
+                        $('#medicamentoDescripcion').text(data.descripcion || 'Sin descripción');
+                        $('#stockActual').text(`${data.stock} ${data.unidad_medida}`);
+                        $('#stockMinimo').text(`${data.stock_minimo} ${data.unidad_medida}`);
+                        $('#medicamentoLote').text(data.lote || 'N/A');
+                        $('#medicamentoVencimiento').text(data.fecha_vencimiento ? new Date(data.fecha_vencimiento).toLocaleDateString('es-ES') : 'No especificada');
+                        $('#medicamentoProveedor').text(data.proveedor_nombre || 'No especificado');
+                        
+                        // Actualizar barra de progreso
+                        const porcentajeStock = Math.min(100, (data.stock / (data.stock_minimo * 2)) * 100);
+                        $('#stockProgress').css('width', `${porcentajeStock}%`);
+                        
+                        if (data.stock <= 0) {
+                            $('#stockProgress').removeClass('bg-success bg-warning').addClass('bg-danger');
+                        } else if (data.stock < data.stock_minimo) {
+                            $('#stockProgress').removeClass('bg-success bg-danger').addClass('bg-warning');
+                        } else {
+                            $('#stockProgress').removeClass('bg-warning bg-danger').addClass('bg-success');
+                        }
+                        
+                        // Actualizar unidad de medida en el campo de dosis
+                        $('#unidad_medida').text(data.unidad_medida);
+                        
+                        // Cargar historial de aplicaciones
+                        cargarHistorialAplicaciones(medicamentoId);
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo cargar la información del medicamento',
+                            icon: 'error'
+                        });
+                    }
+                });
+            } else {
+                $('#medicamentoInfoCard').hide();
+            }
+        });
+        
+        // Cargar información del lote seleccionado
+        $('#id_lote').on('change', function() {
+            const loteId = $(this).val();
+            
+            if (loteId) {
+                // Mostrar tarjeta de información del lote
+                $('#loteInfoCard').show();
+                
+                // Obtener datos del lote vía AJAX
+                $.ajax({
+                    url: `/api/lotes/${loteId}/`,
+                    method: 'GET',
+                    success: function(data) {
+                        // Actualizar información del lote
+                        $('#loteCodigo').text(data.codigo_lote);
+                        $('#loteEdad').text(`${data.edad_dias} días`);
+                        $('#loteAves').text(data.cantidad_aves);
+                        $('#loteRaza').text(data.raza_nombre);
+                        $('#loteIngreso').text(new Date(data.fecha_ingreso).toLocaleDateString('es-ES'));
+                        $('#loteEstado').text(data.estado);
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo cargar la información del lote',
+                            icon: 'error'
+                        });
+                    }
+                });
+            } else {
+                $('#loteInfoCard').hide();
+            }
+        });
+        
+        // Función para cargar el historial de aplicaciones
+        function cargarHistorialAplicaciones(medicamentoId) {
+            $.ajax({
+                url: `/api/medicamentos/${medicamentoId}/aplicaciones/`,
+                method: 'GET',
+                success: function(data) {
+                    const $historial = $('#historialAplicaciones');
+                    $historial.empty();
+                    
+                    if (data.length > 0) {
+                        // Mostrar las últimas 5 aplicaciones
+                        data.slice(0, 5).forEach(function(aplicacion) {
+                            $historial.append(`
+                                <div class="list-group-item px-0 py-2">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">${aplicacion.lote_codigo}</h6>
+                                        <small>${new Date(aplicacion.fecha_aplicacion).toLocaleDateString('es-ES')}</small>
+                                    </div>
+                                    <p class="mb-1">${aplicacion.dosis} ${aplicacion.unidad_medida} - ${aplicacion.via_aplicacion_display}</p>
+                                    <small class="text-muted">Por: ${aplicacion.aplicado_por_nombre}</small>
+                                </div>
+                            `);
+                        });
+                        
+                        if (data.length > 5) {
+                            $historial.append(`
+                                <div class="text-center mt-2">
+                                    <a href="#" class="btn btn-sm btn-link">
+                                        Ver todas las aplicaciones <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            `);
+                        }
+                    } else {
+                        $historial.html(`
+                            <div class="text-center py-3 text-muted">
+                                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                <p>No hay aplicaciones registradas para este medicamento</p>
+                            </div>
+                        `);
+                    }
+                },
+                error: function() {
+                    $('#historialAplicaciones').html(`
+                        <div class="text-center py-3 text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p>Error al cargar el historial</p>
+                        </div>
+                    `);
+                }
+            });
+        }
+        
+        // Validar que la dosis no sea mayor al stock disponible
+        $('#aplicacionForm').on('submit', function(e) {
+            const medicamentoSelect = $('#id_medicamento');
+            const dosisInput = $('#id_dosis');
+            const stock = parseFloat(medicamentoSelect.find('option:selected').data('stock'));
+            const dosis = parseFloat(dosisInput.val());
+            
+            if (dosis > stock) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Error en la dosis',
+                    text: `La dosis no puede ser mayor al stock disponible (${stock} ${$('#unidad_medida').text()})`,
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+                dosisInput.focus();
+                return false;
+            }
+            
+            // Mostrar confirmación antes de enviar
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Confirmar aplicación?',
+                text: '¿Está seguro de registrar esta aplicación de medicamento?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, registrar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+        
+        // Actualizar información de stock al cambiar el medicamento
+        $('#id_medicamento').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const stock = selectedOption.data('stock');
+            const unidad = selectedOption.data('unidad');
+            
+            if (stock !== undefined && unidad) {
+                $('#stock_disponible').text(`Stock disponible: ${stock} ${unidad}`);
+                $('#unidad_medida').text(unidad);
+                
+                // Establecer el valor máximo permitido para la dosis
+                $('#id_dosis').attr('max', stock);
+                
+                // Resaltar si el stock es bajo
+                if (stock <= 0) {
+                    $('#stock_disponible').addClass('stock-low').text(`¡Stock agotado!`);
+                } else {
+                    $('#stock_disponible').removeClass('stock-low');
+                }
+            } else {
+                $('#stock_disponible').text('');
+                $('#unidad_medida').text('');
+            }
+        }).trigger('change');
+    });
+</script>
+{% endblock %}

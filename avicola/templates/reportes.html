@@ -1,0 +1,173 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Reportes - App Granja{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5">
+                <i class="fas fa-chart-bar me-2"></i>Reportes
+            </h1>
+            <p class="lead">
+                Genera y visualiza informes detallados de la granja.
+            </p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Tarjeta de Reporte de Producción -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-egg me-2"></i>Producción Diaria
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Genera reportes de producción diaria de huevos por galpón.
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i> Ver
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download me-1"></i> PDF
+                            </a>
+                        </div>
+                        <small class="text-muted">Actualizado hoy</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Reporte de Mortalidad -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Mortalidad
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Reportes detallados de mortalidad por lote y galpón.
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="#" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-eye me-1"></i> Ver
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download me-1"></i> PDF
+                            </a>
+                        </div>
+                        <small class="text-muted">Actualizado hoy</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Reporte de Alimentación -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-utensils me-2"></i>Consumo de Alimento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Control y seguimiento del consumo de alimento por lote.
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="#" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-eye me-1"></i> Ver
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download me-1"></i> PDF
+                            </a>
+                        </div>
+                        <small class="text-muted">Actualizado hoy</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros para Reportes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-filter me-2"></i>Filtros de Reportes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicio">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                                <input type="date" class="form-control" id="fechaFin">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tipoReporte" class="form-label">Tipo de Reporte</label>
+                                <select class="form-select" id="tipoReporte">
+                                    <option selected>Seleccionar...</option>
+                                    <option>Producción Diaria</option>
+                                    <option>Mortalidad</option>
+                                    <option>Consumo de Alimento</option>
+                                    <option>Desempeño por Lote</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> Generar Reporte
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Ejemplo -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Producción Semanal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                        <p class="text-muted">Seleccione un rango de fechas y haga clic en "Generar Reporte" para ver los datos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Script para inicializar gráficos o funcionalidades de los reportes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aquí iría el código para inicializar gráficos con Chart.js o similar
+        console.log('Página de reportes cargada');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "codigo": "L-2023-001",
+    "fecha_ingreso": "2023-01-15",
+    "cantidad_aves": 1000,
+    "raza": "Lohmann Brown",
+    "galpon": 1,
+    "estado": "Activo",
+    "edad_semanas": 30
+  },
+  {
+    "id": 2,
+    "codigo": "L-2023-002",
+    "fecha_ingreso": "2023-02-01",
+    "cantidad_aves": 1500,
+    "raza": "Hy-Line Brown",
+    "galpon": 2,
+    "estado": "Activo",
+    "edad_semanas": 25
+  },
+  {
+    "id": 3,
+    "codigo": "L-2023-003",
+    "fecha_ingreso": "2023-02-15",
+    "cantidad_aves": 1200,
+    "raza": "Babcock",
+    "galpon": 3,
+    "estado": "Cerrado",
+    "edad_semanas": 20
+  }
+]

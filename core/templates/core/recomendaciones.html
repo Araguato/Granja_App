@@ -1,0 +1,470 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Recomendaciones de Alimentación - App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .recommendation-card {
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+    .recommendation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .recommendation-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .recommendation-alerta {
+        color: #f44336;
+    }
+    .recommendation-advertencia {
+        color: #ff9800;
+    }
+    .recommendation-positivo {
+        color: #4caf50;
+    }
+    .recommendation-informacion {
+        color: #2196f3;
+    }
+    .stats-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .stats-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .selector-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 2s linear infinite;
+        margin: 20px auto;
+        display: none;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-lightbulb me-2"></i>Recomendaciones de Alimentación</h1>
+        <p class="lead">Optimiza la alimentación de tus aves con recomendaciones basadas en datos de eficiencia nutricional.</p>
+        <hr>
+    </div>
+</div>
+
+<!-- Selector de lote/galpón -->
+<div class="selector-container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="lote-selector"><i class="fas fa-layer-group me-2"></i>Seleccionar Lote</label>
+                <select class="form-control" id="lote-selector">
+                    <option value="">-- Seleccione un lote --</option>
+                    {% for lote in lotes %}
+                    <option value="{{ lote.id }}">{{ lote.codigo_lote }} - {{ lote.raza.nombre }} ({{ lote.edad_semanas }} semanas)</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="galpon-selector"><i class="fas fa-warehouse me-2"></i>Seleccionar Galpón</label>
+                <select class="form-control" id="galpon-selector">
+                    <option value="">-- Seleccione un galpón --</option>
+                    {% for galpon in galpones %}
+                    <option value="{{ galpon.id }}">Galpón {{ galpon.numero_galpon }} - {{ galpon.get_tipo_galpon_display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="dias-selector"><i class="fas fa-calendar-alt me-2"></i>Período de análisis</label>
+                <select class="form-control" id="dias-selector">
+                    <option value="30">Últimos 30 días</option>
+                    <option value="60">Últimos 60 días</option>
+                    <option value="90">Últimos 90 días</option>
+                    <option value="180">Últimos 6 meses</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button id="btn-obtener-recomendaciones" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i>Obtener Recomendaciones
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Loader -->
+<div id="loader" class="loader"></div>
+
+<!-- Contenedor de recomendaciones específicas -->
+<div id="recomendaciones-especificas" style="display: none;">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i><span id="titulo-recomendaciones">Recomendaciones Específicas</span></h3>
+        </div>
+        <div class="card-body">
+            <div id="info-container" class="mb-4">
+                <!-- Aquí se mostrará la información del lote o galpón -->
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center p-3">
+                        <div class="recommendation-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="stats-label">Eficiencia Energética</div>
+                        <div id="eficiencia-energetica" class="stats-value">-</div>
+                        <div class="stats-label">kcal/g</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center p-3">
+                        <div class="recommendation-icon"><i class="fas fa-drumstick-bite"></i></div>
+                        <div class="stats-label">Eficiencia Proteica</div>
+                        <div id="eficiencia-proteica" class="stats-value">-</div>
+                        <div class="stats-label">g/g</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center p-3">
+                        <div class="recommendation-icon"><i class="fas fa-balance-scale"></i></div>
+                        <div class="stats-label">Relación E/P</div>
+                        <div id="relacion-energia-proteina" class="stats-value">-</div>
+                        <div class="stats-label">Ratio</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mb-3"><i class="fas fa-list-ul me-2"></i>Recomendaciones</h4>
+            <div id="recomendaciones-container">
+                <!-- Aquí se mostrarán las recomendaciones -->
+            </div>
+            
+            <div id="alimentos-recomendados-container" class="mt-4" style="display: none;">
+                <h4 class="mb-3"><i class="fas fa-utensils me-2"></i>Alimentos Recomendados</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Etapa</th>
+                                <th>Energía (kcal/kg)</th>
+                                <th>Proteína (%)</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alimentos-recomendados-body">
+                            <!-- Aquí se mostrarán los alimentos recomendados -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recomendaciones generales -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Recomendaciones Generales</h3>
+    </div>
+    <div class="card-body">
+        {% if recomendaciones_generales.status == 'success' %}
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center p-3">
+                        <div class="recommendation-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="stats-label">Eficiencia Energética Promedio</div>
+                        <div class="stats-value">{{ recomendaciones_generales.estadisticas.avg_eficiencia_energetica|floatformat:2 }}</div>
+                        <div class="stats-label">kcal/g</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center p-3">
+                        <div class="recommendation-icon"><i class="fas fa-drumstick-bite"></i></div>
+                        <div class="stats-label">Eficiencia Proteica Promedio</div>
+                        <div class="stats-value">{{ recomendaciones_generales.estadisticas.avg_eficiencia_proteica|floatformat:3 }}</div>
+                        <div class="stats-label">g/g</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center p-3">
+                        <div class="recommendation-icon"><i class="fas fa-balance-scale"></i></div>
+                        <div class="stats-label">Relación E/P Promedio</div>
+                        <div class="stats-value">{{ recomendaciones_generales.estadisticas.avg_relacion_energia_proteina|floatformat:1 }}</div>
+                        <div class="stats-label">Ratio</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mb-3"><i class="fas fa-list-ul me-2"></i>Recomendaciones</h4>
+            <div class="row">
+                {% for recomendacion in recomendaciones_generales.recomendaciones %}
+                <div class="col-md-6">
+                    <div class="card recommendation-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if recomendacion.tipo == 'alerta' %}
+                                <i class="fas fa-exclamation-triangle recommendation-icon recommendation-alerta me-3"></i>
+                                {% elif recomendacion.tipo == 'advertencia' %}
+                                <i class="fas fa-exclamation-circle recommendation-icon recommendation-advertencia me-3"></i>
+                                {% elif recomendacion.tipo == 'positivo' %}
+                                <i class="fas fa-check-circle recommendation-icon recommendation-positivo me-3"></i>
+                                {% else %}
+                                <i class="fas fa-info-circle recommendation-icon recommendation-informacion me-3"></i>
+                                {% endif %}
+                                <h5 class="card-title mb-0">{{ recomendacion.mensaje }}</h5>
+                            </div>
+                            <p class="card-text">{{ recomendacion.accion }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if recomendaciones_generales.mejor_registro %}
+            <div class="alert alert-info mt-4">
+                <h5><i class="fas fa-trophy me-2"></i>Mejor Rendimiento</h5>
+                <p>El mejor rendimiento se registró el <strong>{{ recomendaciones_generales.mejor_registro.fecha }}</strong> en el lote <strong>{{ recomendaciones_generales.mejor_registro.lote }}</strong> con el alimento <strong>{{ recomendaciones_generales.mejor_registro.alimento }}</strong>.</p>
+                <p>Valores: Eficiencia Energética <strong>{{ recomendaciones_generales.mejor_registro.eficiencia_energetica|floatformat:2 }}</strong> kcal/g, 
+                   Eficiencia Proteica <strong>{{ recomendaciones_generales.mejor_registro.eficiencia_proteica|floatformat:3 }}</strong> g/g, 
+                   Relación E/P <strong>{{ recomendaciones_generales.mejor_registro.relacion_energia_proteina|floatformat:1 }}</strong>.</p>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ recomendaciones_generales.message }}
+            </div>
+            <p>Para obtener recomendaciones, asegúrese de tener registros de seguimiento de engorde con datos de consumo de alimento y ganancia de peso.</p>
+            <a href="{% url 'admin:produccion_seguimientodiario_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nuevo Seguimiento
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Enlaces útiles -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0"><i class="fas fa-link me-2"></i>Enlaces Útiles</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card p-3 text-center">
+                    <i class="fas fa-book recommendation-icon recommendation-informacion"></i>
+                    <h5>Guía de Eficiencia Nutricional</h5>
+                    <p>Aprende a interpretar los indicadores de eficiencia nutricional y cómo mejorarlos.</p>
+                    <a href="{% static 'docs/guia_eficiencia_nutricional.md' %}" target="_blank" class="btn btn-outline-primary">Ver Guía</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 text-center">
+                    <i class="fas fa-chart-line recommendation-icon recommendation-positivo"></i>
+                    <h5>Estadísticas de Engorde</h5>
+                    <p>Visualiza gráficos detallados sobre el rendimiento de engorde de tus lotes.</p>
+                    <a href="{% url 'estadisticas' %}" class="btn btn-outline-primary">Ver Estadísticas</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 text-center">
+                    <i class="fas fa-utensils recommendation-icon recommendation-advertencia"></i>
+                    <h5>Gestión de Alimentos</h5>
+                    <p>Administra los alimentos disponibles y sus valores nutricionales.</p>
+                    <a href="{% url 'admin:inventario_alimento_changelist' %}" class="btn btn-outline-primary">Administrar Alimentos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loteSelector = document.getElementById('lote-selector');
+        const galponSelector = document.getElementById('galpon-selector');
+        const diasSelector = document.getElementById('dias-selector');
+        const btnObtenerRecomendaciones = document.getElementById('btn-obtener-recomendaciones');
+        const loader = document.getElementById('loader');
+        const recomendacionesEspecificas = document.getElementById('recomendaciones-especificas');
+        const tituloRecomendaciones = document.getElementById('titulo-recomendaciones');
+        const infoContainer = document.getElementById('info-container');
+        const recomendacionesContainer = document.getElementById('recomendaciones-container');
+        const alimentosRecomendadosContainer = document.getElementById('alimentos-recomendados-container');
+        const alimentosRecomendadosBody = document.getElementById('alimentos-recomendados-body');
+        const eficienciaEnergetica = document.getElementById('eficiencia-energetica');
+        const eficienciaProteica = document.getElementById('eficiencia-proteica');
+        const relacionEnergiaProteina = document.getElementById('relacion-energia-proteina');
+        
+        // Asegurarse de que solo uno de los selectores esté activo a la vez
+        loteSelector.addEventListener('change', function() {
+            if (this.value) {
+                galponSelector.value = '';
+            }
+        });
+        
+        galponSelector.addEventListener('change', function() {
+            if (this.value) {
+                loteSelector.value = '';
+            }
+        });
+        
+        // Obtener recomendaciones al hacer clic en el botón
+        btnObtenerRecomendaciones.addEventListener('click', function() {
+            const loteId = loteSelector.value;
+            const galponId = galponSelector.value;
+            const dias = diasSelector.value;
+            
+            if (!loteId && !galponId) {
+                alert('Por favor, seleccione un lote o un galpón.');
+                return;
+            }
+            
+            // Mostrar loader
+            loader.style.display = 'block';
+            recomendacionesEspecificas.style.display = 'none';
+            
+            // Construir la URL
+            let url;
+            if (loteId) {
+                url = `/recomendaciones/lote/${loteId}/?dias=${dias}`;
+                tituloRecomendaciones.textContent = `Recomendaciones para Lote ${loteSelector.options[loteSelector.selectedIndex].text}`;
+            } else {
+                url = `/recomendaciones/galpon/${galponId}/?dias=${dias}`;
+                tituloRecomendaciones.textContent = `Recomendaciones para ${galponSelector.options[galponSelector.selectedIndex].text}`;
+            }
+            
+            // Realizar la petición AJAX
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Ocultar loader
+                    loader.style.display = 'none';
+                    
+                    if (data.status === 'error') {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    // Mostrar contenedor de recomendaciones
+                    recomendacionesEspecificas.style.display = 'block';
+                    
+                    // Actualizar valores de eficiencia
+                    eficienciaEnergetica.textContent = data.estadisticas.avg_eficiencia_energetica.toFixed(2);
+                    eficienciaProteica.textContent = data.estadisticas.avg_eficiencia_proteica.toFixed(3);
+                    relacionEnergiaProteina.textContent = data.estadisticas.avg_relacion_energia_proteina.toFixed(1);
+                    
+                    // Mostrar información específica
+                    if (loteId && data.lote) {
+                        infoContainer.innerHTML = `
+                            <div class="alert alert-info">
+                                <h5><i class="fas fa-info-circle me-2"></i>Información del Lote</h5>
+                                <p><strong>Código:</strong> ${data.lote.codigo}</p>
+                                <p><strong>Edad:</strong> ${data.lote.edad_semanas} semanas</p>
+                                <p><strong>Galpón:</strong> ${data.lote.galpon}</p>
+                                <p><strong>Raza:</strong> ${data.lote.raza}</p>
+                                <p><strong>Alimento actual:</strong> ${data.lote.alimento_actual}</p>
+                            </div>
+                        `;
+                    } else if (galponId && data.galpon) {
+                        infoContainer.innerHTML = `
+                            <div class="alert alert-info">
+                                <h5><i class="fas fa-info-circle me-2"></i>Información del Galpón</h5>
+                                <p><strong>Número:</strong> ${data.galpon.numero}</p>
+                                <p><strong>Tipo:</strong> ${data.galpon.tipo}</p>
+                                <p><strong>Capacidad:</strong> ${data.galpon.capacidad} aves</p>
+                                <p><strong>Lotes activos:</strong> ${data.galpon.lotes_activos}</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Mostrar recomendaciones
+                    recomendacionesContainer.innerHTML = '';
+                    if (data.recomendaciones && data.recomendaciones.length > 0) {
+                        let html = '<div class="row">';
+                        data.recomendaciones.forEach(recomendacion => {
+                            let iconClass = '';
+                            if (recomendacion.tipo === 'alerta') {
+                                iconClass = 'fa-exclamation-triangle recommendation-alerta';
+                            } else if (recomendacion.tipo === 'advertencia') {
+                                iconClass = 'fa-exclamation-circle recommendation-advertencia';
+                            } else if (recomendacion.tipo === 'positivo') {
+                                iconClass = 'fa-check-circle recommendation-positivo';
+                            } else {
+                                iconClass = 'fa-info-circle recommendation-informacion';
+                            }
+                            
+                            html += `
+                                <div class="col-md-6">
+                                    <div class="card recommendation-card">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fas ${iconClass} recommendation-icon me-3"></i>
+                                                <h5 class="card-title mb-0">${recomendacion.mensaje}</h5>
+                                            </div>
+                                            <p class="card-text">${recomendacion.accion}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        recomendacionesContainer.innerHTML = html;
+                    } else {
+                        recomendacionesContainer.innerHTML = '<div class="alert alert-warning">No hay recomendaciones disponibles.</div>';
+                    }
+                    
+                    // Mostrar alimentos recomendados si existen
+                    if (data.alimentos_recomendados && data.alimentos_recomendados.length > 0) {
+                        alimentosRecomendadosContainer.style.display = 'block';
+                        alimentosRecomendadosBody.innerHTML = '';
+                        
+                        data.alimentos_recomendados.forEach(alimento => {
+                            alimentosRecomendadosBody.innerHTML += `
+                                <tr>
+                                    <td>${alimento.nombre}</td>
+                                    <td>${alimento.etapa}</td>
+                                    <td>${alimento.energia}</td>
+                                    <td>${alimento.proteina}%</td>
+                                    <td>
+                                        <a href="/admin/inventario/alimento/${alimento.id}/change/" class="btn btn-sm btn-info" target="_blank">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        alimentosRecomendadosContainer.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    loader.style.display = 'none';
+                    alert('Error al obtener las recomendaciones: ' + error);
+                });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Preguntas Frecuentes - App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .faq-category {
+        margin-bottom: 2rem;
+    }
+    .faq-item {
+        margin-bottom: 1rem;
+    }
+    .faq-question {
+        cursor: pointer;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    .faq-answer {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        margin-top: 0.5rem;
+    }
+    .category-title {
+        border-bottom: 2px solid #4caf50;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-question-circle me-2"></i>Preguntas Frecuentes</h1>
+        <p class="lead">Aquí encontrarás respuestas a las preguntas más comunes sobre el uso del sistema.</p>
+        <hr>
+    </div>
+</div>
+
+{% if no_faqs %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>Actualmente no hay preguntas frecuentes disponibles. Por favor, contacta al administrador si tienes alguna duda.
+</div>
+{% else %}
+    {% for category in categories %}
+    <div class="faq-category">
+        <h3 class="category-title">
+            <i class="fas fa-folder me-2"></i>{{ category.name }}
+        </h3>
+        <p class="mb-3">{{ category.description }}</p>
+        
+        {% if category.faqs_list %}
+            <div class="accordion" id="accordion-{{ category.slug }}">
+                {% for faq in category.faqs_list %}
+                <div class="card mb-2">
+                    <div class="card-header" id="heading-{{ faq.id }}">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link text-decoration-none text-start w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ faq.id }}" aria-expanded="false" aria-controls="collapse-{{ faq.id }}">
+                                <i class="fas fa-question-circle me-2 text-primary"></i>{{ faq.question }}
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapse-{{ faq.id }}" class="collapse" aria-labelledby="heading-{{ faq.id }}" data-bs-parent="#accordion-{{ category.slug }}">
+                        <div class="card-body">
+                            {{ faq.answer|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-light">
+                <i class="fas fa-info-circle me-2"></i>No hay preguntas disponibles en esta categoría.
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

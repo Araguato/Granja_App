@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-drumstick-bite me-2"></i>
+                {% trans "Alimentos" %}
+            </h1>
+            <p class="text-muted">{% trans "Gestión de alimentos para aves" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventario:registrar_consumo' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> {% trans "Registrar Consumo" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                {% trans "Inventario de Alimentos" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if alimentos %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Nombre" %}</th>
+                                <th>{% trans "Tipo" %}</th>
+                                <th>{% trans "Stock (kg)" %}</th>
+                                <th>{% trans "Precio ($/kg)" %}</th>
+                                <th>{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alimento in alimentos %}
+                                <tr>
+                                    <td>{{ alimento.nombre }}</td>
+                                    <td>
+                                        {% if alimento.tipo == 'INICIAL' %}
+                                            <span class="badge bg-info">{% trans "Inicial" %}</span>
+                                        {% elif alimento.tipo == 'CRECIMIENTO' %}
+                                            <span class="badge bg-warning">{% trans "Crecimiento" %}</span>
+                                        {% elif alimento.tipo == 'PRODUCCION' %}
+                                            <span class="badge bg-success">{% trans "Producción" %}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ alimento.tipo }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if alimento.stock_kg < 100 %}
+                                            <span class="text-danger fw-bold">{{ alimento.stock_kg }}</span>
+                                        {% else %}
+                                            {{ alimento.stock_kg }}
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ alimento.precio_kg }}</td>
+                                    <td>
+                                        <a href="{% url 'inventario:detalle_alimento' alimento.id %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> {% trans "Ver" %}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "No hay alimentos registrados actualmente." %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

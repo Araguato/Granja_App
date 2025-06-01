@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Dashboard - App Granja{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Encabezado del Dashboard -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Panel de Control</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="{% url 'produccion:lista_lotes' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-plus"></i> Nuevo Lote
+                </a>
+                <a href="{% url 'produccion:lista_galpones' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-plus"></i> Nuevo Galpón
+                </a>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                <i class="fas fa-calendar"></i> Esta semana
+            </button>
+        </div>
+    </div>
+
+    <!-- Tarjetas de estadísticas rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'produccion:lista_lotes' %}" class="text-decoration-none">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-layer-group stats-icon"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.total_lotes }}</div>
+                        <div class="stats-label">Lotes Totales</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'produccion:lista_lotes' %}?estado=ACTIVO" class="text-decoration-none">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle stats-icon text-success"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.lotes_activos }}</div>
+                        <div class="stats-label">Lotes Activos</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'inventario:lista_alimentos' %}" class="text-decoration-none">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-drumstick-bite stats-icon text-warning"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.total_alimentos }}</div>
+                        <div class="stats-label">Alimentos</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'inventario:lista_vacunas' %}" class="text-decoration-none">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-syringe stats-icon text-danger"></i>
+                        <div class="stats-number">{{ estadisticas.inventario.total_vacunas }}</div>
+                        <div class="stats-label">Vacunas</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Resto del contenido del dashboard... -->
+    
+</div>
+{% endblock %}

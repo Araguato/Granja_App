@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">{{ title }}</h1>
+    
+    <!-- Fila de tarjetas de resumen -->
+    <div class="row">
+        <!-- Tarjeta de Lotes Activos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Lotes Activos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ lotes_activos }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-kiwi-bird fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Tareas Pendientes -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Tareas Pendientes</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ tareas_pendientes }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila de alertas y notificaciones -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Alertas y Notificaciones</h6>
+                </div>
+                <div class="card-body">
+                    {% if alertas %}
+                        <div class="list-group">
+                            {% for alerta in alertas %}
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ alerta.titulo }}</h6>
+                                        <small>{{ alerta.fecha|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ alerta.mensaje }}</p>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">No hay alertas recientes.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Tareas Recientes</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-center text-muted">No hay tareas recientes.</p>
+                    <!-- Aquí iría la lista de tareas recientes -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Código JavaScript específico del dashboard del operario
+$(document).ready(function() {
+    // Inicialización de tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Actualización automática de datos
+    function actualizarDatos() {
+        // Aquí iría la lógica para actualizar los datos del dashboard
+        console.log('Actualizando datos del dashboard...');
+    }
+    
+    // Actualizar cada 5 minutos
+    setInterval(actualizarDatos, 300000);
+});
+</script>
+{% endblock %}

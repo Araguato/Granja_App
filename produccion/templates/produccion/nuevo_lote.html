@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-plus-circle me-2"></i>
+                {% trans "Nuevo Lote" %}
+            </h1>
+            <p class="text-muted">
+                {{ galpon.numero }} - {{ galpon.granja }}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/produccion/galpones/{{ galpon.id }}/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                {% trans "Formulario de Registro" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="loteForm">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="codigo" class="form-label">{% trans "Código" %}</label>
+                        <input type="text" class="form-control" id="codigo" name="codigo" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="raza" class="form-label">{% trans "Raza" %}</label>
+                        <select class="form-select" id="raza" name="raza" required>
+                            <option value="">{% trans "Seleccione una raza" %}</option>
+                            <option value="COBB 500">COBB 500</option>
+                            <option value="Ross 308">Ross 308</option>
+                            <option value="Hy-Line Brown">Hy-Line Brown</option>
+                            <option value="Lohmann Brown">Lohmann Brown</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="fecha_ingreso" class="form-label">{% trans "Fecha de Ingreso" %}</label>
+                        <input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" value="{{ fecha_actual|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cantidad_aves" class="form-label">{% trans "Cantidad de Aves" %}</label>
+                        <input type="number" class="form-control" id="cantidad_aves" name="cantidad_aves" min="1" max="{{ galpon.capacidad }}" required>
+                        <div class="form-text">{% trans "Capacidad máxima del galpón:" %} {{ galpon.capacidad }}</div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="edad_ingreso" class="form-label">{% trans "Edad al Ingreso (semanas)" %}</label>
+                        <input type="number" class="form-control" id="edad_ingreso" name="edad_ingreso" min="0" step="1" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">{% trans "Estado" %}</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="INICIAL">{% trans "Inicial" %}</option>
+                            <option value="CRECIMIENTO">{% trans "Crecimiento" %}</option>
+                            <option value="PRODUCCION">{% trans "Producción" %}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">{% trans "Observaciones" %}</label>
+                    <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "Todos los campos son obligatorios excepto las observaciones." %}
+                </div>
+                
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        {% trans "Cancelar" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% trans "Guardar" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validación del formulario
+        const form = document.getElementById('loteForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const codigo = document.getElementById('codigo').value;
+            const raza = document.getElementById('raza').value;
+            const cantidadAves = document.getElementById('cantidad_aves').value;
+            
+            if (!codigo || !raza || !cantidadAves) {
+                alert('{% trans "Por favor complete todos los campos obligatorios" %}');
+                return;
+            }
+            
+            // Validar que la cantidad de aves no supere la capacidad del galpón
+            const capacidadMaxima = {{ galpon.capacidad }};
+            if (parseInt(cantidadAves) > capacidadMaxima) {
+                alert(`{% trans "La cantidad de aves no puede superar la capacidad máxima del galpón (${capacidadMaxima})" %}`);
+                return;
+            }
+            
+            // Si todo está bien, enviar el formulario
+            this.submit();
+        });
+    });
+</script>
+{% endblock %}

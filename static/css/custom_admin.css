@@ -1,0 +1,197 @@
+/* Tema personalizado para la interfaz de administración de Django */
+
+/* Colores principales */
+:root {
+  --primary-color: #3498db;       /* Azul claro */
+  --secondary-color: #2ecc71;     /* Verde */
+  --accent-color: #f39c12;        /* Naranja */
+  --text-color: #2c3e50;          /* Azul oscuro */
+  --background-color: #ecf0f1;    /* Gris muy claro */
+  --link-color: #3498db;          /* Azul claro */
+  --link-hover-color: #2980b9;    /* Azul medio */
+  --header-color: #2c3e50;        /* Azul oscuro */
+  --selected-row: #d6eaf8;        /* Azul muy claro */
+  --button-color: #3498db;        /* Azul claro */
+  --button-hover-color: #2980b9;  /* Azul medio */
+  --error-color: #e74c3c;         /* Rojo */
+  --success-color: #2ecc71;       /* Verde */
+  --warning-color: #f39c12;       /* Naranja */
+  --menu-text-color: #FFFFFF;     /* Blanco para texto del menú */
+}
+
+/* Estilos generales */
+
+/* Mejorar el contraste del texto en el menú de navegación */
+#header {
+  color: var(--menu-text-color) !important;
+}
+
+/* Color del texto en el menú de aplicaciones */
+#header .module h2 {
+  color: var(--menu-text-color) !important;
+}
+
+/* Color del texto de los elementos del menú */
+#header .module ul li a {
+  color: var(--menu-text-color) !important;
+}
+
+/* Color del texto al pasar el cursor por encima */
+#header .module ul li a:hover {
+  color: var(--menu-text-color) !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Color del texto para elementos activos */
+#header .module ul li.selected a {
+  color: var(--menu-text-color) !important;
+  font-weight: bold;
+}
+
+/* Mejorar la visibilidad de los submenús */
+#header .module ul li ul li a {
+  color: var(--menu-text-color) !important;
+  padding-left: 20px !important;
+}
+
+/* Ajustar el contraste para los títulos de secciones */
+.app-avicola .module caption, 
+.app-produccion .module caption,
+.app-inventario .module caption,
+.app-ventas .module caption,
+.app-reportes .module caption,
+.app-wiki .module caption,
+.app-faq .module caption,
+.app-bot .module caption {
+  color: var(--menu-text-color) !important;
+}
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Cabecera */
+#header {
+  background-color: var(--header-color);
+  color: white;
+}
+
+#header a:link, #header a:visited {
+  color: white;
+}
+
+#header a:hover {
+  color: var(--accent-color);
+}
+
+/* Barra lateral */
+.module h2, .module caption, .inline-group h2 {
+  background-color: var(--primary-color);
+}
+
+div.breadcrumbs {
+  background-color: var(--secondary-color);
+}
+
+/* Enlaces */
+a:link, a:visited {
+  color: var(--link-color);
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* Botones */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  background-color: var(--button-color);
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover {
+  background-color: var(--button-hover-color);
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+  background-color: var(--secondary-color);
+}
+
+.button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover {
+  background-color: #27ae60;
+}
+
+/* Mensajes */
+.errornote {
+  background-color: var(--error-color);
+}
+
+.success {
+  background-color: var(--success-color);
+}
+
+.warning {
+  background-color: var(--warning-color);
+}
+
+/* Tablas */
+thead th {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+tr.row1 {
+  background-color: #f8f9fa;
+}
+
+tr.row2 {
+  background-color: #e9ecef;
+}
+
+.row1:hover, .row2:hover {
+  background-color: var(--selected-row);
+}
+
+/* Formularios */
+.form-row {
+  border-bottom: 1px solid #ddd;
+}
+
+fieldset.collapsed h2 {
+  background-color: var(--primary-color);
+}
+
+/* Dashboard */
+.dashboard .module table th {
+  background-color: var(--primary-color);
+}
+
+.dashboard .module table td a {
+  color: var(--link-color);
+}
+
+/* Selector de fecha/hora */
+.calendarbox, .clockbox {
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.calendar caption, .calendarbox h2 {
+  background-color: var(--primary-color);
+}
+
+.calendar td a:hover, .timelist a:hover {
+  background-color: var(--selected-row);
+}
+
+/* Personalización específica para App_Granja */
+.dashboard .module h2 {
+  background-color: var(--primary-color);
+}
+
+.object-tools a {
+  background-color: var(--secondary-color);
+}
+
+.object-tools a:hover {
+  background-color: #27ae60;
+}

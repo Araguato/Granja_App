@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-key me-2"></i>
+                {% trans "Verificar Permisos de Grupo" %}: {{ grupo.name }}
+            </h1>
+            <p class="text-muted">
+                {% trans "Esta herramienta le permite verificar y configurar los permisos necesarios para el grupo de usuarios seleccionado." %}
+            </p>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    {% trans "Grupo" %}: {{ grupo.name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "Seleccione los permisos que desea otorgar a este grupo. Los cambios afectarán a todos los usuarios que pertenecen al grupo." %}
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>{% trans "Modelo" %}</th>
+                                <th class="text-center">{% trans "Ver" %}</th>
+                                <th class="text-center">{% trans "Añadir" %}</th>
+                                <th class="text-center">{% trans "Editar" %}</th>
+                                <th class="text-center">{% trans "Eliminar" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for modelo in permisos_por_modelo %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ modelo.nombre }}</strong>
+                                        <small class="text-muted d-block">{{ modelo.app }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if modelo.permisos.ver %}
+                                            <div class="form-check d-flex justify-content-center">
+                                                <input class="form-check-input" type="checkbox" name="permisos" value="{{ modelo.permisos.ver.id }}" id="ver_{{ modelo.permisos.ver.id }}" {% if modelo.asignados.ver %}checked{% endif %}>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if modelo.permisos.anadir %}
+                                            <div class="form-check d-flex justify-content-center">
+                                                <input class="form-check-input" type="checkbox" name="permisos" value="{{ modelo.permisos.anadir.id }}" id="anadir_{{ modelo.permisos.anadir.id }}" {% if modelo.asignados.anadir %}checked{% endif %}>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if modelo.permisos.cambiar %}
+                                            <div class="form-check d-flex justify-content-center">
+                                                <input class="form-check-input" type="checkbox" name="permisos" value="{{ modelo.permisos.cambiar.id }}" id="cambiar_{{ modelo.permisos.cambiar.id }}" {% if modelo.asignados.cambiar %}checked{% endif %}>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if modelo.permisos.eliminar %}
+                                            <div class="form-check d-flex justify-content-center">
+                                                <input class="form-check-input" type="checkbox" name="permisos" value="{{ modelo.permisos.eliminar.id }}" id="eliminar_{{ modelo.permisos.eliminar.id }}" {% if modelo.asignados.eliminar %}checked{% endif %}>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                    <a href="{% url 'admin:auth_group_changelist' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> {% trans "Volver a Grupos" %}
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-1"></i> {% trans "Guardar Cambios" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                {% trans "Información Adicional" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <h6>{% trans "Tipos de Permisos" %}:</h6>
+            <ul>
+                <li><strong>{% trans "Ver" %}:</strong> {% trans "Permite visualizar los registros." %}</li>
+                <li><strong>{% trans "Añadir" %}:</strong> {% trans "Permite crear nuevos registros." %}</li>
+                <li><strong>{% trans "Editar" %}:</strong> {% trans "Permite modificar registros existentes." %}</li>
+                <li><strong>{% trans "Eliminar" %}:</strong> {% trans "Permite eliminar registros." %}</li>
+            </ul>
+            
+            <h6>{% trans "Recomendaciones" %}:</h6>
+            <ul>
+                <li>{% trans "Para usuarios de solo lectura, asigne únicamente permisos de 'Ver'." %}</li>
+                <li>{% trans "Para operadores, asigne permisos de 'Ver', 'Añadir' y 'Editar', pero no 'Eliminar'." %}</li>
+                <li>{% trans "Para supervisores, considere asignar todos los permisos." %}</li>
+                <li>{% trans "Los administradores tienen acceso completo independientemente de estos permisos." %}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

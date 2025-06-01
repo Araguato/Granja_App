@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "empresa_nombre": "Granja de Prueba",
+    "encargado_nombre": "",
+    "codigo_granja": "Z001",
+    "nombre": "Zuata Centro",
+    "direccion": "Andres Eloy Blanco 10",
+    "ubicacion_geografica": "",
+    "telefono": "04124945403",
+    "capacidad_total_aves": 30000,
+    "estado": "ACTIVA",
+    "empresa": 1,
+    "encargado": null
+  }
+]

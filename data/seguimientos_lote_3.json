@@ -1,0 +1,16 @@
+[
+  {
+    "fecha": "2025-05-22",
+    "peso_promedio": 3500,
+    "consumo_alimento": 53.0,
+    "mortalidad": 8,
+    "observaciones": ""
+  },
+  {
+    "fecha": "2025-05-22",
+    "peso_promedio": 3750,
+    "consumo_alimento": 50.0,
+    "mortalidad": 11,
+    "observaciones": ""
+  }
+]

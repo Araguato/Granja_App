@@ -1,0 +1,56 @@
+# Core Django
+Django==5.2.1
+asgiref==3.8.1
+sqlparse==0.4.4
+tzdata==2025.2
+psycopg2-binary==2.9.9
+
+# Django Extensions
+django-extensions==3.2.3
+
+# REST Framework
+djangorestframework==3.16.0
+djangorestframework-simplejwt==5.3.1
+PyJWT==2.8.0
+
+# Django Packages
+django-crispy-forms==2.1
+django-filter==25.1
+django-cors-headers==4.3.1
+django-summernote==0.8.20.0
+markdown==3.5.2
+
+# Development Tools
+ipython==8.12.3
+matplotlib-inline==0.1.6
+parso==0.8.3
+prompt-toolkit==3.0.43
+Pygments==2.17.2
+stack-data==0.6.3
+traitlets==5.14.2
+wcwidth==0.2.13
+asttokens==2.4.1
+executing==2.0.1
+decorator==5.1.1
+
+# HTTP/Networking
+requests==2.31.0
+urllib3==2.2.1
+idna==3.10
+certifi==2025.4.26
+charset-normalizer==3.4.2
+
+# Utilities
+python-dotenv==1.0.1
+qrcode==7.4.2
+colorama==0.4.6
+
+# Image Processing
+Pillow==10.4.0
+
+# GUI packages (commented out by default as they're not typically needed in production)
+# PyQt5==5.15.11
+# PyQt5-Qt5==5.15.2
+# PyQt5_sip==12.17.0
+# PyQtChart==5.15.7
+# PyQtChart-Qt5==5.15.2

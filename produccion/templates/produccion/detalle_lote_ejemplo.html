@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-layer-group me-2"></i>
+                {% trans "Detalle de Lote" %}: {{ lote.codigo }}
+            </h1>
+            <p class="text-muted">
+                {{ lote.galpon }} - {{ lote.raza }} - 
+                {% if lote.estado == 'PRODUCCION' %}
+                    <span class="badge bg-success">{% trans "Producción" %}</span>
+                {% elif lote.estado == 'CRECIMIENTO' %}
+                    <span class="badge bg-warning">{% trans "Crecimiento" %}</span>
+                {% else %}
+                    <span class="badge bg-info">{% trans "Levante" %}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/produccion/lotes/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+            <a href="/produccion/lotes/{{ lote_ejemplo.id }}/editar/" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> {% trans "Editar" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% trans "Información General" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Código:" %}</div>
+                        <div class="col-md-7">{{ lote.codigo }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Galpón:" %}</div>
+                        <div class="col-md-7">{{ lote.galpon }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Raza:" %}</div>
+                        <div class="col-md-7">{{ lote.raza }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Edad:" %}</div>
+                        <div class="col-md-7">{{ lote.edad_semanas }} {% trans "semanas" %}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Aves:" %}</div>
+                        <div class="col-md-7">{{ lote.cantidad_aves }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Estado:" %}</div>
+                        <div class="col-md-7">
+                            {% if lote.estado == 'PRODUCCION' %}
+                                <span class="badge bg-success">{% trans "Producción" %}</span>
+                            {% elif lote.estado == 'CRECIMIENTO' %}
+                                <span class="badge bg-warning">{% trans "Crecimiento" %}</span>
+                            {% else %}
+                                <span class="badge bg-info">{% trans "Levante" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        {% trans "Estadísticas" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">{% trans "Peso Promedio" %}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="text-center">{{ lote.peso_promedio }} g</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">{% trans "Mortalidad Acumulada" %}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="text-center">{{ lote.mortalidad_acumulada }}%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if lote.estado == 'PRODUCCION' %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">{% trans "Producción Diaria" %}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="text-center">{{ lote.produccion_diaria }} {% trans "huevos" %}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">{% trans "Conversión Alimenticia" %}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="text-center">{{ lote.conversion_alimenticia }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-clipboard-check me-2"></i>
+                {% trans "Seguimiento Diario" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Fecha" %}</th>
+                            <th>{% trans "Peso Promedio (g)" %}</th>
+                            <th>{% trans "Consumo Alimento (kg)" %}</th>
+                            <th>{% trans "Mortalidad" %}</th>
+                            {% if lote.estado == 'PRODUCCION' %}
+                            <th>{% trans "Producción Huevos" %}</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seguimiento in seguimientos %}
+                            <tr>
+                                <td>{{ seguimiento.fecha|date:"d/m/Y" }}</td>
+                                <td>{{ seguimiento.peso_promedio }}</td>
+                                <td>{{ seguimiento.consumo_alimento }}</td>
+                                <td>{{ seguimiento.mortalidad }}</td>
+                                {% if lote.estado == 'PRODUCCION' %}
+                                <td>{{ seguimiento.produccion_huevos }}</td>
+                                {% endif %}
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="{% if lote.estado == 'PRODUCCION' %}5{% else %}4{% endif %}" class="text-center">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {% trans "No hay registros de seguimiento para este lote." %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="text-end mt-3">
+                <a href="/inventario/seguimiento/nuevo/{{ lote_ejemplo.id }}/" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-1"></i> {% trans "Nuevo Seguimiento" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

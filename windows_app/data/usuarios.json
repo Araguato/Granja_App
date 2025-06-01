@@ -1,0 +1,26 @@
+[
+  {
+    "id": 3,
+    "username": "maria",
+    "email": "",
+    "first_name": "Maria",
+    "last_name": "Suerte",
+    "is_active": true
+  },
+  {
+    "id": 2,
+    "username": "Pepe",
+    "email": "",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true
+  },
+  {
+    "id": 1,
+    "username": "thomas",
+    "email": "schiwatsch@hotmail.com",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true
+  }
+]

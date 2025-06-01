@@ -1,0 +1,71 @@
+/* Estilos para la administración de Seguimiento Diario */
+
+/* Resaltar el tipo de seguimiento */
+.field-tipo_seguimiento select {
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+/* Estilos para los diferentes tipos de seguimiento */
+.field-tipo_seguimiento select option[value="PRODUCCION"] {
+    background-color: #e8f5e9;
+}
+
+.field-tipo_seguimiento select option[value="ENGORDE"] {
+    background-color: #fff8e1;
+}
+
+.field-tipo_seguimiento select option[value="MIXTO"] {
+    background-color: #e3f2fd;
+}
+
+/* Mejorar visualización de los fieldsets */
+.module h2 {
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 4px 4px 0 0;
+    border-bottom: 2px solid #eaeaea;
+}
+
+/* Destacar campos importantes */
+.field-peso_promedio_ave input,
+.field-consumo_alimento_kg input,
+.field-mortalidad input,
+.field-huevos_totales input {
+    font-weight: bold;
+    background-color: #f9f9f9;
+}
+
+/* Mejorar visualización de los inline forms */
+.inline-related h3 {
+    background: #f0f0f0;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Estilos para los campos de engorde */
+#seguimientoengorde_set-group .form-row {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+#seguimientoengorde_set-group .form-row:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Mejorar visualización de las observaciones */
+.field-observaciones textarea,
+.field-observaciones_engorde textarea {
+    min-height: 100px;
+    width: 90%;
+}
+
+/* Estilos para los campos de ambiente */
+.field-temperatura_min input,
+.field-temperatura_max input,
+.field-humedad input {
+    width: 80px;
+}

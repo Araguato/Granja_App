@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="display-4">{% trans 'Bienvenido al Sistema Avícola' %}</h1>
+            <p class="lead">{% trans 'Gestión integral para su granja avícola' %}</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        {% if user.is_authenticated %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{% trans 'Acciones Rápidas' %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <a href="{% url 'produccion:lista_galpones' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-warehouse me-2"></i>{% trans 'Ver Galpones' %}
+                            </a>
+                            <a href="{% url 'produccion:lista_lotes' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-egg me-2"></i>{% trans 'Ver Lotes' %}
+                            </a>
+                            <a href="{% url 'avicola:avicola_reportes' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-chart-bar me-2"></i>{% trans 'Ver Reportes' %}
+                            </a>
+                            {% if user.is_staff %}
+                                <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-cog me-2"></i>{% trans 'Administración' %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">{% trans 'Estado del Sistema' %}</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {% trans 'Usuario' %}
+                                <span class="badge bg-primary rounded-pill">{{ user.username }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {% trans 'Rol' %}
+                                {% if user.is_superuser %}
+                                    <span class="badge bg-danger rounded-pill">{% trans 'Administrador' %}</span>
+                                {% elif user.is_staff %}
+                                    <span class="badge bg-warning text-dark rounded-pill">{% trans 'Supervisor' %}</span>
+                                {% else %}
+                                    <span class="badge bg-info text-dark rounded-pill">{% trans 'Operario' %}</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <h4>{% trans 'Inicie sesión para continuar' %}</h4>
+                    <p class="mb-0">
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>{% trans 'Iniciar Sesión' %}
+                        </a>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

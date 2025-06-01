@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Eliminar Respaldo - App Granja{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-trash me-2"></i>Eliminar Respaldo</h1>
+        <p class="lead">Eliminar un respaldo del sistema.</p>
+        <div class="mb-3">
+            <a href="{% url 'respaldos:backup_detail' backup.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Volver a Detalles
+            </a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-exclamation-triangle me-2 text-danger"></i>Confirmación de Eliminación
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <h5><i class="fas fa-exclamation-triangle me-2"></i>¡Advertencia!</h5>
+                    <p>Estás a punto de eliminar el respaldo <strong>{{ backup.name }}</strong>.</p>
+                    <p>Esta acción eliminará tanto el registro en la base de datos como el archivo físico del respaldo. Esta acción no se puede deshacer.</p>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle me-2"></i>Información del Respaldo
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Nombre:</span>
+                                <strong>{{ backup.name }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tipo:</span>
+                                <strong>{{ backup.get_backup_type_display }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Fecha de Creación:</span>
+                                <strong>{{ backup.created_at|date:"d/m/Y H:i" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tamaño:</span>
+                                <strong>{{ backup.size_in_mb }} MB</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Archivo:</span>
+                                <strong>
+                                    {% if backup.file_exists %}
+                                    <i class="fas fa-check-circle text-success me-1"></i>{{ backup.file_name }}
+                                    {% else %}
+                                    <i class="fas fa-times-circle text-danger me-1"></i>Archivo no encontrado
+                                    {% endif %}
+                                </strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Confirmar Eliminación
+                        </button>
+                        <a href="{% url 'respaldos:backup_detail' backup.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

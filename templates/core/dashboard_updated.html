@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">{{ title }}</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Panel de Control</li>
+    </ol>
+
+    {% if estadisticas %}
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">{{ estadisticas.total_lotes|default:"0" }}</h5>
+                            <span>Lotes Totales</span>
+                        </div>
+                        <i class="fas fa-egg fa-2x text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'avicola:listar_lotes' %}">Ver Detalles</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">{{ estadisticas.lotes_activos|default:"0" }}</h5>
+                            <span>Lotes Activos</span>
+                        </div>
+                        <i class="fas fa-chicken fa-2x text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'avicola:listar_galpones' %}">Ver Galpones</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">{{ estadisticas.produccion_total|default:"0" }}</h5>
+                            <span>Huevos Hoy</span>
+                        </div>
+                        <i class="fas fa-egg fa-2x text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'avicola:seguimientos_recientes' %}">Ver Producción</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">{{ estadisticas.mortalidad_hoy|default:"0" }}</h5>
+                            <span>Mortalidad Hoy</span>
+                        </div>
+                        <i class="fas fa-skull fa-2x text-white-50"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'avicola:reportes' %}">Ver Reportes</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-area me-1"></i>
+                    Producción Semanal
+                </div>
+                <div class="card-body"><canvas id="produccionChart" width="100%" height="40"></canvas></div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie me-1"></i>
+                    Distribución por Tipo
+                </div>
+                <div class="card-body"><canvas id="distribucionChart" width="100%" height="40"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Actividad Reciente
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Acción</th>
+                            <th>Usuario</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for actividad in estadisticas.actividades_recientes|slice:":5" %}
+                        <tr>
+                            <td>{{ actividad.fecha|date:"d/m/Y H:i" }}</td>
+                            <td>{{ actividad.accion }}</td>
+                            <td>{{ actividad.usuario.get_full_name|default:actividad.usuario.username }}</td>
+                            <td>{{ actividad.detalles }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No hay actividades recientes</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        No hay datos disponibles para mostrar en el dashboard. Por favor, verifique la conexión con la base de datos.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Producción semanal
+var ctx = document.getElementById('produccionChart').getContext('2d');
+var produccionChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ estadisticas.semanas|safe|default:"[]" }},
+        datasets: [{
+            label: 'Huevos',
+            data: {{ estadisticas.produccion_semanal|default:"[]" }},
+            borderColor: 'rgba(78, 115, 223, 1)',
+            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Distribución por tipo
+var ctx2 = document.getElementById('distribucionChart').getContext('2d');
+var distribucionChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: {{ estadisticas.tipos_huevo|safe|default:"[]" }},
+        datasets: [{
+            data: {{ estadisticas.distribucion_tipos|default:"[]" }},
+            backgroundColor: [
+                'rgba(54, 185, 204, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(153, 102, 255, 0.7)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

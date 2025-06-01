@@ -1,0 +1,32 @@
+.menu {
+    background: #417690;
+    padding: 10px;
+}
+
+.menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.menu li {
+    position: relative;
+    margin-right: 20px;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+}
+
+.menu li ul {
+    display: none;
+    position: absolute;
+    background: #79aec8;
+    padding: 10px;
+}
+
+.menu li:hover ul {
+    display: block;
+}

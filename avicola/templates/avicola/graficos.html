@@ -1,0 +1,190 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if LANGUAGE_CODE == 'en' %}Charts and Statistics{% else %}Gráficos y Estadísticas{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css" rel="stylesheet">
+<style>
+    .chart-container {
+        position: relative;
+        margin: 20px 0;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .chart-title {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        color: #2c3e50;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chart-pie me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Charts and Statistics{% else %}Gráficos y Estadísticas{% endif %}
+        </h1>
+    </div>
+
+    <!-- Gráfico de Producción de Huevos -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-egg me-2"></i>
+                {% if LANGUAGE_CODE == 'en' %}Egg Production (Last 30 Days){% else %}Producción de Huevos (Últimos 30 días){% endif %}
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="produccionHuevosChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Mortalidad -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-skull me-2"></i>
+                {% if LANGUAGE_CODE == 'en' %}Mortality (Last 30 Days){% else %}Mortalidad (Últimos 30 días){% endif %}
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="mortalidadChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Consumo de Alimento -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-utensils me-2"></i>
+                {% if LANGUAGE_CODE == 'en' %}Food Consumption (Last 30 Days){% else %}Consumo de Alimento (Últimos 30 días){% endif %}
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="consumoAlimentoChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+    // Parsear los datos de los gráficos
+    const datosGraficos = JSON.parse('{{ datos_graficos|escapejs }}');
+    
+    // Configuración común para todos los gráficos
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        scales: {
+            x: {
+                display: true,
+                title: {
+                    display: true,
+                    text: '{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}'
+                }
+            },
+            y: {
+                display: true,
+                beginAtZero: true
+            }
+        }
+    };
+
+    // Gráfico de Producción de Huevos
+    if (document.getElementById('produccionHuevosChart')) {
+        const ctx = document.getElementById('produccionHuevosChart').getContext('2d');
+        const fechas = datosGraficos.produccion_huevos.map(item => item.fecha);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: fechas,
+                datasets: [
+                    {
+                        label: '{% if LANGUAGE_CODE == 'en' %}Total Eggs{% else %}Huevos Totales{% endif %}',
+                        data: datosGraficos.produccion_huevos.map(item => item.total),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: '{% if LANGUAGE_CODE == 'en' %}Broken Eggs{% else %}Huevos Rotos{% endif %}',
+                        data: datosGraficos.produccion_huevos.map(item => item.rotos),
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: '{% if LANGUAGE_CODE == 'en' %}Dirty Eggs{% else %}Huevos Sucios{% endif %}',
+                        data: datosGraficos.produccion_huevos.map(item => item.sucios),
+                        borderColor: 'rgb(255, 206, 86)',
+                        tension: 0.1,
+                        fill: false
+                    }
+                ]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Gráfico de Mortalidad
+    if (document.getElementById('mortalidadChart')) {
+        const ctx = document.getElementById('mortalidadChart').getContext('2d');
+        const fechas = datosGraficos.mortalidad.map(item => item.fecha);
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: fechas,
+                datasets: [{
+                    label: '{% if LANGUAGE_CODE == 'en' %}Deaths{% else %}Muertes{% endif %}',
+                    data: datosGraficos.mortalidad.map(item => item.muertes),
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Gráfico de Consumo de Alimento
+    if (document.getElementById('consumoAlimentoChart')) {
+        const ctx = document.getElementById('consumoAlimentoChart').getContext('2d');
+        const fechas = datosGraficos.consumo_alimento.map(item => item.fecha);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: fechas,
+                datasets: [{
+                    label: '{% if LANGUAGE_CODE == 'en' %}Food Consumption (kg){% else %}Consumo de Alimento (kg){% endif %}',
+                    data: datosGraficos.consumo_alimento.map(item => item.kg),
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+    }
+</script>
+{% endblock %}

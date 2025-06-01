@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+    <style>
+        /* Custom CSS for admin interface */
+        .app-avicola {
+            order: 1;
+        }
+        .app-produccion {
+            order: 2;
+        }
+        .app-ventas {
+            order: 3;
+        }
+        .app-reportes {
+            order: 4;
+        }
+        .app-auth {
+            order: 5;
+        }
+        /* Push all other apps to the bottom */
+        #content-main > div:not(.app-avicol):not(.app-produccion):not(.app-ventas):not(.app-reportes):not(.app-auth) {
+            order: 10;
+        }
+        #content-main {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+{% endblock %}
+
+{% block nav-global %}
+    {{ block.super }}
+    <script>
+        // Reorder apps after the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentMain = document.getElementById('content-main');
+            if (contentMain) {
+                // Create an array of app divs
+                const apps = Array.from(contentMain.children);
+                
+                // Sort the apps based on our custom order
+                const appOrder = ['avicola', 'produccion', 'ventas', 'reportes', 'auth'];
+                
+                apps.sort((a, b) => {
+                    const aClass = Array.from(a.classList).find(cls => cls.startsWith('app-'));
+                    const bClass = Array.from(b.classList).find(cls => cls.startsWith('app-'));
+                    
+                    if (!aClass || !bClass) return 0;
+                    
+                    const aApp = aClass.replace('app-', '');
+                    const bApp = bClass.replace('app-', '');
+                    
+                    const aIndex = appOrder.indexOf(aApp);
+                    const bIndex = appOrder.indexOf(bApp);
+                    
+                    if (aIndex === -1 && bIndex === -1) return 0;
+                    if (aIndex === -1) return 1;
+                    if (bIndex === -1) return -1;
+                    
+                    return aIndex - bIndex;
+                });
+                
+                // Re-append the sorted apps
+                apps.forEach(app => contentMain.appendChild(app));
+            }
+        });
+    </script>
+{% endblock %}

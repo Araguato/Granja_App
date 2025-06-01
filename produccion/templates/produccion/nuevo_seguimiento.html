@@ -1,0 +1,154 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'avicola:dashboard_operario' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'produccion:lista_lotes' %}">Lotes</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Nuevo Seguimiento</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-6">
+                <i class="fas fa-clipboard-check me-2"></i>Nuevo Seguimiento Diario
+            </h1>
+            <p class="lead">Complete el formulario para registrar un nuevo seguimiento diario</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Datos del Seguimiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="lote" class="form-label">Lote <span class="text-danger">*</span></label>
+                            <select class="form-select" id="lote" name="lote" required>
+                                <option value="" selected disabled>Seleccione un lote</option>
+                                {% for lote in lotes_activos %}
+                                    <option value="{{ lote.id }}">
+                                        {{ lote.codigo_lote }} - {{ lote.galpon.numero_galpon }} ({{ lote.raza.nombre }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha" class="form-label">Fecha <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="fecha" name="fecha" 
+                                       value="{% now 'Y-m-d' %}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="huevos_totales" class="form-label">Huevos Totales <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="huevos_totales" name="huevos_totales" 
+                                       min="0" step="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="huevos_comercializables" class="form-label">Huevos Comercializables</label>
+                                <input type="number" class="form-control" id="huevos_comercializables" 
+                                       name="huevos_comercializables" min="0" step="1">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="huevos_incubables" class="form-label">Huevos Incubables</label>
+                                <input type="number" class="form-control" id="huevos_incubables" 
+                                       name="huevos_incubables" min="0" step="1">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="mortalidad" class="form-label">Mortalidad</label>
+                                <input type="number" class="form-control" id="mortalidad" 
+                                       name="mortalidad" min="0" step="1">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="peso_promedio" class="form-label">Peso Promedio (g)</label>
+                                <input type="number" class="form-control" id="peso_promedio" 
+                                       name="peso_promedio" min="0" step="0.01">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" 
+                                     rows="3"></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'produccion:lista_lotes' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Guardar Seguimiento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Validación del formulario
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Validar que se haya seleccionado un lote
+            const loteSelect = document.getElementById('lote');
+            if (!loteSelect.value) {
+                isValid = false;
+                errorMessage = 'Por favor seleccione un lote';
+            }
+            
+            // Validar que la fecha no sea futura
+            const fechaInput = document.getElementById('fecha');
+            const fechaSeleccionada = new Date(fechaInput.value);
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            if (fechaSeleccionada > hoy) {
+                isValid = false;
+                errorMessage = 'La fecha no puede ser futura';
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+                alert(errorMessage);
+            }
+        });
+        
+        // Calcular automáticamente los huevos comercializables si no se han ingresado
+        const huevosTotales = document.getElementById('huevos_totales');
+        const huevosComercializables = document.getElementById('huevos_comercializables');
+        
+        if (huevosTotales && huevosComercializables) {
+            huevosTotales.addEventListener('change', function() {
+                if (!huevosComercializables.value) {
+                    huevosComercializables.value = this.value;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

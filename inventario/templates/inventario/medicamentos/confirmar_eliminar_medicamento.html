@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="text-center font-weight-light my-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Confirmar Eliminación
+                    </h3>
+                </div>
+                <div class="card-body text-center py-4">
+                    <div class="mb-4">
+                        <i class="fas fa-trash-alt fa-5x text-danger mb-3"></i>
+                        <h4 class="text-gray-800 mb-3">¿Está seguro de eliminar este medicamento?</h4>
+                        <p class="mb-1">Está a punto de eliminar el siguiente medicamento:</p>
+                        <h5 class="font-weight-bold text-primary">{{ medicamento.nombre }}</h5>
+                        
+                        <div class="alert alert-warning mt-4 mb-4">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <strong>¡Atención!</strong> Esta acción no se puede deshacer. 
+                            {% if medicamento.aplicaciones.exists %}
+                                <br>Se eliminarán también todas las aplicaciones registradas ({{ medicamento.aplicaciones.count }} en total).
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row justify-content-center mt-4">
+                            <div class="col-md-8">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Stock Actual</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    {{ medicamento.stock }} {{ medicamento.unidad_medida }}
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center">
+                            <a href="{% url 'inventario:detalle_medicamento' medicamento.id %}" 
+                               class="btn btn-secondary btn-icon-split mr-3">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                                <span class="text">Cancelar y Volver</span>
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                                <span class="text">Sí, Eliminar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Deshabilitar el botón de retroceso del navegador
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+        history.go(1);
+    };
+    
+    // Mostrar confirmación antes de enviar el formulario
+    $(document).ready(function() {
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            
+            Swal.fire({
+                title: '¿Está completamente seguro?',
+                text: 'Esta acción no se puede deshacer. ¿Desea continuar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74a3b',
+                cancelButtonColor: '#858796',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si confirma, enviar el formulario
+                    this.submit();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

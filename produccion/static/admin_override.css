@@ -1,0 +1,50 @@
+/* Override admin interface colors for better readability */
+body {
+    color: #333 !important;
+}
+
+/* Fix link colors */
+a, a:link, a:visited {
+    color: #447e9b !important;
+}
+
+/* Fix header and branding */
+#header {
+    background: #417690 !important;
+    color: #fff !important;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+    color: #fff !important;
+}
+
+/* Fix sidebar */
+#content-main .module {
+    background: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+}
+
+/* Fix form fields */
+input[type="text"], input[type="password"], input[type="email"], 
+input[type="url"], input[type="number"], input[type="tel"], 
+textarea, select, .vTextField {
+    border: 1px solid #ccc !important;
+    padding: 5px !important;
+    color: #333 !important;
+}
+
+/* Fix table text */
+#result_list th, #result_list td {
+    color: #333 !important;
+}
+
+/* Fix field labels */
+label {
+    color: #333 !important;
+}
+
+/* Fix help text */
+.help, .help-tooltip {
+    color: #666 !important;
+}

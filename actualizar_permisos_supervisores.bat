@@ -1,0 +1,6 @@
+@echo off
+echo Actualizando permisos de supervisores...
+python actualizar_permisos_supervisores.py
+echo.
+echo Presione cualquier tecla para continuar...
+pause > nul

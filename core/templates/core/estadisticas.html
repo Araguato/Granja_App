@@ -1,0 +1,391 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Estadísticas - App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        transition: all 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .stats-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .period-selector {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-chart-line me-2"></i>Estadísticas</h1>
+        <p class="lead">Análisis detallado de la producción, mortalidad, ventas e inventario de tu granja.</p>
+        <hr>
+    </div>
+</div>
+
+<!-- Tarjetas de estadísticas rápidas -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stats-card text-center">
+            <div class="card-body">
+                <i class="fas fa-layer-group stats-icon"></i>
+                <div class="stats-number">{{ estadisticas.inventario.total_lotes }}</div>
+                <div class="stats-label">Lotes Totales</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stats-card text-center">
+            <div class="card-body">
+                <i class="fas fa-check-circle stats-icon text-success"></i>
+                <div class="stats-number">{{ estadisticas.inventario.lotes_activos }}</div>
+                <div class="stats-label">Lotes Activos</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stats-card text-center">
+            <div class="card-body">
+                <i class="fas fa-drumstick-bite stats-icon text-warning"></i>
+                <div class="stats-number">{{ estadisticas.inventario.total_alimentos }}</div>
+                <div class="stats-label">Alimentos</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stats-card text-center">
+            <div class="card-body">
+                <i class="fas fa-syringe stats-icon text-danger"></i>
+                <div class="stats-number">{{ estadisticas.inventario.total_vacunas }}</div>
+                <div class="stats-label">Vacunas</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Producción -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0"><i class="fas fa-egg me-2"></i>Producción de Huevos</h3>
+    </div>
+    <div class="card-body">
+        {% if estadisticas.produccion.datos %}
+        <div class="chart-container">
+            <canvas id="produccionChart"></canvas>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No hay datos de producción disponibles. Registra seguimientos diarios para ver estadísticas.
+        </div>
+        {% endif %}
+        <div class="mt-3">
+            <a href="{% url 'admin:produccion_seguimientodiario_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nuevo Seguimiento
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Mortalidad -->
+<div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+        <h3 class="mb-0"><i class="fas fa-skull me-2"></i>Mortalidad</h3>
+    </div>
+    <div class="card-body">
+        {% if estadisticas.mortalidad.datos %}
+        <div class="chart-container">
+            <canvas id="mortalidadChart"></canvas>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No hay datos de mortalidad disponibles. Registra seguimientos diarios para ver estadísticas.
+        </div>
+        {% endif %}
+        <div class="mt-3">
+            <a href="{% url 'admin:produccion_mortalidaddiaria_add' %}" class="btn btn-danger">
+                <i class="fas fa-plus me-1"></i>Registrar Mortalidad
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Engorde -->
+<div class="card mb-4">
+    <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+        <h3 class="mb-0"><i class="fas fa-drumstick-bite me-2"></i>Estadísticas de Engorde</h3>
+        <a href="{% static 'docs/guia_eficiencia_nutricional.md' %}" target="_blank" class="btn btn-sm btn-info">
+            <i class="fas fa-info-circle"></i> Guía de Eficiencia Nutricional
+        </a>
+    </div>
+    <div class="card-body">
+        {% if estadisticas.engorde.datos_peso %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>Las estadísticas de engorde ahora incluyen métricas de eficiencia energética y proteica. Consulta la guía para más información.
+        </div>
+        <div class="chart-container">
+            <canvas id="engordeChart"></canvas>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No hay datos de engorde disponibles. Registra seguimientos de engorde para ver estadísticas.
+        </div>
+        {% endif %}
+        <div class="mt-3">
+            <a href="{% url 'admin:produccion_seguimientoengorde_changelist' %}" class="btn btn-warning">
+                <i class="fas fa-list me-1"></i>Ver Registros de Engorde
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de Ventas -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Ventas</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                {% if estadisticas.ventas.datos %}
+                <div class="chart-container">
+                    <canvas id="ventasChart"></canvas>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay datos de ventas disponibles. Registra ventas para ver estadísticas.
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if estadisticas.tipos_huevo.datos %}
+                <div class="chart-container">
+                    <canvas id="tiposHuevoChart"></canvas>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay datos de tipos de huevo disponibles.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-3">
+            <a href="{% url 'admin:ventas_venta_add' %}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Nueva Venta
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Configuración de colores
+    const primaryColor = '#4caf50';
+    const secondaryColor = '#ff9800';
+    const dangerColor = '#f44336';
+    const infoColor = '#2196f3';
+    const warningColor = '#ffeb3b';
+    const successColor = '#8bc34a';
+    
+    // Función para crear gráficos
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gráfico de Producción
+        {% if estadisticas.produccion.datos %}
+        const produccionCtx = document.getElementById('produccionChart').getContext('2d');
+        new Chart(produccionCtx, {
+            type: 'line',
+            data: {
+                labels: {{ estadisticas.produccion.labels|safe }},
+                datasets: [{
+                    label: 'Huevos producidos',
+                    data: {{ estadisticas.produccion.datos|safe }},
+                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    borderColor: primaryColor,
+                    borderWidth: 2,
+                    tension: 0.1,
+                    pointBackgroundColor: primaryColor
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        {% endif %}
+        
+        // Gráfico de Mortalidad
+        {% if estadisticas.mortalidad.datos %}
+        const mortalidadCtx = document.getElementById('mortalidadChart').getContext('2d');
+        new Chart(mortalidadCtx, {
+            type: 'line',
+            data: {
+                labels: {{ estadisticas.mortalidad.labels|safe }},
+                datasets: [{
+                    label: 'Mortalidad',
+                    data: {{ estadisticas.mortalidad.datos|safe }},
+                    backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                    borderColor: dangerColor,
+                    borderWidth: 2,
+                    tension: 0.1,
+                    pointBackgroundColor: dangerColor
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        {% endif %}
+        
+        // Gráfico de Ventas
+        {% if estadisticas.ventas.datos %}
+        const ventasCtx = document.getElementById('ventasChart').getContext('2d');
+        new Chart(ventasCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ estadisticas.ventas.labels|safe }},
+                datasets: [{
+                    label: 'Ventas ($)',
+                    data: {{ estadisticas.ventas.datos|safe }},
+                    backgroundColor: 'rgba(33, 150, 243, 0.7)',
+                    borderColor: infoColor,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        {% endif %}
+        
+        // Gráfico de Engorde
+        {% if estadisticas.engorde.datos_peso %}
+        const engordeCtx = document.getElementById('engordeChart').getContext('2d');
+        new Chart(engordeCtx, {
+            type: 'line',
+            data: {
+                labels: {{ estadisticas.engorde.labels|safe }},
+                datasets: [{
+                    label: 'Peso Promedio (kg)',
+                    data: {{ estadisticas.engorde.datos_peso|safe }},
+                    backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                    borderColor: '#ff9800',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    pointBackgroundColor: '#ff9800',
+                    yAxisID: 'y'
+                }, {
+                    label: 'Eficiencia Energética (kcal/g)',
+                    data: {{ estadisticas.engorde.datos_eficiencia_energetica|safe }},
+                    backgroundColor: 'rgba(255, 87, 34, 0.2)',
+                    borderColor: '#ff5722',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    pointBackgroundColor: '#ff5722',
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Peso Promedio (kg)'
+                        }
+                    },
+                    y1: {
+                        beginAtZero: false,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Eficiencia Energética (kcal/g)'
+                        }
+                    }
+                }
+            }
+        });
+        {% endif %}
+        
+        // Gráfico de Tipos de Huevo
+        {% if estadisticas.tipos_huevo.datos %}
+        const tiposHuevoCtx = document.getElementById('tiposHuevoChart').getContext('2d');
+        new Chart(tiposHuevoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ estadisticas.tipos_huevo.labels|safe }},
+                datasets: [{
+                    data: {{ estadisticas.tipos_huevo.datos|safe }},
+                    backgroundColor: [
+                        primaryColor,
+                        secondaryColor,
+                        infoColor,
+                        warningColor,
+                        successColor,
+                        dangerColor
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+        {% endif %}
+    });
+</script>
+{% endblock %}

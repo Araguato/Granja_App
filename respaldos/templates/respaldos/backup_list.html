@@ -1,0 +1,118 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Lista de Respaldos - App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .status-completed {
+        background-color: #28a745;
+        color: white;
+    }
+    .status-pending {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .status-in-progress {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .status-failed {
+        background-color: #dc3545;
+        color: white;
+    }
+    .backup-row {
+        transition: all 0.2s ease;
+    }
+    .backup-row:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-list me-2"></i>Lista de Respaldos</h1>
+        <p class="lead">Todos los respaldos del sistema.</p>
+        <div class="mb-3">
+            <a href="{% url 'respaldos:backup_dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Panel
+            </a>
+            <a href="{% url 'respaldos:create_backup' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Crear Nuevo Respaldo
+            </a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% if backups %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Tamaño</th>
+                                <th>Estado</th>
+                                <th>Creado por</th>
+                                <th>Fecha de Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backups %}
+                            <tr class="backup-row" data-backup-id="{{ backup.id }}">
+                                <td>{{ backup.id }}</td>
+                                <td>{{ backup.name }}</td>
+                                <td>{{ backup.get_backup_type_display }}</td>
+                                <td>{{ backup.size_in_mb }} MB</td>
+                                <td>
+                                    <span class="badge status-badge status-{{ backup.status|lower }}">
+                                        {{ backup.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ backup.created_by.username|default:"Sistema" }}</td>
+                                <td>{{ backup.created_at|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'respaldos:backup_detail' backup.id %}" class="btn btn-outline-primary" title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if backup.status == 'COMPLETED' and backup.file_exists %}
+                                        <a href="{% url 'respaldos:download_backup' backup.id %}" class="btn btn-outline-success" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <a href="{% url 'respaldos:restore_backup' backup.id %}" class="btn btn-outline-warning" title="Restaurar">
+                                            <i class="fas fa-undo"></i>
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'respaldos:delete_backup' backup.id %}" class="btn btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay respaldos disponibles. Crea tu primer respaldo haciendo clic en "Crear Nuevo Respaldo".
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

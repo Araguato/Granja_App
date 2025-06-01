@@ -1,0 +1,46 @@
+{
+  "total_aves": 3247,
+  "lotes_activos": 5,
+  "produccion_total": 2500,
+  "mortalidad_total": 12,
+  "ventas_total": 1800,
+  "produccion_diaria": [
+    {"fecha": "2025-05-14", "cantidad": 2450},
+    {"fecha": "2025-05-15", "cantidad": 2480},
+    {"fecha": "2025-05-16", "cantidad": 2520},
+    {"fecha": "2025-05-17", "cantidad": 2490},
+    {"fecha": "2025-05-18", "cantidad": 2510},
+    {"fecha": "2025-05-19", "cantidad": 2530},
+    {"fecha": "2025-05-20", "cantidad": 2500}
+  ],
+  "mortalidad_diaria": [
+    {"fecha": "2025-05-14", "cantidad": 15},
+    {"fecha": "2025-05-15", "cantidad": 12},
+    {"fecha": "2025-05-16", "cantidad": 10},
+    {"fecha": "2025-05-17", "cantidad": 14},
+    {"fecha": "2025-05-18", "cantidad": 11},
+    {"fecha": "2025-05-19", "cantidad": 9},
+    {"fecha": "2025-05-20", "cantidad": 12}
+  ],
+  "ventas_diarias": [
+    {"fecha": "2025-05-14", "monto": 1750},
+    {"fecha": "2025-05-15", "monto": 1820},
+    {"fecha": "2025-05-16", "monto": 1790},
+    {"fecha": "2025-05-17", "monto": 1850},
+    {"fecha": "2025-05-18", "monto": 1780},
+    {"fecha": "2025-05-19", "monto": 1830},
+    {"fecha": "2025-05-20", "monto": 1800}
+  ],
+  "distribucion_huevos": [
+    {"tipo": "Pequeños", "porcentaje": 20},
+    {"tipo": "Medianos", "porcentaje": 45},
+    {"tipo": "Grandes", "porcentaje": 30},
+    {"tipo": "Extra grandes", "porcentaje": 5}
+  ],
+  "inventario_alimentos": [
+    {"tipo": "Concentrado A", "cantidad": 1200},
+    {"tipo": "Concentrado B", "cantidad": 950},
+    {"tipo": "Maíz", "cantidad": 800},
+    {"tipo": "Suplemento vitamínico", "cantidad": 350}
+  ]
+}

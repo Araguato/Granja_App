@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-edit me-2"></i>
+                {% trans "Editar Galpón" %}: {{ galpon.numero }}
+            </h1>
+            <p class="text-muted">
+                {{ galpon.granja }}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/produccion/galpones/{{ galpon.id }}/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                {% trans "Formulario de Edición" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="galponForm">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="numero" class="form-label">{% trans "Número/Identificador" %}</label>
+                        <input type="text" class="form-control" id="numero" name="numero" value="{{ galpon.numero }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tipo" class="form-label">{% trans "Tipo" %}</label>
+                        <select class="form-select" id="tipo" name="tipo" required>
+                            <option value="">{% trans "Seleccione un tipo" %}</option>
+                            <option value="PRODUCCION" {% if galpon.tipo == 'PRODUCCION' %}selected{% endif %}>{% trans "Producción" %}</option>
+                            <option value="CRIA" {% if galpon.tipo == 'CRIA' %}selected{% endif %}>{% trans "Cría" %}</option>
+                            <option value="LEVANTE" {% if galpon.tipo == 'LEVANTE' %}selected{% endif %}>{% trans "Levante" %}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="capacidad" class="form-label">{% trans "Capacidad (aves)" %}</label>
+                        <input type="number" class="form-control" id="capacidad" name="capacidad" min="1" value="{{ galpon.capacidad }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">{% trans "Estado" %}</label>
+                        <select class="form-select" id="estado" name="estado" required>
+                            <option value="ACTIVO" {% if galpon.estado == 'ACTIVO' %}selected{% endif %}>{% trans "Activo" %}</option>
+                            <option value="MANTENIMIENTO" {% if galpon.estado == 'MANTENIMIENTO' %}selected{% endif %}>{% trans "En Mantenimiento" %}</option>
+                            <option value="INACTIVO" {% if galpon.estado == 'INACTIVO' %}selected{% endif %}>{% trans "Inactivo" %}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="dimensiones" class="form-label">{% trans "Dimensiones" %}</label>
+                        <input type="text" class="form-control" id="dimensiones" name="dimensiones" value="{{ galpon.dimensiones }}" placeholder="Ej: 10m x 20m" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">{% trans "Observaciones" %}</label>
+                    <textarea class="form-control" id="observaciones" name="observaciones" rows="3">{{ galpon.observaciones }}</textarea>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "Todos los campos son obligatorios excepto las observaciones." %}
+                </div>
+                
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        {% trans "Cancelar" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% trans "Guardar Cambios" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validación del formulario
+        const form = document.getElementById('galponForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const numero = document.getElementById('numero').value;
+            const tipo = document.getElementById('tipo').value;
+            const capacidad = document.getElementById('capacidad').value;
+            
+            if (!numero || !tipo || !capacidad) {
+                alert('{% trans "Por favor complete todos los campos obligatorios" %}');
+                return;
+            }
+            
+            // Si todo está bien, enviar el formulario
+            this.submit();
+        });
+    });
+</script>
+{% endblock %}

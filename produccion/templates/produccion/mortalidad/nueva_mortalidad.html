@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Nuevo Registro de Mortalidad" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-plus-circle me-2"></i>
+                {% trans "Nuevo Registro de Mortalidad" %}
+            </h1>
+            <p class="text-muted">
+                {% trans "Ingrese los datos de mortalidad para el lote seleccionado" %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'lista_mortalidad' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                {% trans "Formulario de Registro" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="mortalidadForm">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="lote" class="form-label">{% trans "Lote" %} <span class="text-danger">*</span></label>
+                        <select class="form-select" id="lote" name="lote" required>
+                            <option value="">{% trans "Seleccione un lote" %}</option>
+                            {% for lote in lotes %}
+                                <option value="{{ lote.id }}">{{ lote.codigo }} ({{ lote.galpon }} - {{ lote.cantidad_aves }} aves)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="fecha" class="form-label">{% trans "Fecha" %} <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="fecha" name="fecha" value="{{ fecha_actual|date:'Y-m-d' }}" required>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="cantidad_muertes" class="form-label">{% trans "Cantidad de Muertes" %} <span class="text-danger">*</span></label>
+                        <input type="number" min="1" step="1" class="form-control" id="cantidad_muertes" name="cantidad_muertes" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="causa" class="form-label">{% trans "Causa de Muerte" %}</label>
+                        <select class="form-select" id="causa" name="causa">
+                            <option value="">{% trans "Seleccione una causa" %}</option>
+                            <option value="Enfermedad respiratoria">{% trans "Enfermedad respiratoria" %}</option>
+                            <option value="Enfermedad digestiva">{% trans "Enfermedad digestiva" %}</option>
+                            <option value="Estrés térmico">{% trans "Estrés térmico" %}</option>
+                            <option value="Causas naturales">{% trans "Causas naturales" %}</option>
+                            <option value="Accidente">{% trans "Accidente" %}</option>
+                            <option value="Otra">{% trans "Otra" %}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3" id="otraCausaContainer" style="display: none;">
+                    <label for="otra_causa" class="form-label">{% trans "Especifique la causa" %}</label>
+                    <textarea class="form-control" id="otra_causa" name="otra_causa" rows="2"></textarea>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {% trans "Si la mortalidad supera el 1% del total de aves del lote, se notificará automáticamente al veterinario." %}
+                </div>
+                
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        {% trans "Cancelar" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> {% trans "Guardar" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar campo de texto para "Otra causa" cuando se selecciona esa opción
+        const causaSelect = document.getElementById('causa');
+        const otraCausaContainer = document.getElementById('otraCausaContainer');
+        
+        causaSelect.addEventListener('change', function() {
+            if (this.value === 'Otra') {
+                otraCausaContainer.style.display = 'block';
+            } else {
+                otraCausaContainer.style.display = 'none';
+            }
+        });
+        
+        // Validación del formulario
+        const form = document.getElementById('mortalidadForm');
+        form.addEventListener('submit', function(event) {
+            const lote = document.getElementById('lote').value;
+            const fecha = document.getElementById('fecha').value;
+            const cantidad = document.getElementById('cantidad_muertes').value;
+            
+            if (!lote || !fecha || !cantidad) {
+                event.preventDefault();
+                alert('{% trans "Por favor complete todos los campos obligatorios" %}');
+                return false;
+            }
+            
+            if (causaSelect.value === 'Otra' && document.getElementById('otra_causa').value.trim() === '') {
+                event.preventDefault();
+                alert('{% trans "Por favor especifique la causa de muerte" %}');
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

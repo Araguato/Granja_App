@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Error del servidor - App Granja{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center">
+    <div class="col-md-8">
+        <h1 class="display-1 text-muted">500</h1>
+        <h2 class="mb-4">Error interno del servidor</h2>
+        <p class="lead mb-5">Lo sentimos, ha ocurrido un error en el servidor. Nuestro equipo técnico ha sido notificado.</p>
+        <a href="{% url 'core:home' %}" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i>Volver al inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

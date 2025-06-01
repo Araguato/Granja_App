@@ -1,0 +1,210 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+        color: white;
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .btn-cancel {
+        background-color: #e74a3b;
+        color: white;
+    }
+    .btn-cancel:hover {
+        background-color: #be2617;
+        color: white;
+    }
+    .required-field label:after {
+        content: " *";
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas {% if is_edit %}fa-edit{% else %}fa-plus-circle{% endif %} text-primary"></i> 
+            {% if is_edit %}Editar{% else %}Nuevo{% endif %} Medicamento
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'inventario:lista_medicamentos' %}">Medicamentos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    {% if is_edit %}Editar {{ medicamento.nombre }}{% else %}Nuevo{% endif %}
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas {% if is_edit %}fa-edit{% else %}fa-plus-circle{% endif %} mr-2"></i>
+                        {% if is_edit %}Editar{% else %}Registrar Nuevo{% endif %} Medicamento
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="medicamentoForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required-field">
+                                    {{ form.nombre|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.proveedor|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ form.descripcion|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group required-field">
+                                    {{ form.stock|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required-field">
+                                    {{ form.unidad_medida|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.stock_minimo|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.precio_unitario|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.fecha_vencimiento|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.lote|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        {{ form.activo|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12 d-flex justify-content-between">
+                                <a href="{% if is_edit %}{% url 'inventario:detalle_medicamento' medicamento.id %}{% else %}{% url 'inventario:lista_medicamentos' %}{% endif %}" 
+                                   class="btn btn-cancel btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                    <span class="text">Cancelar</span>
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-save"></i>
+                                    </span>
+                                    <span class="text">{% if is_edit %}Actualizar{% else %}Guardar{% endif %}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Inicializar datepicker
+        $('.dateinput').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+            language: 'es',
+            orientation: 'bottom auto'
+        });
+        
+        // Validación del formulario
+        $('#medicamentoForm').on('submit', function(e) {
+            let isValid = true;
+            const requiredFields = $('.required-field input, .required-field select, .required-field textarea');
+            
+            requiredFields.each(function() {
+                if (!$(this).val()) {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Campos requeridos',
+                    text: 'Por favor complete todos los campos obligatorios marcados con *',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+        
+        // Mostrar/ocultar campos según el tipo de insumo
+        $('input[name$="tipo_insumo"]').on('change', function() {
+            if ($(this).val() === 'MEDICAMENTO') {
+                $('#div_id_presentacion, #div_id_concentracion').show();
+            } else {
+                $('#div_id_presentacion, #div_id_concentracion').hide();
+            }
+        });
+    });
+</script>
+{% endblock %}

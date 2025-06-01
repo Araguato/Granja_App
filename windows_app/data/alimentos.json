@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "nombre": "Iniciador",
+    "marca": "Purina",
+    "proteina": 20,
+    "presentacion": "Saco 50kg"
+  },
+  {
+    "id": 2,
+    "nombre": "Crecimiento",
+    "marca": "Purina",
+    "proteina": 18,
+    "presentacion": "Saco 50kg"
+  }
+]

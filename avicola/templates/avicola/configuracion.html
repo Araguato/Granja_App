@@ -1,0 +1,116 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="fas fa-cog me-2"></i>Configuración
+            </h1>
+            <p class="lead">
+                Configuración del sistema y preferencias de usuario.
+            </p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-cog me-2"></i>Configuración de Usuario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nombre de usuario</label>
+                            <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" value="{{ user.email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="timezone" class="form-label">Zona horaria</label>
+                            <select class="form-select" id="timezone">
+                                <option value="America/Caracas" selected>Caracas (UTC-4)</option>
+                                <option value="America/New_York">New York (UTC-4/-5)</option>
+                                <option value="America/Mexico_City">México (UTC-6/-5)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Guardar cambios
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>Notificaciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notifications" checked>
+                        <label class="form-check-label" for="notifications">
+                            Recibir notificaciones por correo
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="alerts" checked>
+                        <label class="form-check-label" for="alerts">
+                            Alertas de mortalidad
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="reports" checked>
+                        <label class="form-check-label" for="reports">
+                            Informes semanales
+                        </label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="updates">
+                        <label class="form-check-label" for="updates">
+                            Actualizaciones del sistema
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if user.is_staff %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>Configuración de Administrador
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Esta sección solo está disponible para administradores del sistema.
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'admin:index' %}" class="btn btn-outline-warning me-md-2">
+                            <i class="fas fa-tools me-2"></i>Panel de Administración
+                        </a>
+                        <a href="{% url 'avicola:configurar_acceso_admin' %}" class="btn btn-warning">
+                            <i class="fas fa-user-shield me-2"></i>Configurar Acceso
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

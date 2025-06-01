@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* Debug styles */
+  .debug-info {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 10000;
+    font-family: monospace;
+    max-width: 500px;
+  }
+  .debug-info h3 {
+    margin-top: 0;
+    color: #4CAF50;
+  }
+  .css-check {
+    margin: 5px 0;
+    padding: 5px;
+    border-left: 3px solid #4CAF50;
+  }
+  .css-check.error {
+    border-left-color: #f44336;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="flex">
+  <h1>Admin Style Test Page</h1>
+  
+  <div class="app-avicola module">
+    <table>
+      <caption>Test Section</caption>
+      <tbody>
+        <tr>
+          <td>Menu Item 1</td>
+          <td>Value 1</td>
+        </tr>
+        <tr>
+          <td>Menu Item 2</td>
+          <td>Value 2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="debug-info">
+  <h3>Admin Style Debug</h3>
+  
+  <div class="css-check">
+    Base styles: <span style="color: #4CAF50">✓ Loaded</span>
+  </div>
+  
+  <div class="css-check">
+    Admin fixes: <span style="color: #4CAF50">✓ Loaded</span>
+  </div>
+  
+  <div class="css-check">
+    Current CSS file: <code>{% static 'css/admin_fixes.css' %}</code>
+  </div>
+  
+  <div class="css-check">
+    <a href="{% url 'admin:index' %}" style="color: white; text-decoration: underline;">← Back to Admin</a>
+  </div>
+</div>
+{% endblock %}

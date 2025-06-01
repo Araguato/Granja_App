@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Panel de Reportes | App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #fff;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: transform 0.2s;
+    }
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .report-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+    }
+    .report-type-icon {
+        font-size: 24px;
+        margin-right: 10px;
+        color: #4e73df;
+    }
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .module {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        margin-bottom: 30px;
+        padding: 20px;
+    }
+    .module h2 {
+        color: #4e73df;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="report-header">
+        <h1><i class="fas fa-chart-bar me-2"></i>Panel de Reportes</h1>
+        <a href="{% url 'reportes:nuevo_reporte' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Nuevo Reporte
+        </a>
+    </div>
+</div>
+
+<div class="module">
+    <h2>Reportes Recientes</h2>
+    
+    {% if reportes_recientes %}
+        {% for reporte in reportes_recientes %}
+        <div class="report-card">
+            <h3>{{ reporte.titulo }}</h3>
+            <p><strong>Tipo:</strong> {{ reporte.get_tipo_reporte_display }}</p>
+            <p><strong>Periodo:</strong> {{ reporte.fecha_inicio|date:"d/m/Y" }} - {{ reporte.fecha_fin|date:"d/m/Y" }}</p>
+            <p><strong>Formato:</strong> {{ reporte.get_formato_display }}</p>
+            <p><strong>Generado:</strong> {{ reporte.fecha_generacion|date:"d/m/Y H:i" }}</p>
+            
+            <div class="report-actions">
+                <a href="{% url 'reportes:detalle_reporte' reporte.id %}" class="button">Ver Detalles</a>
+                <a href="{% url 'reportes:descargar_reporte' reporte.id %}" class="button">Descargar</a>
+                <form method="post" action="{% url 'reportes:eliminar_reporte' reporte.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button" onclick="return confirm('¿Está seguro de eliminar este reporte?');">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No hay reportes generados recientemente.</p>
+    {% endif %}
+</div>
+
+<div class="module">
+    <h2>Tipos de Reportes Disponibles</h2>
+    
+    <div class="report-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        {% for tipo_id, tipo_nombre in tipos_reporte %}
+        <div class="report-card">
+            <h3>{{ tipo_nombre }}</h3>
+            <p>Genere reportes detallados sobre {{ tipo_nombre|lower }}.</p>
+            <a href="{% url 'reportes:nuevo_reporte' %}?tipo={{ tipo_id }}" class="button">Crear Reporte</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

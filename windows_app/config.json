@@ -1,0 +1,18 @@
+{
+    "is_offline": false,
+    "api_url": "http://127.0.0.1:8000/api",
+    "username": "thomas",
+    "password": "",
+    "user_info": {
+        "id": 1,
+        "username": "thomas",
+        "email": "schiwatsch@hotmail.com",
+        "first_name": "",
+        "last_name": "",
+        "is_active": true,
+        "is_offline": false,
+        "demo_mode": false
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MTQ0MTg2LCJpYXQiOjE3NDgxNDA1ODYsImp0aSI6ImI1ZjY3YmQ5OTc5OTQxODJhOTAzNDhjNDYyM2Q0MmZkIiwidXNlcl9pZCI6MX0.-B-3oIxiVKZcqdjdUjNXCkOP0ARizSlmy0JJrOPPO8M",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0ODIyNjk4NiwiaWF0IjoxNzQ4MTQwNTg2LCJqdGkiOiIzYzQ5MmY1YTYwN2Q0NjFiODYyMGFlOWU2MDY0MmE1ZCIsInVzZXJfaWQiOjF9.sBU4DplQb7DrUtYPY_pp9nkVQYJBI9nXGnoFs7oO5xU"
+}

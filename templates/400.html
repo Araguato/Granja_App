@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}400 - Solicitud incorrecta{% endblock %}
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1 class="display-1 text-danger">400</h1>
+    <h2>Solicitud incorrecta</h2>
+    <p>Lo sentimos, la solicitud no pudo ser procesada.</p>
+    <a href="{% url 'core:home' %}" class="btn btn-primary">Volver al inicio</a>
+</div>
+{% endblock %}

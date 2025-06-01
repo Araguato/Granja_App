@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Seguimiento de Lote" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-clipboard-check me-2"></i>
+                {% trans "Seguimiento:" %} {{ lote.codigo }}
+            </h1>
+            <p class="text-muted">
+                {{ lote.galpon }} - {{ lote.raza }} - 
+                {% if lote.estado == 'PRODUCCION' %}
+                    <span class="badge bg-success">{% trans "Producción" %}</span>
+                {% elif lote.estado == 'CRECIMIENTO' %}
+                    <span class="badge bg-warning">{% trans "Crecimiento" %}</span>
+                {% else %}
+                    <span class="badge bg-info">{% trans "Levante" %}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventario:registro_seguimiento' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> {% trans "Volver" %}
+            </a>
+            <a href="{% url 'inventario:nuevo_seguimiento' lote.id %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> {% trans "Nuevo Registro" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% trans "Información del Lote" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Código:" %}</div>
+                        <div class="col-md-7">{{ lote.codigo }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Galpón:" %}</div>
+                        <div class="col-md-7">{{ lote.galpon }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Raza:" %}</div>
+                        <div class="col-md-7">{{ lote.raza }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Edad:" %}</div>
+                        <div class="col-md-7">{{ lote.edad_semanas }} {% trans "semanas" %}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Aves:" %}</div>
+                        <div class="col-md-7">{{ lote.cantidad_aves }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-5 fw-bold">{% trans "Estado:" %}</div>
+                        <div class="col-md-7">
+                            {% if lote.estado == 'PRODUCCION' %}
+                                <span class="badge bg-success">{% trans "Producción" %}</span>
+                            {% elif lote.estado == 'CRECIMIENTO' %}
+                                <span class="badge bg-warning">{% trans "Crecimiento" %}</span>
+                            {% else %}
+                                <span class="badge bg-info">{% trans "Levante" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        {% trans "Tendencias" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="peso-tab" data-bs-toggle="tab" data-bs-target="#peso" type="button" role="tab" aria-controls="peso" aria-selected="true">
+                                {% trans "Peso" %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="consumo-tab" data-bs-toggle="tab" data-bs-target="#consumo" type="button" role="tab" aria-controls="consumo" aria-selected="false">
+                                {% trans "Consumo" %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="mortalidad-tab" data-bs-toggle="tab" data-bs-target="#mortalidad" type="button" role="tab" aria-controls="mortalidad" aria-selected="false">
+                                {% trans "Mortalidad" %}
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content p-3" id="myTabContent">
+                        <div class="tab-pane fade show active" id="peso" role="tabpanel" aria-labelledby="peso-tab">
+                            <canvas id="pesoChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="tab-pane fade" id="consumo" role="tabpanel" aria-labelledby="consumo-tab">
+                            <canvas id="consumoChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="tab-pane fade" id="mortalidad" role="tabpanel" aria-labelledby="mortalidad-tab">
+                            <canvas id="mortalidadChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-history me-2"></i>
+                {% trans "Historial de Seguimiento" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if seguimientos %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Fecha" %}</th>
+                                <th>{% trans "Peso Promedio (g)" %}</th>
+                                <th>{% trans "Consumo Alimento (kg)" %}</th>
+                                <th>{% trans "Mortalidad" %}</th>
+                                {% if lote.estado == 'PRODUCCION' %}
+                                <th>{% trans "Conv. Alimenticia" %}</th>
+                                <th>{% trans "Energía (kcal/kg)" %}</th>
+                                {% endif %}
+                                <th>{% trans "Acciones" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for seguimiento in seguimientos %}
+                                <tr>
+                                    <td>{{ seguimiento.fecha|date:"d/m/Y" }}</td>
+                                    <td>{{ seguimiento.peso_promedio }}</td>
+                                    <td>{{ seguimiento.consumo_alimento }}</td>
+                                    <td>{{ seguimiento.mortalidad }}</td>
+                                    {% if lote.estado == 'PRODUCCION' %}
+                                    <td>{{ seguimiento.conversion_alimenticia|default:"--" }}</td>
+                                    <td>{{ seguimiento.energia|default:"--" }}</td>
+                                    {% endif %}
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleModal{{ forloop.counter }}">
+                                            <i class="fas fa-eye"></i> {% trans "Detalles" %}
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Modal de detalles -->
+                                <div class="modal fade" id="detalleModal{{ forloop.counter }}" tabindex="-1" aria-labelledby="detalleModalLabel{{ forloop.counter }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-info text-white">
+                                                <h5 class="modal-title" id="detalleModalLabel{{ forloop.counter }}">
+                                                    {% trans "Detalles del Seguimiento" %} - {{ seguimiento.fecha|date:"d/m/Y" }}
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Fecha:" %}</div>
+                                                    <div class="col-md-7">{{ seguimiento.fecha|date:"d/m/Y" }}</div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Peso Promedio:" %}</div>
+                                                    <div class="col-md-7">{{ seguimiento.peso_promedio }} g</div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Consumo Alimento:" %}</div>
+                                                    <div class="col-md-7">{{ seguimiento.consumo_alimento }} kg</div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Mortalidad:" %}</div>
+                                                    <div class="col-md-7">{{ seguimiento.mortalidad }} aves</div>
+                                                </div>
+                                                {% if lote.estado == 'PRODUCCION' %}
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Conversión Alimenticia:" %}</div>
+                                                    <div class="col-md-7">{{ seguimiento.conversion_alimenticia|default:"--" }}</div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Energía:" %}</div>
+                                                    <div class="col-md-7">{{ seguimiento.energia|default:"--" }} kcal/kg</div>
+                                                </div>
+                                                {% endif %}
+                                                <div class="row mb-3">
+                                                    <div class="col-md-5 fw-bold">{% trans "Observaciones:" %}</div>
+                                                    <div class="col-md-7">
+                                                        {% if seguimiento.observaciones %}
+                                                            {{ seguimiento.observaciones }}
+                                                        {% else %}
+                                                            <em>{% trans "Sin observaciones" %}</em>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cerrar" %}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "No hay registros de seguimiento para este lote." %}
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/inventario/seguimiento/nuevo/{{ lote.id }}/" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-1"></i> {% trans "Crear Primer Registro" %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Datos para los gráficos (simulados)
+        const fechas = [
+            {% for seguimiento in seguimientos %}
+                '{{ seguimiento.fecha|date:"d/m" }}',
+            {% endfor %}
+        ];
+        
+        const pesos = [
+            {% for seguimiento in seguimientos %}
+                {{ seguimiento.peso_promedio }},
+            {% endfor %}
+        ];
+        
+        const consumos = [
+            {% for seguimiento in seguimientos %}
+                {{ seguimiento.consumo_alimento }},
+            {% endfor %}
+        ];
+        
+        const mortalidades = [
+            {% for seguimiento in seguimientos %}
+                {{ seguimiento.mortalidad }},
+            {% endfor %}
+        ];
+        
+        // Gráfico de peso
+        const ctxPeso = document.getElementById('pesoChart').getContext('2d');
+        new Chart(ctxPeso, {
+            type: 'line',
+            data: {
+                labels: fechas.length > 0 ? fechas : ['{% trans "Sin datos" %}'],
+                datasets: [{
+                    label: '{% trans "Peso Promedio (g)" %}',
+                    data: pesos.length > 0 ? pesos : [0],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '{% trans "Gramos" %}'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de consumo
+        const ctxConsumo = document.getElementById('consumoChart').getContext('2d');
+        new Chart(ctxConsumo, {
+            type: 'line',
+            data: {
+                labels: fechas.length > 0 ? fechas : ['{% trans "Sin datos" %}'],
+                datasets: [{
+                    label: '{% trans "Consumo Alimento (kg)" %}',
+                    data: consumos.length > 0 ? consumos : [0],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 2,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '{% trans "Kilogramos" %}'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de mortalidad
+        const ctxMortalidad = document.getElementById('mortalidadChart').getContext('2d');
+        new Chart(ctxMortalidad, {
+            type: 'bar',
+            data: {
+                labels: fechas.length > 0 ? fechas : ['{% trans "Sin datos" %}'],
+                datasets: [{
+                    label: '{% trans "Mortalidad (aves)" %}',
+                    data: mortalidades.length > 0 ? mortalidades : [0],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '{% trans "Aves" %}'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

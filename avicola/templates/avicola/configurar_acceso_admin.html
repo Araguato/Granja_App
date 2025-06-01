@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-unlock-alt me-2"></i>
+                {% trans "Configurar Acceso al Panel de Administración" %}
+            </h1>
+            <p class="text-muted">
+                {% trans "Esta herramienta configura los permisos necesarios para que los supervisores puedan acceder a las secciones de Ventas y Mortalidad en el panel de administración." %}
+            </p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-shield-alt me-2"></i>
+                {% trans "Configuración de Acceso al Admin" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                {% trans "Al hacer clic en el botón a continuación, se configurarán los siguientes permisos para el grupo de Supervisores:" %}
+                <ul class="mt-2 mb-0">
+                    <li><strong>{% trans "Ventas" %}:</strong> {% trans "Acceso a ventas, clientes, tipos de huevo e inventario de huevos" %}</li>
+                    <li><strong>{% trans "Mortalidad" %}:</strong> {% trans "Acceso a seguimientos diarios, lotes y galpones" %}</li>
+                    <li><strong>{% trans "Panel de Administración" %}:</strong> {% trans "Acceso general al panel de administración" %}</li>
+                </ul>
+            </div>
+            
+            <form method="post" class="mt-3">
+                {% csrf_token %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> {% trans "Volver al Admin" %}
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-1"></i> {% trans "Configurar Permisos de Acceso" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                {% trans "Información Adicional" %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <h6>{% trans "¿Por qué es necesario esto?" %}:</h6>
+            <p>{% trans "Django utiliza un sistema de permisos específico para controlar el acceso al panel de administración. Aunque los permisos estén correctamente asignados en la interfaz de gestión de permisos, es necesario asegurarse de que:" %}</p>
+            <ul>
+                <li>{% trans "Los usuarios tengan el atributo is_staff=True para poder acceder al panel de administración." %}</li>
+                <li>{% trans "Los permisos específicos para cada modelo en el admin estén correctamente asignados." %}</li>
+                <li>{% trans "Los permisos de acceso general al admin estén configurados." %}</li>
+            </ul>
+            
+            <h6>{% trans "Solución de problemas comunes:" %}</h6>
+            <ul>
+                <li>{% trans "Si después de ejecutar esta herramienta los supervisores siguen sin poder acceder a ciertas secciones, asegúrese de que estén correctamente asignados al grupo 'Supervisores'." %}</li>
+                <li>{% trans "Verifique que los supervisores tengan el tipo de usuario correcto (SUPERVISOR) en su perfil." %}</li>
+                <li>{% trans "Compruebe que los permisos específicos para cada modelo estén correctamente asignados en la interfaz de gestión de permisos." %}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

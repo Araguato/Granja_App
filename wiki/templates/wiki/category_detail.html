@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ category.name }} - Wiki - App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .article-item {
+        padding: 15px;
+        border-left: 3px solid #4caf50;
+        margin-bottom: 15px;
+        transition: all 0.2s ease;
+    }
+    .article-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+    .article-meta {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-folder-open me-2"></i>{{ category.name }}</h1>
+        <p class="lead">{{ category.description }}</p>
+        <a href="{% url 'wiki:wiki_home' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Volver a todas las categorías
+        </a>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-file-alt me-2"></i>Artículos en esta categoría
+            </div>
+            <div class="card-body">
+                {% if articles %}
+                <div class="list-group">
+                    {% for article in articles %}
+                    <a href="{% url 'wiki:article_detail' category.slug article.slug %}" class="list-group-item list-group-item-action article-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ article.title }}</h5>
+                        </div>
+                        <p class="mb-1">{{ article.summary }}</p>
+                        <div class="article-meta">
+                            <i class="fas fa-clock me-1"></i>Actualizado: {{ article.updated_at|date:"d/m/Y" }}
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay artículos disponibles en esta categoría.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

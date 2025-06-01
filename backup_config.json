@@ -1,0 +1,24 @@
+{
+    "db_settings": {
+        "name": "granja_db",
+        "user": "postgres",
+        "password": "",
+        "host": "localhost",
+        "port": "5432"
+    },
+    "backup_settings": {
+        "max_backups": 10,
+        "compress": true,
+        "encrypt": false,
+        "encrypt_password": "",
+        "include_media": true
+    },
+    "notification_settings": {
+        "enabled": false,
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "smtp_user": "",
+        "smtp_password": "",
+        "recipients": []
+    }
+}

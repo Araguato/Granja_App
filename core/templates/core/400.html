@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Error 400 - Solicitud incorrecta{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-1 text-danger">400</h1>
+            <h2>Solicitud incorrecta</h2>
+            <p class="lead">Lo sentimos, la solicitud no pudo ser procesada debido a un error en los datos enviados.</p>
+            <a href="{% url 'core:home' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-home"></i> Volver al inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

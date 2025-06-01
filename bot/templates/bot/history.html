@@ -1,0 +1,198 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i> Historial de Conversaciones
+                    </h5>
+                    <a href="{% url 'bot:chat' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-robot"></i> Nueva Conversación
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Duración</th>
+                                    <th>Mensajes</th>
+                                    <th>Calificación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for conversation in conversations %}
+                                <tr>
+                                    <td>{{ conversation.start_time|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if conversation.end_time %}
+                                            {% with duration=conversation.end_time|timeuntil:conversation.start_time %}
+                                                {{ duration }}
+                                            {% endwith %}
+                                        {% else %}
+                                            <span class="badge bg-success">Activa</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ conversation.messages.count }}</td>
+                                    <td>
+                                        {% if conversation.feedback_rating %}
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= conversation.feedback_rating %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Sin calificar</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary view-conversation" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#conversationModal" 
+                                                    data-conversation-id="{{ conversation.id }}">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </button>
+                                            {% if not conversation.end_time %}
+                                            <a href="{% url 'bot:chat' %}" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-comments"></i> Continuar
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="fas fa-robot fa-3x mb-3 text-muted"></i>
+                                        <p class="mb-0">No hay conversaciones registradas.</p>
+                                        <a href="{% url 'bot:chat' %}" class="btn btn-primary mt-3">
+                                            <i class="fas fa-comments"></i> Iniciar una conversación
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver conversación -->
+<div class="modal fade" id="conversationModal" tabindex="-1" aria-labelledby="conversationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="conversationModalLabel">Detalles de la Conversación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center py-5" id="conversationLoading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando conversación...</p>
+                </div>
+                <div id="conversationContent" style="display: none;">
+                    <div class="mb-3">
+                        <strong>Fecha:</strong> <span id="conversationDate"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Duración:</strong> <span id="conversationDuration"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Calificación:</strong> <span id="conversationRating"></span>
+                    </div>
+                    <hr>
+                    <h6 class="mb-3">Mensajes</h6>
+                    <div id="conversationMessages" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Los mensajes se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejar la visualización de conversaciones
+        const viewButtons = document.querySelectorAll('.view-conversation');
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const conversationId = this.getAttribute('data-conversation-id');
+                
+                // Mostrar cargando y ocultar contenido
+                document.getElementById('conversationLoading').style.display = 'block';
+                document.getElementById('conversationContent').style.display = 'none';
+                
+                // Aquí normalmente haríamos una petición AJAX para obtener los detalles de la conversación
+                // Por ahora, simularemos una carga con setTimeout
+                setTimeout(() => {
+                    // Ocultar cargando y mostrar contenido
+                    document.getElementById('conversationLoading').style.display = 'none';
+                    document.getElementById('conversationContent').style.display = 'block';
+                    
+                    // En una implementación real, aquí cargaríamos los datos de la conversación
+                    // Por ahora, mostraremos datos de ejemplo
+                    document.getElementById('conversationDate').textContent = '01/05/2023 15:30';
+                    document.getElementById('conversationDuration').textContent = '10 minutos';
+                    document.getElementById('conversationRating').innerHTML = '<i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i class="far fa-star text-muted"></i>';
+                    
+                    // Cargar mensajes de ejemplo
+                    const messagesContainer = document.getElementById('conversationMessages');
+                    messagesContainer.innerHTML = `
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>Tú:</strong>
+                                <small class="text-muted">15:30</small>
+                            </div>
+                            <p class="mb-0">Hola, ¿cómo están los lotes hoy?</p>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>Asistente:</strong>
+                                <small class="text-muted">15:31</small>
+                            </div>
+                            <p class="mb-0">¡Hola! Los lotes están en buen estado. La producción de huevos está al 85% y la mortalidad está dentro de los rangos normales.</p>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>Tú:</strong>
+                                <small class="text-muted">15:32</small>
+                            </div>
+                            <p class="mb-0">¿Cuál es la tasa de mortalidad actual?</p>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>Asistente:</strong>
+                                <small class="text-muted">15:32</small>
+                            </div>
+                            <p class="mb-0">La tasa de mortalidad actual es del 0.5%, lo cual está dentro de los parámetros normales para esta etapa de producción.</p>
+                        </div>
+                    `;
+                }, 1000);
+            });
+        });
+    });
+</script>
+{% endblock %}

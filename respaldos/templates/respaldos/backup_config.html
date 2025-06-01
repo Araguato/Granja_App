@@ -1,0 +1,137 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Configuración de Respaldos - App Granja{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-cog me-2"></i>Configuración de Respaldos</h1>
+        <p class="lead">Configura las opciones del sistema de respaldos.</p>
+        <div class="mb-3">
+            <a href="{% url 'respaldos:backup_dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Panel
+            </a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-sliders-h me-2"></i>Opciones de Configuración
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3">Configuración General</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.backup_directory.id_for_label }}" class="form-label">{{ form.backup_directory.label }}</label>
+                        {{ form.backup_directory }}
+                        {% if form.backup_directory.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.backup_directory.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Directorio donde se guardarán los archivos de respaldo.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.max_backups.id_for_label }}" class="form-label">{{ form.max_backups.label }}</label>
+                        {{ form.max_backups }}
+                        {% if form.max_backups.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.max_backups.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Número máximo de respaldos a mantener. Los más antiguos se eliminarán automáticamente.</div>
+                    </div>
+                    
+                    <hr>
+                    <h5 class="mb-3">Respaldo Automático</h5>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.auto_backup_enabled }}
+                        <label class="form-check-label" for="{{ form.auto_backup_enabled.id_for_label }}">
+                            {{ form.auto_backup_enabled.label }}
+                        </label>
+                        <div class="form-text">Habilitar respaldos automáticos programados.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.auto_backup_frequency.id_for_label }}" class="form-label">{{ form.auto_backup_frequency.label }}</label>
+                        {{ form.auto_backup_frequency }}
+                        {% if form.auto_backup_frequency.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.auto_backup_frequency.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Frecuencia con la que se realizarán los respaldos automáticos (en horas).</div>
+                    </div>
+                    
+                    <hr>
+                    <h5 class="mb-3">Contenido del Respaldo</h5>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.include_database }}
+                        <label class="form-check-label" for="{{ form.include_database.id_for_label }}">
+                            {{ form.include_database.label }}
+                        </label>
+                        <div class="form-text">Incluir la base de datos en los respaldos automáticos.</div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.include_media }}
+                        <label class="form-check-label" for="{{ form.include_media.id_for_label }}">
+                            {{ form.include_media.label }}
+                        </label>
+                        <div class="form-text">Incluir archivos de medios (imágenes, documentos, etc.) en los respaldos automáticos.</div>
+                    </div>
+                    
+                    <hr>
+                    <h5 class="mb-3">Opciones Avanzadas</h5>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.compress_backup }}
+                        <label class="form-check-label" for="{{ form.compress_backup.id_for_label }}">
+                            {{ form.compress_backup.label }}
+                        </label>
+                        <div class="form-text">Comprimir los archivos de respaldo para reducir su tamaño.</div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.encrypt_backup }}
+                        <label class="form-check-label" for="{{ form.encrypt_backup.id_for_label }}">
+                            {{ form.encrypt_backup.label }}
+                        </label>
+                        <div class="form-text">Cifrar los archivos de respaldo para mayor seguridad.</div>
+                    </div>
+                    
+                    <hr>
+                    <h5 class="mb-3">Notificaciones</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notification_email.id_for_label }}" class="form-label">{{ form.notification_email.label }}</label>
+                        {{ form.notification_email }}
+                        {% if form.notification_email.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.notification_email.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Correo electrónico para recibir notificaciones sobre los respaldos. Dejar en blanco para desactivar.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Guardar Configuración
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="fas fa-egg me-2"></i>
+                {% if LANGUAGE_CODE == 'en' %}Lot Details{% else %}Detalle del Lote{% endif %}
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'avicola:listar_lotes' %}">{% if LANGUAGE_CODE == 'en' %}Active Lots{% else %}Lotes Activos{% endif %}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ lote.codigo|default:lote.id }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del Lote -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Lot Information{% else %}Información del Lote{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-50">{% if LANGUAGE_CODE == 'en' %}Code{% else %}Código{% endif %}</th>
+                                <td>{{ lote.codigo|default:"N/A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Shed{% else %}Galpón{% endif %}</th>
+                                <td>{{ lote.galpon.nombre|default:"N/A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Breed{% else %}Raza{% endif %}</th>
+                                <td>{{ lote.raza.nombre|default:"N/A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Current Age (days){% else %}Edad Actual (días){% endif %}</th>
+                                <td>{{ lote.edad_actual|default:"0" }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Birds{% else %}Aves{% endif %}</th>
+                                <td>{{ lote.cantidad_aves|default:"0" }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Status{% else %}Estado{% endif %}</th>
+                                <td>
+                                    <span class="badge {% if lote.estado == 'INICIAL' %}bg-info{% elif lote.estado == 'CRECIMIENTO' %}bg-warning{% else %}bg-success{% endif %}">
+                                        {{ lote.get_estado_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Entry Date{% else %}Fecha de Ingreso{% endif %}</th>
+                                <td>{{ lote.fecha_ingreso|date:"d/m/Y"|default:"N/A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% if LANGUAGE_CODE == 'en' %}Expected End{% else %}Fin Estimado{% endif %}</th>
+                                <td>{{ lote.fecha_estimada_fin|date:"d/m/Y"|default:"N/A" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seguimientos Recientes -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Recent Follow-ups{% else %}Seguimientos Recientes{% endif %}
+                    </h5>
+                    <span class="badge bg-white text-dark">{{ seguimientos|length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if seguimientos %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{% if LANGUAGE_CODE == 'en' %}Date{% else %}Fecha{% endif %}</th>
+                                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Eggs{% else %}Huevos{% endif %}</th>
+                                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Mortality{% else %}Mortalidad{% endif %}</th>
+                                        <th class="text-end">{% if LANGUAGE_CODE == 'en' %}Food (kg){% else %}Alimento (kg){% endif %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for seguimiento in seguimientos %}
+                                    <tr>
+                                        <td>{{ seguimiento.fecha_seguimiento|date:"d/m/Y" }}</td>
+                                        <td class="text-end">{{ seguimiento.huevos_producidos|default:"0" }}</td>
+                                        <td class="text-end">{{ seguimiento.mortalidad|default:"0" }}</td>
+                                        <td class="text-end">{{ seguimiento.consumo_alimento|floatformat:2|default:"0.00" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-3 text-center text-muted">
+                            <i class="fas fa-inbox fa-3x mb-2"></i>
+                            <p class="mb-0">{% if LANGUAGE_CODE == 'en' %}No follow-up records found{% else %}No se encontraron registros de seguimiento{% endif %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-end">
+                    <a href="#" class="btn btn-sm btn-outline-info" disabled>
+                        <i class="fas fa-plus me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Add Follow-up{% else %}Agregar Seguimiento{% endif %}
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2" disabled>
+                        <i class="fas fa-list me-1"></i>
+                        {% if LANGUAGE_CODE == 'en' %}View All{% else %}Ver Todos{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

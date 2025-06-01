@@ -1,0 +1,14 @@
+[
+  {
+    "id": 2,
+    "nombre": "Cobb 500",
+    "tipo_raza": "ENGORDE",
+    "descripcion": "Cobb 500 es una raza de pollo de engorde con excelente crecimiento, eficiencia alimenticia y rendimiento de carne."
+  },
+  {
+    "id": 1,
+    "nombre": "Ross 308 AP",
+    "tipo_raza": "ENGORDE",
+    "descripcion": "Ross 308 AP es un pollo de engorde de alto rendimiento con excelente conversión alimenticia y rendimiento de pechuga."
+  }
+]

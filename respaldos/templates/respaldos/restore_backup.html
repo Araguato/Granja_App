@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Restaurar Respaldo - App Granja{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-undo me-2"></i>Restaurar Respaldo</h1>
+        <p class="lead">Restaurar el sistema desde un respaldo.</p>
+        <div class="mb-3">
+            <a href="{% url 'respaldos:backup_detail' backup.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Volver a Detalles
+            </a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Confirmación de Restauración
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h5><i class="fas fa-exclamation-triangle me-2"></i>¡Advertencia!</h5>
+                    <p>Estás a punto de restaurar el sistema desde el respaldo <strong>{{ backup.name }}</strong>.</p>
+                    <p>Este proceso reemplazará la información actual del sistema con los datos del respaldo. Esta acción no se puede deshacer.</p>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle me-2"></i>Información del Respaldo
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Nombre:</span>
+                                <strong>{{ backup.name }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tipo:</span>
+                                <strong>{{ backup.get_backup_type_display }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Fecha de Creación:</span>
+                                <strong>{{ backup.created_at|date:"d/m/Y H:i" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tamaño:</span>
+                                <strong>{{ backup.size_in_mb }} MB</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>El proceso de restauración puede tardar varios minutos dependiendo del tamaño de los datos. No cierres esta ventana durante el proceso.
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-undo me-2"></i>Confirmar Restauración
+                        </button>
+                        <a href="{% url 'respaldos:backup_detail' backup.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

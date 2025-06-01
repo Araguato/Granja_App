@@ -1,0 +1,73 @@
+{
+    "inventario": {
+        "alimento": [
+            "view_alimento",
+            "change_alimento"
+        ],
+        "consumoalimento": [
+            "add_consumoalimento",
+            "view_consumoalimento",
+            "change_consumoalimento"
+        ],
+        "vacuna": [
+            "view_vacuna"
+        ],
+        "insumo": [
+            "view_insumo"
+        ]
+    },
+    "produccion": {
+        "galpon": [
+            "view_galpon",
+            "change_galpon"
+        ],
+        "lote": [
+            "view_lote",
+            "change_lote"
+        ],
+        "seguimientodiario": [
+            "add_seguimientodiario",
+            "view_seguimientodiario",
+            "change_seguimientodiario"
+        ],
+        "tarea": [
+            "add_tarea",
+            "view_tarea",
+            "change_tarea",
+            "complete_tarea"
+        ],
+        "raza": [
+            "view_raza"
+        ]
+    },
+    "wiki": {
+        "article": [
+            "view_article"
+        ],
+        "category": [
+            "view_category"
+        ]
+    },
+    "faq": {
+        "faq": [
+            "view_faq"
+        ],
+        "faqcategory": [
+            "view_faqcategory"
+        ]
+    },
+    "bot": {
+        "botconversation": [
+            "view_botconversation"
+        ],
+        "botmessage": [
+            "add_botmessage",
+            "view_botmessage"
+        ]
+    },
+    "avicola": {
+        "dashboard": [
+            "view_dashboard_operario"
+        ]
+    }
+}

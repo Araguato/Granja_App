@@ -1,0 +1,271 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Reporte | App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #5a5c69;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #6e707e;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .form-control:focus {
+        color: #6e707e;
+        background-color: #fff;
+        border-color: #bac8f3;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    .form-section {
+        background-color: #f8f9fc;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border-left: 4px solid #4e73df;
+    }
+    .form-section h3 {
+        color: #4e73df;
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .form-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 0.35rem;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, 
+                    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .btn-primary {
+        color: #fff;
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2653d4;
+    }
+    .btn-secondary {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+    .btn i {
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="report-header">
+        <h1><i class="fas fa-plus-circle me-2"></i>Generar Nuevo Reporte</h1>
+        <a href="{% url 'reportes:panel_reportes' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Volver al Panel
+        </a>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+<div class="form-container">
+    <form method="post" class="form-section">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="titulo" class="form-label">Título del Reporte</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="tipo_reporte" class="form-label">Tipo de Reporte</label>
+            <select class="form-control" id="tipo_reporte" name="tipo_reporte" required>
+                <option value="">Seleccione un tipo...</option>
+                {% for tipo_id, tipo_nombre in tipos_reporte %}
+                    <option value="{{ tipo_id }}">{{ tipo_nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_mes_anterior }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_hoy }}" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="formato" class="form-label">Formato</label>
+                    <select class="form-control" id="formato" name="formato" required>
+                        {% for formato_id, formato_nombre in formatos_disponibles %}
+                            {% if formato_id == 'PDF' and pdf_disponible or formato_id == 'EXCEL' and excel_disponible or formato_id == 'CSV' %}
+                                <option value="{{ formato_id }}">{{ formato_nombre }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="plantilla_id" class="form-label">Plantilla (opcional)</label>
+                    <select class="form-control" id="plantilla_id" name="plantilla_id">
+                        <option value="">Sin plantilla</option>
+                        {% for plantilla in plantillas %}
+                            <option value="{{ plantilla.id }}">{{ plantilla.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div id="parametros_adicionales" class="form-section" style="display: none;">
+            <h3><i class="fas fa-cog me-2"></i>Parámetros Adicionales</h3>
+            <!-- Los parámetros adicionales se cargarán dinámicamente según el tipo de reporte -->
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-file-export me-1"></i> Generar Reporte
+            </button>
+            <button type="reset" class="btn btn-secondary">
+                <i class="fas fa-eraser me-1"></i> Limpiar
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Script para mostrar parámetros adicionales según el tipo de reporte
+    document.getElementById('tipo_reporte').addEventListener('change', function() {
+        var tipoReporte = this.value;
+        var parametrosDiv = document.getElementById('parametros_adicionales');
+        
+        // Limpiar parámetros anteriores
+        parametrosDiv.innerHTML = '<h3>Parámetros Adicionales</h3>';
+        
+        if (tipoReporte) {
+            // Mostrar parámetros según el tipo de reporte
+            parametrosDiv.style.display = 'block';
+            
+            if (tipoReporte === 'PRODUCCION_DIARIA' || tipoReporte === 'PRODUCCION_SEMANAL' || tipoReporte === 'PRODUCCION_MENSUAL') {
+                addParameter('param_incluir_graficos', 'Incluir Gráficos', 'checkbox');
+                addParameter('param_desglose_por_lote', 'Desglose por Lote', 'checkbox');
+            } else if (tipoReporte === 'MORTALIDAD') {
+                addParameter('param_incluir_causas', 'Incluir Causas de Mortalidad', 'checkbox');
+                addParameter('param_agrupar_por', 'Agrupar por', 'select', ['Día', 'Semana', 'Lote']);
+            } else if (tipoReporte === 'INVENTARIO') {
+                addParameter('param_tipo_inventario', 'Tipo de Inventario', 'select', ['Alimentos', 'Vacunas', 'Insumos', 'Todos']);
+            } else if (tipoReporte === 'VENTAS') {
+                addParameter('param_agrupar_por', 'Agrupar por', 'select', ['Cliente', 'Producto', 'Fecha']);
+                addParameter('param_incluir_graficos', 'Incluir Gráficos', 'checkbox');
+            }
+        } else {
+            parametrosDiv.style.display = 'none';
+        }
+    });
+    
+    function addParameter(name, label, type, options) {
+        var parametrosDiv = document.getElementById('parametros_adicionales');
+        var paramDiv = document.createElement('div');
+        paramDiv.className = 'form-row';
+        
+        var paramLabel = document.createElement('label');
+        paramLabel.setAttribute('for', name);
+        paramLabel.textContent = label;
+        
+        var paramInput;
+        
+        if (type === 'checkbox') {
+            paramInput = document.createElement('input');
+            paramInput.type = 'checkbox';
+            paramInput.id = name;
+            paramInput.name = name;
+            paramInput.value = 'true';
+        } else if (type === 'select') {
+            paramInput = document.createElement('select');
+            paramInput.id = name;
+            paramInput.name = name;
+            
+            options.forEach(function(option) {
+                var optionEl = document.createElement('option');
+                optionEl.value = option;
+                optionEl.textContent = option;
+                paramInput.appendChild(optionEl);
+            });
+        } else {
+            paramInput = document.createElement('input');
+            paramInput.type = type;
+            paramInput.id = name;
+            paramInput.name = name;
+        }
+        
+        paramDiv.appendChild(paramLabel);
+        paramDiv.appendChild(paramInput);
+        parametrosDiv.appendChild(paramDiv);
+    }
+</script>
+{% endblock %}

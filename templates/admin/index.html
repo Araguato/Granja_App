@@ -1,0 +1,88 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    /* Estilos específicos para la página de índice del panel de administración */
+    #content h1 { color: #333; }
+    
+    /* Mejorar el contraste del texto en el menú de navegación */
+    .app-avicola .app-name { color: #FFFFFF !important; font-weight: bold !important; }
+    .app-avicola .model-empresa a { color: #FFFFFF !important; }
+    .app-avicola .model-userprofile a { color: #FFFFFF !important; }
+    
+    /* Aplicar a todas las aplicaciones y modelos */
+    .app-label { color: #FFFFFF !important; font-weight: bold !important; }
+    .model a { color: #FFFFFF !important; }
+    
+    /* Selector más específico para los elementos del menú */
+    #header .app-avicola .app-name,
+    #header .app-produccion .app-name,
+    #header .app-inventario .app-name,
+    #header .app-ventas .app-name,
+    #header .app-wiki .app-name,
+    #header .app-faq .app-name,
+    #header .app-bot .app-name {
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+    }
+    
+    /* Selector para los elementos del menú */
+    #header .app-avicola .model a,
+    #header .app-produccion .model a,
+    #header .app-inventario .model a,
+    #header .app-ventas .model a,
+    #header .app-wiki .model a,
+    #header .app-faq .model a,
+    #header .app-bot .model a {
+        color: #FFFFFF !important;
+    }
+  </style>
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="content-related">
+    <div class="module" id="recent-actions-module">
+        <h2>{% translate 'Recent actions' %}</h2>
+        <h3>{% translate 'My actions' %}</h3>
+            {% load log %}
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% translate 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                {% if entry.is_deletion or not entry.get_admin_url %}
+                    {{ entry.object_repr }}
+                {% else %}
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                {% endif %}
+                <br>
+                {% if entry.content_type %}
+                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                {% else %}
+                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}

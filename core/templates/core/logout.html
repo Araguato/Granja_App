@@ -1,0 +1,20 @@
+{% extends 'core/base_auth.html' %}
+
+{% block title %}Sesión Cerrada - App Granja{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="text-center mb-4">
+            <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+            <h3>Sesión cerrada correctamente</h3>
+            <p class="text-muted">Has cerrado sesión de forma segura.</p>
+        </div>
+        <div class="text-center">
+            <a href="{% url 'login' %}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión nuevamente
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

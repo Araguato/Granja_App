@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema Avícola</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos personalizados -->
+    <style>
+        .language-selector {
+            margin-left: 15px;
+        }
+        .language-selector .dropdown-item {
+            cursor: pointer;
+        }
+        .language-flag {
+            width: 20px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Sistema Avícola</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Menú Archivos -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="archivosDropdown" role="button" data-bs-toggle="dropdown">
+                            {% if LANGUAGE_CODE == 'en' %}Files{% else %}Archivos{% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'home' %}">{% if LANGUAGE_CODE == 'en' %}Main{% else %}Principal{% endif %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'avicola:avicola_reportes' %}">{% if LANGUAGE_CODE == 'en' %}Reports{% else %}Reportes{% endif %}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">{% if LANGUAGE_CODE == 'en' %}Logout{% else %}Salir{% endif %}</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Otros elementos del menú pueden ir aquí -->
+                </ul>
+                
+                <!-- Selector de idioma -->
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown language-selector">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe"></i> {% if LANGUAGE_CODE == 'en' %}Language{% else %}Idioma{% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="changeLanguage('es')">
+                                    <img src="https://flagcdn.com/w20/es.png" class="language-flag" alt="Español"> Español
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="changeLanguage('en')">
+                                    <img src="https://flagcdn.com/w20/us.png" class="language-flag" alt="English"> English
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery para AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Script para cambio de idioma directo -->
+    <script>
+        function changeLanguage(languageCode) {
+            // Crear una cookie con el idioma seleccionado
+            document.cookie = `django_language=${languageCode}; path=/; max-age=31536000`;
+            
+            // Recargar la página para aplicar el cambio de idioma
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

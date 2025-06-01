@@ -1,0 +1,289 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if LANGUAGE_CODE == 'en' %}Register Food Consumption{% else %}Registrar Consumo de Alimento{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-utensils me-2"></i>
+            {% if LANGUAGE_CODE == 'en' %}Register Food Consumption{% else %}Registrar Consumo de Alimento{% endif %}
+        </h1>
+        <a href="{% if alimento %}{% url 'inventario:detalle_alimento' alimento.id %}{% else %}{% url 'inventario:lista_alimentos' %}{% endif %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> {% if LANGUAGE_CODE == 'en' %}Back{% else %}Volver{% endif %}
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-clipboard-check me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Consumption Information{% else %}Información del Consumo{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="consumoForm">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.alimento.id_for_label }}" class="form-label">{{ form.alimento.label }}</label>
+                                {% if alimento %}
+                                    <input type="text" class="form-control" value="{{ alimento.nombre }}" disabled>
+                                    <input type="hidden" name="alimento" value="{{ alimento.id }}">
+                                {% else %}
+                                    {{ form.alimento }}
+                                {% endif %}
+                                {% if form.alimento.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.alimento.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.cantidad_kg.id_for_label }}" class="form-label">
+                                    {{ form.cantidad_kg.label }}
+                                    {% if alimento and alimento.stock_actual %}
+                                        <small class="text-muted">
+                                            ({% if LANGUAGE_CODE == 'en' %}Available:{% else %}Disponible:{% endif %} {{ alimento.stock_actual|floatformat:2 }} kg)
+                                        </small>
+                                    {% endif %}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.cantidad_kg }}
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                {% if form.cantidad_kg.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.cantidad_kg.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.fecha_consumo.id_for_label }}" class="form-label">{{ form.fecha_consumo.label }}</label>
+                                {{ form.fecha_consumo }}
+                                {% if form.fecha_consumo.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.fecha_consumo.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.lote_aves.id_for_label }}" class="form-label">{{ form.lote_aves.label }}</label>
+                                {{ form.lote_aves }}
+                                {% if form.lote_aves.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.lote_aves.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.observaciones.id_for_label }}" class="form-label">{{ form.observaciones.label }}</label>
+                            {{ form.observaciones }}
+                            {% if form.observaciones.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.observaciones.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% if alimento %}{% url 'inventario:detalle_alimento' alimento.id %}{% else %}{% url 'inventario:lista_alimentos' %}{% endif %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> {% if LANGUAGE_CODE == 'en' %}Cancel{% else %}Cancelar{% endif %}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> {% if LANGUAGE_CODE == 'en' %}Save{% else %}Guardar{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Tarjeta de información del alimento -->
+            {% if alimento %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Food Information{% else %}Información del Alimento{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ alimento.nombre }}</h5>
+                    <p class="mb-1">
+                        <strong>{% if LANGUAGE_CODE == 'en' %}Stage:{% else %}Etapa:{% endif %}</strong>
+                        <span class="badge 
+                            {% if alimento.etapa == 'iniciador' %}bg-primary
+                            {% elif alimento.etapa == 'crecimiento' %}bg-success
+                            {% elif alimento.etapa == 'engorde' %}bg-warning
+                            {% elif alimento.etapa == 'postura' %}bg-info
+                            {% else %}bg-secondary{% endif %}">
+                            {{ alimento.get_etapa_display }}
+                        </span>
+                    </p>
+                    <p class="mb-1"><strong>{% if LANGUAGE_CODE == 'en' %}Supplier:{% else %}Proveedor:{% endif %}</strong> {{ alimento.proveedor.nombre }}</p>
+                    <p class="mb-1"><strong>{% if LANGUAGE_CODE == 'en' %}Protein:{% else %}Proteína:{% endif %}</strong> {{ alimento.proteina_porcentaje }}%</p>
+                    <p class="mb-1"><strong>{% if LANGUAGE_CODE == 'en' %}Current Stock:{% else %}Stock Actual:{% endif %}</strong> {{ alimento.stock_actual|default:0|floatformat:2 }} kg</p>
+                    {% if alimento.stock_minimo is not None %}
+                    <p class="mb-0">
+                        <strong>{% if LANGUAGE_CODE == 'en' %}Minimum Stock:{% else %}Stock Mínimo:{% endif %}</strong> {{ alimento.stock_minimo|floatformat:2 }} kg
+                        {% if alimento.stock_actual <= alimento.stock_minimo %}
+                            <span class="badge bg-warning">{% if LANGUAGE_CODE == 'en' %}Low Stock{% else %}Stock Bajo{% endif %}</span>
+                        {% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Resumen de consumo reciente -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history me-2"></i>
+                        {% if LANGUAGE_CODE == 'en' %}Recent Consumption{% else %}Consumo Reciente{% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if consumos_recientes %}
+                        <div class="list-group list-group-flush">
+                            {% for consumo in consumos_recientes %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ consumo.lote_aves.codigo_lote }}</h6>
+                                    <small>{{ consumo.cantidad_kg|floatformat:2 }} kg</small>
+                                </div>
+                                <p class="mb-1 small">
+                                    {{ consumo.fecha_consumo|date:"d/m/Y H:i" }}
+                                    {% if consumo.observaciones %}
+                                        <span class="d-block text-muted">{{ consumo.observaciones|truncatechars:50 }}</span>
+                                    {% endif %}
+                                </p>
+                                <small class="text-muted">{{ consumo.registrado_por.get_full_name|default:consumo.registrado_por.username }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-end mt-2">
+                            <a href="{% if alimento %}{% url 'inventario:detalle_alimento' alimento.id %}{% else %}{% url 'inventario:lista_alimentos' %}{% endif %}" class="btn btn-sm btn-link p-0">
+                                {% if LANGUAGE_CODE == 'en' %}View all{% else %}Ver todo{% endif %} <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {% if LANGUAGE_CODE == 'en' %}No recent consumption records found.{% else %}No se encontraron registros de consumo recientes.{% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar la fecha y hora actual por defecto
+    var now = new Date();
+    var tzOffset = now.getTimezoneOffset() * 60000; // offset in milliseconds
+    var localISOTime = (new Date(Date.now() - tzOffset)).toISOString().slice(0, 16);
+    document.getElementById('id_fecha_consumo').value = localISOTime;
+    
+    // Seleccion automática del lote si solo hay uno disponible
+    var loteSelect = document.getElementById('id_lote_aves');
+    if (loteSelect && loteSelect.options.length === 2) { // 1 opción + el placeholder
+        loteSelect.selectedIndex = 1;
+    }
+    
+    // Validación personalizada del formulario
+    var form = document.getElementById('consumoForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            var cantidadInput = document.getElementById('id_cantidad_kg');
+            var cantidad = parseFloat(cantidadInput.value);
+            var stockActual = {{ alimento.stock_actual|default:0|floatformat:2 }};
+            
+            // Validar que la cantidad sea un número positivo
+            if (isNaN(cantidad) || cantidad <= 0) {
+                e.preventDefault();
+                showAlert('danger', '{% if LANGUAGE_CODE == 'en' %}Error!{% else %}¡Error!{% endif %}', '{% if LANGUAGE_CODE == 'en' %}Please enter a valid positive number.{% else %}Por favor ingrese un número válido mayor a cero.{% endif %}');
+                cantidadInput.focus();
+                return false;
+            }
+            
+            // Validar que no se consuma más del stock disponible
+            if (cantidad > stockActual) {
+                e.preventDefault();
+                showAlert('danger', '{% if LANGUAGE_CODE == 'en' %}Error!{% else %}¡Error!{% endif %}', '{% if LANGUAGE_CODE == 'en' %}The quantity cannot be greater than the available stock.{% else %}La cantidad no puede ser mayor al stock disponible.{% endif %}');
+                cantidadInput.focus();
+                return false;
+            }
+            
+            // Mostrar indicador de carga
+            var submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> {% if LANGUAGE_CODE == 'en' %}Saving...{% else %}Guardando...{% endif %}';
+            }
+            
+            return true;
+        });
+    }
+    
+    // Función para mostrar alertas
+    function showAlert(type, title, message) {
+        // Eliminar alertas existentes
+        var existingAlert = document.querySelector('.alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+        
+        var alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <strong>${title}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        // Insertar la alerta al principio del contenido principal
+        var container = document.querySelector('.container-fluid');
+        if (container) {
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+            
+            // Desaparecer después de 5 segundos
+            setTimeout(function() {
+                var alert = document.querySelector('.alert');
+                if (alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+    }
+    
+    // Inicializar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-users me-2"></i>
+                {% trans "Usuarios del Grupo" %}: {{ grupo.name }}
+            </h1>
+            <p class="text-muted">
+                {% trans "Esta interfaz le permite gestionar los usuarios que pertenecen al grupo seleccionado." %}
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-check me-2"></i>
+                        {% trans "Usuarios Asignados" %}
+                    </h5>
+                    <a href="{% url 'verificar_permisos_grupo' grupo.name %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-key me-1"></i> {% trans "Gestionar Permisos" %}
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if usuarios %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Nombre" %}</th>
+                                        <th>{% trans "Usuario" %}</th>
+                                        <th>{% trans "Email" %}</th>
+                                        <th>{% trans "Tipo" %}</th>
+                                        <th class="text-center">{% trans "Acciones" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for usuario in usuarios %}
+                                        <tr>
+                                            <td>{{ usuario.get_full_name }}</td>
+                                            <td>{{ usuario.username }}</td>
+                                            <td>{{ usuario.email }}</td>
+                                            <td>
+                                                <span class="badge bg-{% if usuario.user_type == 'ADMIN' %}danger{% elif usuario.user_type == 'SUPERVISOR' %}primary{% elif usuario.user_type == 'VETERINARIO' %}success{% else %}secondary{% endif %}">
+                                                    {{ usuario.get_user_type_display }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <form method="post" class="d-inline" action="{% url 'quitar_usuario_grupo' grupo.name usuario.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('{% trans "¿Está seguro de querer quitar a este usuario del grupo?" %}');">
+                                                        <i class="fas fa-user-minus"></i>
+                                                    </button>
+                                                </form>
+                                                <a href="{% url 'admin:avicola_userprofile_change' usuario.id %}" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {% trans "No hay usuarios asignados a este grupo." %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        {% trans "Añadir Usuarios al Grupo" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'agregar_usuario_grupo' grupo.name %}">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <select name="usuario_id" class="form-select" required>
+                                    <option value="">{% trans "Seleccione un usuario..." %}</option>
+                                    {% for usuario in usuarios_disponibles %}
+                                        <option value="{{ usuario.id }}">{{ usuario.get_full_name }} ({{ usuario.username }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-plus-circle me-1"></i> {% trans "Añadir al Grupo" %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    {% if not usuarios_disponibles %}
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% trans "No hay usuarios disponibles para añadir a este grupo." %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+        <a href="{% url 'admin:auth_group_changelist' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> {% trans "Volver a Grupos" %}
+        </a>
+        <a href="{% url 'admin:avicola_userprofile_add' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-1"></i> {% trans "Crear Nuevo Usuario" %}
+        </a>
+    </div>
+</div>
+{% endblock %}

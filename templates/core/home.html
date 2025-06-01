@@ -1,0 +1,97 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Inicio - App Granja{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-5">
+        <h1 class="display-4">Bienvenido a App Granja</h1>
+        <p class="lead">Sistema integral para la gestión de granjas avícolas</p>
+        <hr class="my-4">
+        <p>Optimiza la producción, inventario y ventas de tu granja avícola con nuestra plataforma especializada.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 text-center">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-egg module-icon"></i>
+                <h3 class="card-title">Producción</h3>
+                <p class="card-text">Control detallado de lotes, galpones, seguimiento diario y mortalidad.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-warehouse module-icon"></i>
+                <h3 class="card-title">Inventario</h3>
+                <p class="card-text">Gestión de alimentos, vacunas, insumos y proveedores de manera eficiente.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-chart-line module-icon"></i>
+                <h3 class="card-title">Ventas</h3>
+                <p class="card-text">Registro de clientes, ventas y seguimiento de la producción de huevos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12 text-center">
+        <h2>Características Principales</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-2"></i>Reportes Detallados
+            </div>
+            <div class="card-body">
+                <p>Genera reportes personalizados de producción, mortalidad, inventario y ventas en formatos PDF, Excel y CSV.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-users-cog me-2"></i>Control de Acceso
+            </div>
+            <div class="card-body">
+                <p>Diferentes niveles de acceso para administradores, supervisores, veterinarios y operarios.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt me-2"></i>Seguimiento Diario
+            </div>
+            <div class="card-body">
+                <p>Registro y monitoreo diario de la producción de huevos, mortalidad y otros indicadores clave.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-syringe me-2"></i>Control de Vacunación
+            </div>
+            <div class="card-body">
+                <p>Seguimiento de vacunas aplicadas a cada lote, con alertas de vencimiento y programación.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block after_field_sets %}
+{{ block.super }}
+{% if original %}
+<fieldset class="module">
+    <h2>Información de Auditoría</h2>
+    <div class="form-row">
+        <div>
+            <label>Fecha de Creación:</label>
+            <div class="readonly">{{ original.fecha_creacion|default:"-" }}</div>
+        </div>
+        <div>
+            <label>Creado Por:</label>
+            <div class="readonly">{{ original.creado_por|default:"-" }}</div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div>
+            <label>Última Actualización:</label>
+            <div class="readonly">{{ original.fecha_actualizacion|default:"-" }}</div>
+        </div>
+        <div>
+            <label>Actualizado Por:</label>
+            <div class="readonly">{{ original.actualizado_por|default:"-" }}</div>
+        </div>
+    </div>
+</fieldset>
+{% endif %}
+{% endblock %}

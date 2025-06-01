@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ article.title }} - Wiki - App Granja{% endblock %}
+
+{% block extra_css %}
+<style>
+    .article-content {
+        line-height: 1.7;
+    }
+    .article-content h2 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .article-content h3 {
+        margin-top: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+    .article-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+    .related-article {
+        padding: 10px;
+        border-left: 3px solid #4caf50;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+    .related-article:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'wiki:wiki_home' %}">Wiki</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'wiki:category_detail' category.slug %}">{{ category.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ article.title }}</li>
+            </ol>
+        </nav>
+        
+        <h1>{{ article.title }}</h1>
+        <div class="article-meta">
+            <i class="fas fa-folder me-1"></i>{{ category.name }} | 
+            <i class="fas fa-clock me-1"></i>Actualizado: {{ article.updated_at|date:"d/m/Y" }}
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                <div class="article-content">
+                    {{ article.content|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-link me-2"></i>Artículos Relacionados
+            </div>
+            <div class="card-body">
+                {% if related_articles %}
+                <div class="list-group">
+                    {% for related in related_articles %}
+                    <a href="{% url 'wiki:article_detail' category.slug related.slug %}" class="list-group-item list-group-item-action related-article">
+                        <h6 class="mb-1">{{ related.title }}</h6>
+                        <small class="text-muted">{{ related.updated_at|date:"d/m/Y" }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-light">
+                    <i class="fas fa-info-circle me-2"></i>No hay artículos relacionados.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-folder me-2"></i>En esta categoría
+            </div>
+            <div class="card-body">
+                <a href="{% url 'wiki:category_detail' category.slug %}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="fas fa-list me-1"></i>Ver todos los artículos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

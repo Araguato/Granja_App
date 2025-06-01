@@ -1,0 +1,143 @@
+# Spanish translation for App_Granja
+# Copyright (C) 2025 App_Granja Team
+# This file is distributed under the same license as the App_Granja package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-21 10:00-0400\n"
+"PO-Revision-Date: 2025-05-21 10:00-0400\n"
+"Last-Translator: App_Granja Team\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Menú principal
+msgid "Files"
+msgstr "Archivos"
+
+msgid "Main"
+msgstr "Principal"
+
+msgid "Reports"
+msgstr "Reportes"
+
+msgid "Logout"
+msgstr "Salir"
+
+msgid "Language"
+msgstr "Idioma"
+
+# Dashboard de operario
+msgid "Operator Dashboard"
+msgstr "Dashboard de Operario"
+
+msgid "Welcome"
+msgstr "Bienvenido"
+
+msgid "My Tasks"
+msgstr "Mis Tareas"
+
+msgid "My Lots"
+msgstr "Mis Lotes"
+
+msgid "Urgent"
+msgstr "Urgente"
+
+msgid "Important"
+msgstr "Importante"
+
+msgid "Assigned"
+msgstr "Asignado"
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "Yesterday"
+msgstr "Ayer"
+
+msgid "Check Lot 1 Temperature"
+msgstr "Revisar Temperatura Lote 1"
+
+msgid "Verify that the temperature is between 30-32°C"
+msgstr "Verificar que la temperatura esté entre 30-32°C"
+
+msgid "Feed Lot 3"
+msgstr "Alimentar Lote 3"
+
+msgid "Distribute 50kg of feed"
+msgstr "Distribuir 50kg de alimento"
+
+msgid "View All Tasks"
+msgstr "Ver Todas las Tareas"
+
+msgid "View All Lots"
+msgstr "Ver Todos los Lotes"
+
+msgid "Lot 1 - Shed 2"
+msgstr "Lote 1 - Galpón 2"
+
+msgid "Lot 3 - Shed 1"
+msgstr "Lote 3 - Galpón 1"
+
+msgid "Day"
+msgstr "Día"
+
+msgid "COBB 500 - 1000 birds"
+msgstr "COBB 500 - 1000 aves"
+
+msgid "ROSS 308 - 800 birds"
+msgstr "ROSS 308 - 800 aves"
+
+# Comparación de razas
+msgid "Breed Comparison"
+msgstr "Comparación de Razas"
+
+msgid "Here you can compare the nominal data of a breed with the real data of an active lot."
+msgstr "Aquí puedes comparar los datos nominales de una raza con los datos reales de un lote activo."
+
+msgid "Select Breed"
+msgstr "Seleccionar Raza"
+
+msgid "Select Lot"
+msgstr "Seleccionar Lote"
+
+msgid "Compare"
+msgstr "Comparar"
+
+msgid "Comparison Results"
+msgstr "Resultados de la Comparación"
+
+msgid "Metric"
+msgstr "Métrica"
+
+msgid "Nominal Value"
+msgstr "Valor Nominal"
+
+msgid "Real Value"
+msgstr "Valor Real"
+
+msgid "Difference"
+msgstr "Diferencia"
+
+msgid "Weight (g)"
+msgstr "Peso (g)"
+
+msgid "Feed Conversion"
+msgstr "Conversión Alimenticia"
+
+msgid "Mortality (%)"
+msgstr "Mortalidad (%)"
+
+msgid "Daily Gain (g)"
+msgstr "Ganancia Diaria (g)"
+
+msgid "Export to PDF"
+msgstr "Exportar a PDF"
+
+msgid "Print"
+msgstr "Imprimir"

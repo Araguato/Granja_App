@@ -1,0 +1,40 @@
+{
+  "raza1": {
+    "nombre": "Leghorn Blanca",
+    "nominal": {
+      "produccion_esperada": 280,
+      "peso_esperado": 1.8,
+      "mortalidad_esperada": 2.0,
+      "consumo_alimento_esperado": 110,
+      "conversion_esperada": 2.1
+    },
+    "actual": {
+      "lote_id": 1,
+      "nombre_lote": "Lote A-001",
+      "produccion_actual": 265,
+      "peso_actual": 1.7,
+      "mortalidad_actual": 2.5,
+      "consumo_alimento_actual": 115,
+      "conversion_actual": 2.3
+    }
+  },
+  "raza2": {
+    "nombre": "Rhode Island Red",
+    "nominal": {
+      "produccion_esperada": 260,
+      "peso_esperado": 2.0,
+      "mortalidad_esperada": 2.5,
+      "consumo_alimento_esperado": 120,
+      "conversion_esperada": 2.3
+    },
+    "actual": {
+      "lote_id": 2,
+      "nombre_lote": "Lote B-002",
+      "produccion_actual": 250,
+      "peso_actual": 1.9,
+      "mortalidad_actual": 2.8,
+      "consumo_alimento_actual": 125,
+      "conversion_actual": 2.4
+    }
+  }
+}
